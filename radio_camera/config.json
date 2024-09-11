@@ -1,0 +1,19 @@
+{
+    "filename": "input/Spectrogram.csv",
+    "gamma": 0.2,
+    "cmap":"ocean",
+    "bands": {
+        "A": [
+            12,
+            123
+        ],
+        "B": [
+            123,
+            1234
+        ],
+        "C": [
+            1,
+            2
+        ]
+    }
+}
