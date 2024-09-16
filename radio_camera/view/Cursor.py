@@ -1,9 +1,10 @@
-import matplotlib.image
 import numpy as np
-import matplotlib
 from matplotlib.backend_bases import MouseButton
-from view.basic_view import basic_view, plt
+from view.basic_view import plt, basic_view
+from matplotlib.widgets import RadioButtons, CheckButtons
+import matplotlib
 from matplotlib import cm
+from scipy.signal import find_peaks
 
 
 class Cursor:
@@ -21,6 +22,10 @@ class Cursor:
         )
         self.__horizontal_line = ax["spectrogram"].axhline(color="k", ls="--", lw=0.5)
         self.__vertical_line = ax["spectrogram"].axvline(color="k", ls="--", lw=0.5)
+        self.__fig = []
+        self.__axvlines = {}
+        self.__peaks_checkbuttons = []
+        self.__options_radiobuttons = []
 
     def __position(self, event):
         x, y = event.xdata, event.ydata
@@ -59,35 +64,160 @@ class Cursor:
         self.ax["f_proj"].set_ylim(lim)
 
     def __left_button_double_press_event(self, event, target):
-        fig = basic_view(self.ax[target].get_title())
-        mosaic = [[target]]
-        ax = fig.subplot_mosaic(mosaic=mosaic, empty_sentinel=None)
-        is_rotated = (
-            hasattr(self.ax[target], "is_rotated") and self.ax[target].is_rotated
-        )
-        if isinstance(self.im[target], matplotlib.lines.Line2D):
-            ax[target].plot(
-                self.im[target].get_data()[(1 if is_rotated else 0)],
-                self.im[target].get_data()[(0 if is_rotated else 1)],
-            )
-        elif isinstance(self.im[target], matplotlib.image.AxesImage):
-            ax[target].imshow(
-                X=self.im[target]._A,
-                norm=self.im[target].norm,
-                cmap=self.im[target].get_cmap(),
-                aspect=self.im[target].axes.get_aspect(),
-                origin=self.im[target].origin,
-                extent=self.im[target].get_extent(),
+        if target in self.im:
+            self.__fig = basic_view(self.ax[target].get_title())
+            mosaic = [[target, "options"], [target, "peaks"]]
+            self.inner_ax = self.__fig.subplot_mosaic(
+                mosaic=mosaic,
+                empty_sentinel=None,
+                width_ratios=[5, 1],
+                height_ratios=[1, 10],
             )
 
-        ax[target].set_title(self.ax[target].get_title())
-        ax[target].set_xlabel(self.ax[target].get_xlabel())
-        ax[target].set_ylabel(self.ax[target].get_ylabel())
-        ax[target].set_xlim(self.ax[target].get_ylim() if is_rotated else self.ax[target].get_xlim())
-        ax[target].set_ylim(self.ax[target].get_xlim() if is_rotated else self.ax[target].get_ylim())
-        ax[target].grid(True, linestyle="--", color="gray", alpha=0.7)
+            def on_options_radiobuttons_clicked(label):
+                dim = 0
+                is_rotated = (
+                    hasattr(self.ax[target], "is_rotated")
+                    and self.ax[target].is_rotated
+                )
+                if isinstance(self.im[target], matplotlib.lines.Line2D):
+                    dim = 1
+                elif isinstance(self.im[target], matplotlib.image.AxesImage):
+                    dim = 2
 
-        plt.show()
+                if label == "Data":
+                    self.inner_ax["peaks"].clear()
+                    self.inner_ax[target].clear()
+                    if dim == 1:
+                        self.inner_ax[target].plot(
+                            self.im[target].get_data()[(1 if is_rotated else 0)],
+                            self.im[target].get_data()[(0 if is_rotated else 1)],
+                        )
+                    elif dim == 2:
+                        self.inner_ax[target].imshow(
+                            X=self.im[target]._A,
+                            norm=self.im[target].norm,
+                            cmap=self.im[target].get_cmap(),
+                            aspect=self.im[target].axes.get_aspect(),
+                            origin=self.im[target].origin,
+                            extent=self.im[target].get_extent(),
+                        )
+
+                    self.inner_ax[target].set_xlabel(self.ax[target].get_xlabel())
+                    self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
+                    self.inner_ax[target].set_xlim(
+                        self.ax[target].get_ylim()
+                        if is_rotated
+                        else self.ax[target].get_xlim()
+                    )
+                    self.inner_ax[target].set_ylim(
+                        self.ax[target].get_xlim()
+                        if is_rotated
+                        else self.ax[target].get_ylim()
+                    )
+                elif label == "FFT":
+                    self.inner_ax["peaks"].set_title(
+                        f"Peaks [Hz] ({self.ax[target].get_ylabel()})"
+                    )
+                    self.inner_ax[target].clear()
+                    if dim == 1:
+                        x = self.im[target].get_data()[(1 if is_rotated else 0)]
+                        y = self.im[target].get_data()[(0 if is_rotated else 1)]
+                        yf = np.log10(np.abs(np.fft.rfft(y, norm="forward")))
+                        ff = np.log10(
+                            np.fft.rfftfreq(n=len(y), d=(x[1] - x[0]) / 1000) / 1000
+                        )
+
+                        peaks_index, peaks_height = find_peaks(yf, height=-5)
+                        peaks_height = peaks_height["peak_heights"]
+                        sorted_lists = sorted(
+                            zip(peaks_index, peaks_height),
+                            key=lambda x: x[1],
+                            reverse=True,
+                        )
+                        peaks_index, peaks_height = zip(*sorted_lists)
+                        peaks_index = list(peaks_index)
+                        peaks_height = list(peaks_height)
+                        self.inner_ax[target].plot(
+                            ff,
+                            yf,
+                            "-",
+                            ff[peaks_index],
+                            peaks_height,
+                            "x",
+                        )
+
+                        def on_peaks_checkbuttons_clicked(label):
+                            index = list(
+                                map(
+                                    lambda x: x.get_text(),
+                                    self.__peaks_checkbuttons.labels,
+                                )
+                            ).index(label)
+                            frequency = list(map(lambda x: ff[x], peaks_index))[index]
+
+                            if label in self.__axvlines:
+                                self.__axvlines[label].remove()
+                                del self.__axvlines[label]
+                            else:
+                                self.__axvlines[label] = self.inner_ax[target].axvline(
+                                    x=frequency, color="r", linestyle="--"
+                                )
+
+                        labels = list(
+                            map(
+                                lambda x: f"{ff[x[1]]:.2e} ({peaks_height[x[0]]:.2e})",
+                                enumerate(peaks_index),
+                            )
+                        )
+
+                        self.__peaks_checkbuttons = CheckButtons(
+                            ax=self.inner_ax["peaks"],
+                            labels=labels[:20],
+                            actives=list(map(lambda x: False, labels)),
+                        )
+                        self.__peaks_checkbuttons.on_clicked(
+                            on_peaks_checkbuttons_clicked
+                        )
+                    elif dim == 2:
+                        fft = np.log10(abs(np.fft.fft2(self.im[target]._A)))
+                        vmax = max(max(sublist) for sublist in fft)
+                        vmin = min(min(sublist) for sublist in fft)
+                        self.inner_ax[target].imshow(
+                            X=fft,
+                            norm=cm.colors.PowerNorm(
+                                gamma=self.im[target].norm.gamma, vmin=vmin, vmax=vmax
+                            ),
+                            cmap=self.im[target].get_cmap(),
+                            aspect=self.im[target].axes.get_aspect(),
+                            origin=self.im[target].origin,
+                            extent=self.im[target].get_extent(),
+                        )
+
+                    self.inner_ax[target].set_xlabel("Frequency [Hz]")
+                    self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
+
+                self.inner_ax[target].set_title(
+                    f"{self.ax[target].get_title()} ({label})"
+                )
+                self.inner_ax[target].grid(
+                    True, linestyle="--", color="gray", alpha=0.7, which="both"
+                )
+
+                self.__fig.canvas.draw()
+
+            self.inner_ax["options"].set_title("Options")
+            self.__options_radiobuttons = RadioButtons(
+                ax=self.inner_ax["options"],
+                labels=["Data", "FFT"],
+                radio_props={"s": [64, 64]},
+            )
+            self.__options_radiobuttons.on_clicked(on_options_radiobuttons_clicked)
+            on_options_radiobuttons_clicked(
+                self.__options_radiobuttons.labels[0].get_text()
+            )
+
+            plt.show()
 
     def __left_button_press_event(self, event, target):
         if target == "spectrogram":

@@ -1,9 +1,8 @@
 from matplotlib import cm
-from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.widgets import Slider, RadioButtons
 from view.Cursor import Cursor
 from view.Lims import Lims
-from view.basic_view import basic_view, plt
-from view.fft_view import fft_view
+from view.basic_view import plt, basic_view
 import math
 import numpy as np
 
@@ -14,6 +13,7 @@ def __gamma_slider_changed(val, im, vmin, vmax, fig):
 
 
 def main_view(config, properties, frequencies, spectrogram):
+
     fig = basic_view("Radio camera")
 
     mosaic = [
@@ -89,6 +89,7 @@ def main_view(config, properties, frequencies, spectrogram):
     ax["band_selection"].set_title("Band [MHz-MHz]")
     band_selection_radiobuttons = RadioButtons(
         ax=ax["band_selection"],
+        radio_props={"s": list(map(lambda x: 64, config.data["bands"]))},
         labels=list(
             map(lambda x: f"{x} {config.data['bands'][x]}", config.data["bands"].keys())
         ),
@@ -128,9 +129,6 @@ def main_view(config, properties, frequencies, spectrogram):
     ax["f_power"].set_xlabel("Frequency [MHz]")
     ax["f_power"].set_ylabel("Power [log10(µW)]")
     ax["f_power"].grid(True, linestyle="--", color="gray", alpha=0.7)
-
-    # fft_button = Button(ax=ax["fft"], label="FFT", hovercolor="0.975")
-    # fft_button.on_clicked((lambda event: fft_view(event, config, spectrogram)))
 
     cursor = Cursor(ax, im, spectrogram)
     plt.connect("button_press_event", cursor.button_press_event)
