@@ -108,17 +108,27 @@ class Cursor:
                         if is_rotated
                         else self.ax[target].get_ylim()
                     )
-                elif label == "FFT":
-                    self.inner_ax[target].set_xlabel("Frequency [Hz]")
+                elif label.startswith("FFT"):
+                    if label == "FFT (frequency)":
+                        self.inner_ax[target].set_xlabel("Frequency [log10(Hz)]")
+                    elif label == "FFT (time)":
+                        self.inner_ax[target].set_xlabel("Period [log10(sec)]")
                     self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
 
                     if dim == 1:
                         yf = np.log10(np.abs(np.fft.rfft(data["y"], norm="forward")))
                         ff = np.log10(
-                            np.fft.rfftfreq(
-                                n=len(data["y"]), d=(data["x"][1] - data["x"][0]) / 1000
+                            list(
+                                map(
+                                    lambda x: x
+                                    ** (1 if label == "FFT (frequency)" else -1),
+                                    np.fft.rfftfreq(
+                                        n=len(data["y"]),
+                                        d=(data["x"][1] - data["x"][0]) / 1000,
+                                    )
+                                    / 1000,
+                                )
                             )
-                            / 1000
                         )
                         data = {"x": ff, "y": yf}
                     elif dim == 2:
@@ -128,16 +138,18 @@ class Cursor:
 
                 labels = []
                 if dim == 1:
-                    (peaks_index, peaks_height) = find_peaks(data["y"], height=-5)
-                    peaks_height = peaks_height["peak_heights"][:20]
+                    (peaks_index, peaks_height) = find_peaks(
+                        data["y"], height=sum(data["y"]) / len(data["y"])
+                    )
+                    peaks_height = peaks_height["peak_heights"]
                     sorted_lists = sorted(
                         zip(peaks_index, peaks_height),
                         key=lambda x: x[1],
                         reverse=True,
                     )
                     (peaks_index, peaks_height) = zip(*sorted_lists)
-                    peaks_index = list(peaks_index)
-                    peaks_height = list(peaks_height)
+                    peaks_index = list(peaks_index)[:20]
+                    peaks_height = list(peaks_height)[:20]
                     self.inner_ax[target].plot(
                         data["x"],
                         data["y"],
@@ -208,8 +220,8 @@ class Cursor:
             self.inner_ax["options"].set_title("Options")
             self.__options_radiobuttons = RadioButtons(
                 ax=self.inner_ax["options"],
-                labels=["Data", "FFT"],
-                radio_props={"s": [64, 64]},
+                labels=["Data", "FFT (frequency)", "FFT (time)"],
+                radio_props={"s": [64, 64, 64]},
             )
             self.__options_radiobuttons.on_clicked(on_options_radiobuttons_clicked)
             on_options_radiobuttons_clicked(
