@@ -1,10 +1,12 @@
+import math
+
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import cm
-from matplotlib.widgets import Slider, RadioButtons
+from matplotlib.widgets import RadioButtons, Slider
 from view.Cursor import Cursor
 from view.Lims import Lims
-from view.basic_view import plt, basic_view
-import math
-import numpy as np
+from view.basic_view import basic_view
 
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):

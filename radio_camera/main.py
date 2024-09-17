@@ -1,3 +1,8 @@
+import os
+import tkinter as tk
+from tkinter import filedialog
+
+
 def split_file_by_empty_lines(filepath):
     with open(filepath, "r") as file:
         lines = file.readlines()
@@ -18,8 +23,6 @@ def split_file_by_empty_lines(filepath):
     return chunks
 
 
-import os
-
 if __name__ == "__main__":
     from Config import Config
 
@@ -31,8 +34,6 @@ if __name__ == "__main__":
                 filename = config.data["filename"]
 
     if not filename:
-        import tkinter as tk
-        from tkinter import filedialog
 
         window = tk.Tk()
         window.wm_attributes("-topmost", 1)

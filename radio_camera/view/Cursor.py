@@ -1,10 +1,12 @@
-import numpy as np
-from matplotlib.backend_bases import MouseButton
-from view.basic_view import plt, basic_view
-from matplotlib.widgets import RadioButtons, CheckButtons
 import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.text
+import numpy as np
 from matplotlib import cm
+from matplotlib.backend_bases import MouseButton
+from matplotlib.widgets import CheckButtons, RadioButtons
 from scipy.signal import find_peaks
+from view.basic_view import basic_view
 
 
 class Cursor:
@@ -28,15 +30,15 @@ class Cursor:
         self.__options_radiobuttons = []
 
     def __position(self, event):
-        x, y = event.xdata, event.ydata
+        (x, y) = (event.xdata, event.ydata)
         x_el = int(x * self.__x_ratio)
         y_el = int(y * self.__y_ratio)
         self.__vertical_line.set_xdata([x])
         self.__horizontal_line.set_ydata([y])
-        return x_el, y_el
+        return (x_el, y_el)
 
     def __left_button_press_event_spectrogram(self, event):
-        x_el, y_el = self.__position(event)
+        (x_el, y_el) = self.__position(event)
         self.im["t_proj"].set_data(
             np.linspace(
                 min(self.__spectrogram["t"]),
@@ -49,7 +51,6 @@ class Cursor:
         self.ax["t_proj"].relim()
         self.ax["t_proj"].autoscale()
         self.ax["t_proj"].set_xlim(lim)
-
         self.im["f_proj"].set_data(
             [x[x_el] for x in self.im["spectrogram"]._A],
             np.linspace(
@@ -75,34 +76,26 @@ class Cursor:
             )
 
             def on_options_radiobuttons_clicked(label):
-                dim = 0
                 is_rotated = (
                     hasattr(self.ax[target], "is_rotated")
                     and self.ax[target].is_rotated
                 )
+
+                dim = 0
+                data = {}
                 if isinstance(self.im[target], matplotlib.lines.Line2D):
                     dim = 1
+                    data = {
+                        "x": self.im[target].get_data()[1 if is_rotated else 0],
+                        "y": self.im[target].get_data()[0 if is_rotated else 1],
+                    }
                 elif isinstance(self.im[target], matplotlib.image.AxesImage):
                     dim = 2
+                    data = {"X": self.im[target]._A}
 
+                self.inner_ax[target].clear()
+                self.inner_ax["peaks"].clear()
                 if label == "Data":
-                    self.inner_ax["peaks"].clear()
-                    self.inner_ax[target].clear()
-                    if dim == 1:
-                        self.inner_ax[target].plot(
-                            self.im[target].get_data()[(1 if is_rotated else 0)],
-                            self.im[target].get_data()[(0 if is_rotated else 1)],
-                        )
-                    elif dim == 2:
-                        self.inner_ax[target].imshow(
-                            X=self.im[target]._A,
-                            norm=self.im[target].norm,
-                            cmap=self.im[target].get_cmap(),
-                            aspect=self.im[target].axes.get_aspect(),
-                            origin=self.im[target].origin,
-                            extent=self.im[target].get_extent(),
-                        )
-
                     self.inner_ax[target].set_xlabel(self.ax[target].get_xlabel())
                     self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
                     self.inner_ax[target].set_xlim(
@@ -116,87 +109,93 @@ class Cursor:
                         else self.ax[target].get_ylim()
                     )
                 elif label == "FFT":
-                    self.inner_ax["peaks"].set_title(
-                        f"Peaks [Hz] ({self.ax[target].get_ylabel()})"
-                    )
-                    self.inner_ax[target].clear()
-                    if dim == 1:
-                        x = self.im[target].get_data()[(1 if is_rotated else 0)]
-                        y = self.im[target].get_data()[(0 if is_rotated else 1)]
-                        yf = np.log10(np.abs(np.fft.rfft(y, norm="forward")))
-                        ff = np.log10(
-                            np.fft.rfftfreq(n=len(y), d=(x[1] - x[0]) / 1000) / 1000
-                        )
-
-                        peaks_index, peaks_height = find_peaks(yf, height=-5)
-                        peaks_height = peaks_height["peak_heights"]
-                        sorted_lists = sorted(
-                            zip(peaks_index, peaks_height),
-                            key=lambda x: x[1],
-                            reverse=True,
-                        )
-                        peaks_index, peaks_height = zip(*sorted_lists)
-                        peaks_index = list(peaks_index)
-                        peaks_height = list(peaks_height)
-                        self.inner_ax[target].plot(
-                            ff,
-                            yf,
-                            "-",
-                            ff[peaks_index],
-                            peaks_height,
-                            "x",
-                        )
-
-                        def on_peaks_checkbuttons_clicked(label):
-                            index = list(
-                                map(
-                                    lambda x: x.get_text(),
-                                    self.__peaks_checkbuttons.labels,
-                                )
-                            ).index(label)
-                            frequency = list(map(lambda x: ff[x], peaks_index))[index]
-
-                            if label in self.__axvlines:
-                                self.__axvlines[label].remove()
-                                del self.__axvlines[label]
-                            else:
-                                self.__axvlines[label] = self.inner_ax[target].axvline(
-                                    x=frequency, color="r", linestyle="--"
-                                )
-
-                        labels = list(
-                            map(
-                                lambda x: f"{ff[x[1]]:.2e} ({peaks_height[x[0]]:.2e})",
-                                enumerate(peaks_index),
-                            )
-                        )
-
-                        self.__peaks_checkbuttons = CheckButtons(
-                            ax=self.inner_ax["peaks"],
-                            labels=labels[:20],
-                            actives=list(map(lambda x: False, labels)),
-                        )
-                        self.__peaks_checkbuttons.on_clicked(
-                            on_peaks_checkbuttons_clicked
-                        )
-                    elif dim == 2:
-                        fft = np.log10(abs(np.fft.fft2(self.im[target]._A)))
-                        vmax = max(max(sublist) for sublist in fft)
-                        vmin = min(min(sublist) for sublist in fft)
-                        self.inner_ax[target].imshow(
-                            X=fft,
-                            norm=cm.colors.PowerNorm(
-                                gamma=self.im[target].norm.gamma, vmin=vmin, vmax=vmax
-                            ),
-                            cmap=self.im[target].get_cmap(),
-                            aspect=self.im[target].axes.get_aspect(),
-                            origin=self.im[target].origin,
-                            extent=self.im[target].get_extent(),
-                        )
-
                     self.inner_ax[target].set_xlabel("Frequency [Hz]")
                     self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
 
+                    if dim == 1:
+                        yf = np.log10(np.abs(np.fft.rfft(data["y"], norm="forward")))
+                        ff = np.log10(
+                            np.fft.rfftfreq(
+                                n=len(data["y"]), d=(data["x"][1] - data["x"][0]) / 1000
+                            )
+                            / 1000
+                        )
+                        data = {"x": ff, "y": yf}
+                    elif dim == 2:
+                        print("ciao")
+                        fft = np.log10(abs(np.fft.fft2(self.im[target]._A)))
+                        data = {"X": fft}
+
+                labels = []
+                if dim == 1:
+                    (peaks_index, peaks_height) = find_peaks(data["y"], height=-5)
+                    peaks_height = peaks_height["peak_heights"][:20]
+                    sorted_lists = sorted(
+                        zip(peaks_index, peaks_height),
+                        key=lambda x: x[1],
+                        reverse=True,
+                    )
+                    (peaks_index, peaks_height) = zip(*sorted_lists)
+                    peaks_index = list(peaks_index)
+                    peaks_height = list(peaks_height)
+                    self.inner_ax[target].plot(
+                        data["x"],
+                        data["y"],
+                        "-",
+                        data["x"][peaks_index],
+                        peaks_height,
+                        "x",
+                    )
+                    labels = list(
+                        map(
+                            lambda x: f"{data['x'][x[1]]:.2e} ({peaks_height[x[0]]:.2e})",
+                            enumerate(peaks_index),
+                        )
+                    )
+                elif dim == 2:
+                    vmax = max((max(sublist) for sublist in data["X"]))
+                    vmin = min((min(sublist) for sublist in data["X"]))
+                    self.inner_ax[target].imshow(
+                        X=data["X"],
+                        norm=cm.colors.PowerNorm(
+                            gamma=self.im[target].norm.gamma, vmin=vmin, vmax=vmax
+                        ),
+                        cmap=self.im[target].get_cmap(),
+                        aspect=self.im[target].axes.get_aspect(),
+                        origin=self.im[target].origin,
+                        extent=self.im[target].get_extent(),
+                    )
+
+                def on_peaks_checkbuttons_clicked(label, data, dim):
+                    index = [
+                        x.get_text() for x in self.__peaks_checkbuttons.labels
+                    ].index(label)
+                    frequency = 0
+                    if dim == 1:
+                        frequency = [data["x"][x] for x in peaks_index][index]
+                    elif dim == 2:
+                        frequency = 0
+
+                    if label in self.__axvlines:
+                        self.__axvlines[label].remove()
+                        del self.__axvlines[label]
+                    else:
+                        self.__axvlines[label] = self.inner_ax[target].axvline(
+                            x=frequency, color="r", linestyle="--"
+                        )
+
+                self.inner_ax["peaks"].set_title(
+                    f"{self.inner_ax[target].get_xlabel()} ({self.inner_ax[target].get_ylabel()})"
+                )
+                self.__peaks_checkbuttons = CheckButtons(
+                    ax=self.inner_ax["peaks"],
+                    labels=labels,
+                    actives=list(map(lambda x: False, labels)),
+                    frame_props={"s": list(map(lambda x: 64, labels))},
+                )
+                self.__peaks_checkbuttons.on_clicked(
+                    lambda x: (on_peaks_checkbuttons_clicked(x, data, dim))
+                )
                 self.inner_ax[target].set_title(
                     f"{self.ax[target].get_title()} ({label})"
                 )
