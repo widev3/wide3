@@ -10,10 +10,9 @@ from view.basic_view import basic_view
 
 
 class Cursor:
-    def __init__(self, ax, im, spectrogram):
+    def __init__(self, ax, im):
         self.ax = ax
         self.im = im
-        self.__spectrogram = spectrogram
         self.__x_ratio = len(self.im["spectrogram"]._A[0]) / (
             self.im["spectrogram"].get_extent()[1]
             - self.im["spectrogram"].get_extent()[0]
@@ -37,32 +36,52 @@ class Cursor:
         self.__horizontal_line.set_ydata([y])
         return (x_el, y_el)
 
+    def __zommed_limits(self):
+        extent = self.im["spectrogram"].get_extent()
+        xlim = self.ax["spectrogram"].get_xlim()
+        ylim = self.ax["spectrogram"].get_ylim()
+
+        el_xlim = tuple(
+            len(self.im["spectrogram"]._A[0]) * x / (extent[1] - extent[0]) + extent[0]
+            for x in xlim
+        )
+        el_ylim = tuple(
+            len(self.im["spectrogram"]._A) * x / (extent[3] - extent[2]) + extent[2]
+            for x in ylim
+        )
+
+        el_xmin, el_xmax = int(el_xlim[0]), int(el_xlim[1])
+        el_ymin, el_ymax = int(el_ylim[0]), int(el_ylim[1])
+
+        return (
+            self.im["spectrogram"]._A[el_ymin:el_ymax, el_xmin:el_xmax],
+            el_xmin,
+            el_xmax,
+            el_ymin,
+            el_ymax,
+            xlim[0],
+            xlim[1],
+            ylim[0],
+            ylim[1],
+        )
+
     def __left_button_press_event_spectrogram(self, event):
         (x_el, y_el) = self.__position(event)
-        self.im["t_proj"].set_data(
-            np.linspace(
-                min(self.__spectrogram["t"]),
-                max(self.__spectrogram["t"]),
-                num=len(self.__spectrogram["i"][0]),
-            ),
-            self.im["spectrogram"]._A[y_el],
+        zommed_limits, el_xmin, el_xmax, el_ymin, el_ymax, xmin, xmax, ymin, ymax = (
+            self.__zommed_limits()
         )
-        lim = self.ax["t_proj"].get_xlim()
+        self.im["t_proj"].set_data(
+            np.linspace(xmin, xmax, el_xmax - el_xmin), zommed_limits[y_el - el_ymin]
+        )
         self.ax["t_proj"].relim()
         self.ax["t_proj"].autoscale()
-        self.ax["t_proj"].set_xlim(lim)
+
         self.im["f_proj"].set_data(
-            [x[x_el] for x in self.im["spectrogram"]._A],
-            np.linspace(
-                min(self.__spectrogram["f"] / 1000000),
-                max(self.__spectrogram["f"] / 1000000),
-                num=len(self.__spectrogram["i"]),
-            ),
+            [x[x_el - el_xmin] for x in zommed_limits],
+            np.linspace(ymin, ymax, el_ymax - el_ymin),
         )
-        lim = self.ax["f_proj"].get_ylim()
         self.ax["f_proj"].relim()
         self.ax["f_proj"].autoscale()
-        self.ax["f_proj"].set_ylim(lim)
 
     def __left_button_double_press_event(self, event, target):
         if target in self.im:
@@ -110,26 +129,23 @@ class Cursor:
                     )
                 elif label.startswith("FFT"):
                     if label == "FFT (frequency)":
+                        frequency = 1
                         self.inner_ax[target].set_xlabel("Frequency [log10(Hz)]")
                     elif label == "FFT (time)":
+                        frequency = -1
                         self.inner_ax[target].set_xlabel("Period [log10(sec)]")
+
                     self.inner_ax[target].set_ylabel(self.ax[target].get_ylabel())
 
                     if dim == 1:
                         yf = np.log10(np.abs(np.fft.rfft(data["y"], norm="forward")))
-                        ff = np.log10(
-                            list(
-                                map(
-                                    lambda x: x
-                                    ** (1 if label == "FFT (frequency)" else -1),
-                                    np.fft.rfftfreq(
-                                        n=len(data["y"]),
-                                        d=(data["x"][1] - data["x"][0]) / 1000,
-                                    )
-                                    / 1000,
-                                )
+                        ff = (
+                            np.fft.rfftfreq(
+                                n=len(data["y"]), d=(data["x"][1] - data["x"][0]) / 1000
                             )
+                            / 1000
                         )
+                        ff = np.log10(list(map(lambda x: x**frequency, ff)))
                         data = {"x": ff, "y": yf}
                     elif dim == 2:
                         print("ciao")

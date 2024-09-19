@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
-from PyQt5.QtGui import QIcon
+
+# from PyQt5 import QtGui
+# from matplotlib.backends.qt_compat import QtWidgets
 
 
 def basic_view(title):
@@ -10,9 +12,16 @@ def basic_view(title):
     mng = plt.get_current_fig_manager()
     mng.window.showMaximized()
     mng.window.setWindowTitle(title)
-    mng.window.setWindowIcon(
-        QIcon("icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png")
-    )
+    # QtWidgets.QApplication.instance().setWindowIcon(
+    #     QtGui.QIcon(
+    #         "icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png"
+    #     )
+    # )
+    # mng.window.setWindowIcon(
+    #     QtGui.QIcon(
+    #         "icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png"
+    #     )
+    # )
 
     unwanted_buttons = []
     for x in mng.toolbar.actions():

@@ -1,9 +1,9 @@
 class Lims:
-    def __init__(self, ax):
-        self.ax = ax
+    def __init__(self, im):
+        self.im = im
 
     def on_xlim_changed(self, event):
-        self.ax["t_proj"].set_xlim(event.get_xlim())
+        self.im["t_proj"].set_data([], [])
 
     def on_ylim_changed(self, event):
-        self.ax["f_proj"].set_ylim(event.get_ylim())
+        self.im["f_proj"].set_data([], [])
