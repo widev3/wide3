@@ -50,6 +50,6 @@ def spectrogram(file):
 
     t = relative_tss_zero_start  # times
     f = spec[spec.columns[0]]  # frequencies
-    i = list(map(lambda x: x[1:], spec.values))  # intensities
+    i = np.array(list(map(lambda x: x[1:], spec.values)))  # intensities
 
     return {"t": t, "f": f, "i": i}

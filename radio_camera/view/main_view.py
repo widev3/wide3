@@ -8,6 +8,8 @@ from view.Cursor import Cursor
 from view.Lims import Lims
 from view.basic_view import basic_view
 
+# from mpl_toolkits.mplot3d import Axes3D  # <--- This is important for 3d plotting
+
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):
     im.set_norm(cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
@@ -32,8 +34,8 @@ def main_view(config, properties, frequencies, spectrogram):
     )
 
     im = {}
-    vmax = max(max(sublist) for sublist in spectrogram["i"])
-    vmin = min(min(sublist) for sublist in spectrogram["i"])
+    vmax = np.max(spectrogram["i"])
+    vmin = np.min(spectrogram["i"])
     im["spectrogram"] = ax["spectrogram"].imshow(
         X=spectrogram["i"],
         norm=cm.colors.PowerNorm(gamma=config.data["gamma"], vmin=vmin, vmax=vmax),
@@ -47,6 +49,22 @@ def main_view(config, properties, frequencies, spectrogram):
             max(spectrogram["f"] / 1000000),
         ],
     )
+    # im["spectrogram"] = ax["spectrogram"].plot_surface(
+    #     X=np.array([1, 2, 3]),
+    #     Y=np.array([1, 2, 3]),
+    #     Z=np.array([[2, 3, 4], [2, 3, 4], [2, 3, 4]]),
+    #     norm=cm.colors.PowerNorm(gamma=config.data["gamma"], vmin=vmin, vmax=vmax),
+    #     cmap=config.data["cmap"],
+    #     # aspect="auto",
+    #     # origin="lower",
+    #     # extent=[
+    #     #     min(spectrogram["t"]),
+    #     #     max(spectrogram["t"]),
+    #     #     min(spectrogram["f"] / 1000000),
+    #     #     max(spectrogram["f"] / 1000000),
+    #     # ],
+    # )
+    
     lims = Lims(ax)
     ax["spectrogram"].callbacks.connect("xlim_changed", lims.on_xlim_changed)
     ax["spectrogram"].callbacks.connect("ylim_changed", lims.on_ylim_changed)
