@@ -1,7 +1,8 @@
 {
-    "filename": "input/Spectrogram.csv",
-    "gamma": 0.2,
-    "cmap": "ocean",
+    "filename": "input/Spectrogram crop.csv",
+    "separator": ",",
+    "gamma": 0.3,
+    "cmap": "magma",
     "bands": {
         "A": [
             12,

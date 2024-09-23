@@ -24,7 +24,7 @@ def split_file_by_empty_lines(filepath):
 
 
 if __name__ == "__main__":
-    from Config import Config
+    from csv_reader.Config import Config
 
     config = Config()
     filename = ""
@@ -34,7 +34,6 @@ if __name__ == "__main__":
                 filename = config.data["filename"]
 
     if not filename:
-
         window = tk.Tk()
         window.wm_attributes("-topmost", 1)
         window.withdraw()
@@ -46,18 +45,18 @@ if __name__ == "__main__":
 
     file = split_file_by_empty_lines(filename)
 
-    from properties import properties
+    from csv_reader.properties import properties
 
-    pr = properties(file[0])
+    pr = properties(file[0], config)
 
-    from frequencies import frequencies
+    from csv_reader.frequencies import frequencies
 
-    fr = frequencies(file[1])
+    fr = frequencies(file[1], config)
 
-    from spectrogram import spectrogram
+    from csv_reader.spectrogram import spectrogram
 
-    sp = spectrogram(file[2])
+    sp = spectrogram(file[2], config)
 
-    from view.main_view import main_view
+    from radio_camera.view import main_view
 
-    main_view(config, pr, fr, sp)
+    main_view(pr, fr, sp, config)
