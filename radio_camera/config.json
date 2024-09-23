@@ -1,5 +1,5 @@
 {
-    "filename": "input/Spectrogram crop.csv",
+    "filename": "input/Spectrogram_crop.csv",
     "separator": ",",
     "gamma": 0.3,
     "cmap": "magma",

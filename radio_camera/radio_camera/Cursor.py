@@ -21,8 +21,12 @@ class Cursor:
             self.im["spectrogram"].get_extent()[3]
             - self.im["spectrogram"].get_extent()[2]
         )
-        self.__horizontal_line = ax["spectrogram"].axhline(color="k", ls="--", lw=0.5)
-        self.__vertical_line = ax["spectrogram"].axvline(color="k", ls="--", lw=0.5)
+        self.__horizontal_line = ax["spectrogram"].axhline(
+            color="black", linestyle="--", linewidth=1
+        )
+        self.__vertical_line = ax["spectrogram"].axvline(
+            color="black", linestyle="--", linewidth=1
+        )
         self.__fig = []
         self.__axvlines = {}
         self.__peaks_checkbuttons = []
@@ -30,8 +34,8 @@ class Cursor:
 
     def __position(self, event):
         (x, y) = (event.xdata, event.ydata)
-        x_el = int(x * self.__x_ratio)
-        y_el = int(y * self.__y_ratio)
+        x_el = int((x - self.ax["spectrogram"].get_xlim()[0]) * self.__x_ratio)
+        y_el = int((y - self.ax["spectrogram"].get_ylim()[0]) * self.__y_ratio)
         self.__vertical_line.set_xdata([x])
         self.__horizontal_line.set_ydata([y])
         return (x_el, y_el)
@@ -40,18 +44,10 @@ class Cursor:
         extent = self.im["spectrogram"].get_extent()
         xlim = self.ax["spectrogram"].get_xlim()
         ylim = self.ax["spectrogram"].get_ylim()
-
-        el_xlim = tuple(
-            len(self.im["spectrogram"]._A[0]) * x / (extent[1] - extent[0]) + extent[0]
-            for x in xlim
-        )
-        el_ylim = tuple(
-            len(self.im["spectrogram"]._A) * x / (extent[3] - extent[2]) + extent[2]
-            for x in ylim
-        )
-
-        el_xmin, el_xmax = int(el_xlim[0]), int(el_xlim[1])
-        el_ymin, el_ymax = int(el_ylim[0]), int(el_ylim[1])
+        el_xmin = int((xlim[0] - extent[0]) * self.__x_ratio)
+        el_xmax = int((xlim[1] - extent[0]) * self.__x_ratio)
+        el_ymin = int((ylim[0] - extent[2]) * self.__y_ratio)
+        el_ymax = int((ylim[1] - extent[2]) * self.__y_ratio)
 
         return (
             self.im["spectrogram"]._A[el_ymin:el_ymax, el_xmin:el_xmax],
@@ -71,13 +67,13 @@ class Cursor:
             self.__zommed_limits()
         )
         self.im["t_proj"].set_data(
-            np.linspace(xmin, xmax, el_xmax - el_xmin), zommed_limits[y_el - el_ymin]
+            np.linspace(xmin, xmax, el_xmax - el_xmin), zommed_limits[y_el]
         )
         self.ax["t_proj"].relim()
         self.ax["t_proj"].autoscale()
 
         self.im["f_proj"].set_data(
-            [x[x_el - el_xmin] for x in zommed_limits],
+            [x[x_el] for x in zommed_limits],
             np.linspace(ymin, ymax, el_ymax - el_ymin),
         )
         self.ax["f_proj"].relim()
@@ -85,12 +81,16 @@ class Cursor:
 
     def __left_button_double_press_event(self, event, target):
         if target in self.im:
-            mosaic = [[target, "options"], [target, "peaks"]]
+            mosaic = [
+                [target, "options"],
+                [target, "peaks"],
+                ["gamma_setting_slider", "peaks"],
+            ]
             self.__fig, self.inner_ax = basic_view(
                 self.ax[target].get_title(),
                 mosaic=mosaic,
                 width_ratios=[5, 1],
-                height_ratios=[1, 10],
+                height_ratios=[1, 10, 1],
             )
 
             def on_options_radiobuttons_clicked(label):
@@ -147,7 +147,6 @@ class Cursor:
                         ff = np.log10(list(map(lambda x: x**frequency, ff)))
                         data = {"x": ff, "y": yf}
                     elif dim == 2:
-                        print("ciao")
                         fft = np.log10(abs(np.fft.fft2(self.im[target]._A)))
                         data = {"X": fft}
 
@@ -180,8 +179,8 @@ class Cursor:
                         )
                     )
                 elif dim == 2:
-                    vmax = max((max(sublist) for sublist in data["X"]))
-                    vmin = min((min(sublist) for sublist in data["X"]))
+                    vmax = np.max(data["X"])
+                    vmin = np.min(data["X"])
                     self.inner_ax[target].imshow(
                         X=data["X"],
                         norm=cm.colors.PowerNorm(
@@ -208,7 +207,7 @@ class Cursor:
                         del self.__axvlines[label]
                     else:
                         self.__axvlines[label] = self.inner_ax[target].axvline(
-                            x=frequency, color="r", linestyle="--"
+                            x=frequency, color="black", linestyle="--", linewidth=1
                         )
 
                 self.inner_ax["peaks"].set_title(

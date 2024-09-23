@@ -39,6 +39,8 @@ def main_view(properties, frequencies, spectrogram, config):
             max(spectrogram["frequency"]) / 1000000,
         ],
     )
+    ax["spectrogram"].set_xlim(im["spectrogram"].get_extent()[0:2])
+    ax["spectrogram"].set_ylim(im["spectrogram"].get_extent()[2:4])
 
     lims = Lims(im)
     ax["spectrogram"].callbacks.connect("xlim_changed", lims.on_xlim_changed)
@@ -53,7 +55,7 @@ def main_view(properties, frequencies, spectrogram, config):
     ax["t_proj"].set_title("Time projection")
     ax["t_proj"].set_xlabel("Relative time from start [ms]")
     ax["t_proj"].set_ylabel(f"Magnitude [{spectrogram["um"]["magnitude"][1]}]")
-    ax["t_proj"].set_xlim(im["spectrogram"].get_extent()[0:2])
+    ax["t_proj"].set_xlim(ax["spectrogram"].get_xlim()[0:2])
     ax["t_proj"].margins(x=0)
     ax["t_proj"].grid(True, linestyle="--", color="gray", alpha=0.7)
 
@@ -61,7 +63,7 @@ def main_view(properties, frequencies, spectrogram, config):
     ax["f_proj"].set_title("Frequency projection")
     ax["f_proj"].set_xlabel("Frequency [MHz]")
     ax["f_proj"].set_ylabel(f"Magnitude [{spectrogram["um"]["magnitude"][1]}]")
-    ax["f_proj"].set_ylim(im["spectrogram"].get_extent()[2:4])
+    ax["f_proj"].set_ylim(ax["spectrogram"].get_ylim()[0:2])
     ax["f_proj"].margins(y=0)
     ax["f_proj"].is_rotated = True
     ax["f_proj"].grid(True, linestyle="--", color="gray", alpha=0.7)
@@ -90,14 +92,8 @@ def main_view(properties, frequencies, spectrogram, config):
         ),
     )
 
-    power_spectrogram = [
-        [math.pow(10, (el - 30) / 10) for el in row] for row in spectrogram["magnitude"]
-    ]
-
-    t_power_spectrogram = [
-        sum(row[i] for row in power_spectrogram) * 1000
-        for i in range(len(power_spectrogram[0]))
-    ]
+    power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
+    t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
     (im["t_power"],) = ax["t_power"].plot(
         np.linspace(
             min(spectrogram["relative_time"]),
@@ -111,7 +107,7 @@ def main_view(properties, frequencies, spectrogram, config):
     ax["t_power"].set_ylabel("Magnitude [µW]")
     ax["t_power"].grid(True, linestyle="--", color="gray", alpha=0.7)
 
-    f_power_spectrogram = [math.log10(sum(el) * 1000) for el in power_spectrogram]
+    f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
     (im["f_power"],) = ax["f_power"].plot(
         np.linspace(
             min(spectrogram["frequency"] / 1000000),
