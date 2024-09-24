@@ -1,8 +1,5 @@
 import matplotlib.pyplot as plt
 
-# from PyQt5 import QtGui
-# from matplotlib.backends.qt_compat import QtWidgets
-
 
 def basic_view(title, mosaic, width_ratios, height_ratios):
     plt.ion()
@@ -18,18 +15,6 @@ def basic_view(title, mosaic, width_ratios, height_ratios):
     mng = plt.get_current_fig_manager()
     mng.window.showMaximized()
     mng.window.setWindowTitle(title)
-
-    # QtWidgets.QApplication.instance().setWindowIcon(
-    #     QtGui.QIcon(
-    #         "icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png"
-    #     )
-    # )
-
-    # mng.window.setWindowIcon(
-    #     QtGui.QIcon(
-    #         "icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png"
-    #     )
-    # )
 
     unwanted_buttons = []
     for x in mng.toolbar.actions():

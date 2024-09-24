@@ -3,11 +3,8 @@ import json
 
 class Config:
     def __default_config(self):
-        self.data["filename"] = "Spectrogram.csv"
-        self.data["separator"] = ","
-        self.data["gamma"] = 0.2
-        self.data["cmap"] = "ocean"
-        self.data["bands"]["A"] = [10, 12]
+        self.data = {}
+        self.data["app"] = "radio_camera"
 
     def __init__(self):
         config = "config.json"

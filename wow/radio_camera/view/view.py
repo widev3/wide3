@@ -1,12 +1,16 @@
 import math
-
+import os
+import tkinter as tk
 import matplotlib.pyplot as plt
 import numpy as np
+from radio_camera.lib.Config import Config
+from tkinter import filedialog
 from matplotlib import cm
 from matplotlib.widgets import RadioButtons, Slider
-from radio_camera.Cursor import Cursor
-from radio_camera.Lims import Lims
+from radio_camera.view.Cursor import Cursor
+from radio_camera.view.Lims import Lims
 from basic_view import basic_view
+from radio_camera.lib.spectrogram_reader import reader
 
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):
@@ -14,7 +18,7 @@ def __gamma_slider_changed(val, im, vmin, vmax, fig):
     fig.canvas.draw_idle()
 
 
-def main_view(properties, frequencies, spectrogram, config):
+def __main_view(properties, frequencies, spectrogram, config):
     mosaic = [
         ["spectrogram", "colorbar", "f_proj", "t_power"],
         ["spectrogram", "colorbar", "f_proj", "f_power"],
@@ -125,3 +129,28 @@ def main_view(properties, frequencies, spectrogram, config):
     plt.connect("button_press_event", cursor.button_press_event)
 
     plt.show(block=True)
+
+def view(config):
+    if not config:
+        config = Config()
+    
+    filename = ""
+    if "filename" in config.data:
+        if config.data["filename"]:
+            if os.path.isfile(config.data["filename"]):
+                filename = config.data["filename"]
+
+    if not filename:
+        window = tk.Tk()
+        window.wm_attributes("-topmost", 1)
+        window.withdraw()
+        filename = filedialog.askopenfilename(
+            parent=window,
+            title="Select A File",
+            filetypes=(("csv", "*.csv"), ("Text files", "*.txt")),
+        )
+
+    pr, fr, sp = reader(filename, config)
+    __main_view(pr, fr, sp, config)
+
+

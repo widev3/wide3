@@ -1,0 +1,23 @@
+{
+    "app": "radio_camera",
+    "args": {
+        "filename": "input/Spectrogram_crop.csv",
+        "separator": ",",
+        "gamma": 0.3,
+        "cmap": "magma",
+        "bands": {
+            "A": [
+                12,
+                123
+            ],
+            "B": [
+                123,
+                1234
+            ],
+            "C": [
+                1,
+                2
+            ]
+        }
+    }
+}
