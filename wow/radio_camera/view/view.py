@@ -9,8 +9,8 @@ from matplotlib import cm
 from matplotlib.widgets import RadioButtons, Slider
 from radio_camera.view.Cursor import Cursor
 from radio_camera.view.Lims import Lims
-from basic_view import basic_view
 from radio_camera.lib.spectrogram_reader import reader
+from basic_view import basic_view
 
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):
@@ -152,5 +152,3 @@ def view(config):
 
     pr, fr, sp = reader(filename, config)
     __main_view(pr, fr, sp, config)
-
-
