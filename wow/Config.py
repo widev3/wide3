@@ -4,7 +4,6 @@ import json
 class Config:
     def __default_config(self):
         self.data = {}
-        self.data["app"] = "radio_camera"
 
     def __init__(self):
         config = "config.json"

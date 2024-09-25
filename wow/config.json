@@ -1,6 +1,6 @@
 {
-    "app": "radio_camera",
-    "args": {
+    "startup": "radio_camera",
+    "radio_camera": {
         "filename": "input/Spectrogram_crop.csv",
         "separator": ",",
         "gamma": 0.3,

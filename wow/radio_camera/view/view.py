@@ -131,8 +131,7 @@ def __main_view(properties, frequencies, spectrogram, config):
     plt.show(block=True)
 
 def view(config):
-    if not config:
-        config = Config()
+    config = Config(config)
     
     filename = ""
     if "filename" in config.data:
@@ -150,5 +149,6 @@ def view(config):
             filetypes=(("csv", "*.csv"), ("Text files", "*.txt")),
         )
 
-    pr, fr, sp = reader(filename, config)
-    __main_view(pr, fr, sp, config)
+    if filename:
+        pr, fr, sp = reader(filename, config)
+        __main_view(pr, fr, sp, config)
