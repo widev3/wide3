@@ -1,12 +1,11 @@
 import matplotlib
-import matplotlib.pyplot as plt
 import matplotlib.text
 import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import MouseButton
 from matplotlib.widgets import CheckButtons, RadioButtons
 from scipy.signal import find_peaks
-from basic_view import basic_view
+from basic_view import basic_view, plt
 
 
 class Cursor:
@@ -242,7 +241,7 @@ class Cursor:
                 self.__options_radiobuttons.labels[0].get_text()
             )
 
-            plt.show()
+            plt.show(block=True)
 
     def __left_button_press_event(self, event, target):
         if target == "spectrogram":

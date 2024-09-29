@@ -1,7 +1,6 @@
 import math
 import os
 import tkinter as tk
-import matplotlib.pyplot as plt
 import numpy as np
 from radio_camera.lib.Config import Config
 from tkinter import filedialog
@@ -10,7 +9,7 @@ from matplotlib.widgets import RadioButtons, Slider
 from radio_camera.view.Cursor import Cursor
 from radio_camera.view.Lims import Lims
 from radio_camera.lib.spectrogram_reader import reader
-from basic_view import basic_view
+from basic_view import basic_view, plt
 
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):
