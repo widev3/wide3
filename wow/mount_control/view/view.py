@@ -42,15 +42,17 @@ def view(config):
         else:
             catalog_name = basic_view_text_input("Mount control", "Catalog name")
         ra, dec = __update_sky_map(catalog_name)
-        
+
         if "sky_map" in im:
             im["sky_map"].remove()
-        
+
         im["sky_map"] = ax["sky_map"].scatter(ra, dec, marker="o", color="blue", s=20)
         ax["sky_map"].grid(True)
         ax["sky_map"].set_title(f"{catalog_name} catalog")
-        ax["sky_map"].set_xlim([min(ra), max(ra)])
-        ax["sky_map"].set_ylim([min(dec), max(dec)])
+        ax["skyp_map"].relim()
+        ax["skyp_map"].autoscale()
+        # ax["sky_map"].set_xlim([min(ra) * 0.80, max(ra) * 1.20])
+        # ax["sky_map"].set_ylim([min(dec) * 0.80, max(dec) * 1.20])
         plt.show()
 
     mosaic = [["catalogs", "options"], ["sky_map", "options"]]
@@ -60,7 +62,7 @@ def view(config):
 
     im = {}
     refresh_sky_map(catalog_name)
-    
+
     text_box = Button(ax["catalogs"], "Display catalog")
     text_box.on_clicked(lambda x: refresh_sky_map(x))
 
