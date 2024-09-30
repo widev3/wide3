@@ -1,15 +1,12 @@
-import math
 import os
-import tkinter as tk
 import numpy as np
 from radio_camera.lib.Config import Config
-from tkinter import filedialog
 from matplotlib import cm
 from matplotlib.widgets import RadioButtons, Slider
 from radio_camera.view.Cursor import Cursor
 from radio_camera.view.Lims import Lims
 from radio_camera.lib.spectrogram_reader import reader
-from basic_view import basic_view, plt
+from basic_view import basic_view, plt, basic_view_file_dialog
 
 
 def __gamma_slider_changed(val, im, vmin, vmax, fig):
@@ -18,6 +15,12 @@ def __gamma_slider_changed(val, im, vmin, vmax, fig):
 
 
 def __main_view(properties, frequencies, spectrogram, config):
+    vmax = np.max(spectrogram["magnitude"])
+    vmin = np.min(spectrogram["magnitude"])
+    power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
+    t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
+    f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
+    
     mosaic = [
         ["spectrogram", "colorbar", "f_proj", "t_power"],
         ["spectrogram", "colorbar", "f_proj", "f_power"],
@@ -27,8 +30,6 @@ def __main_view(properties, frequencies, spectrogram, config):
     fig, ax = basic_view("Radio camera", mosaic=mosaic, width_ratios=[15, 1, 3, 15], height_ratios=[5, 1, 0.1, 2])
 
     im = {}
-    vmax = np.max(spectrogram["magnitude"])
-    vmin = np.min(spectrogram["magnitude"])
     im["spectrogram"] = ax["spectrogram"].imshow(
         X=spectrogram["magnitude"],
         norm=cm.colors.PowerNorm(gamma=config.data["gamma"], vmin=vmin, vmax=vmax),
@@ -95,8 +96,6 @@ def __main_view(properties, frequencies, spectrogram, config):
         ),
     )
 
-    power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
-    t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
     (im["t_power"],) = ax["t_power"].plot(
         np.linspace(
             min(spectrogram["relative_time"]),
@@ -110,7 +109,6 @@ def __main_view(properties, frequencies, spectrogram, config):
     ax["t_power"].set_ylabel("Magnitude [µW]")
     ax["t_power"].grid(True, linestyle="--", color="gray", alpha=0.7)
 
-    f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
     (im["f_power"],) = ax["f_power"].plot(
         np.linspace(
             min(spectrogram["frequency"] / 1000000),
@@ -139,14 +137,7 @@ def view(config):
                 filename = config.data["filename"]
 
     if not filename:
-        window = tk.Tk()
-        window.wm_attributes("-topmost", 1)
-        window.withdraw()
-        filename = filedialog.askopenfilename(
-            parent=window,
-            title="Select A File",
-            filetypes=(("csv", "*.csv"), ("Text files", "*.txt")),
-        )
+        filename = basic_view_file_dialog()
 
     if filename:
         pr, fr, sp = reader(filename, config)

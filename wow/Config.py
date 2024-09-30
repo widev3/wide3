@@ -2,9 +2,6 @@ import json
 
 
 class Config:
-    def __default_config(self):
-        self.data = {}
-
     def __init__(self):
         configs = ["config.json", "config.jsonc"]
         for config in configs:
@@ -23,6 +20,4 @@ class Config:
                 pass
 
         if not self.data:
-            self.__default_config()
-            print(f"File {config} not found. Fallback to default config")
-            print(self.data)
+            self.data = {}

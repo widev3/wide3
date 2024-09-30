@@ -7,7 +7,7 @@ sudo apt install python3-pyqt5  -y
 ## Project structure
 Consider the following requirements
 1. Every folder is an independent python software
-2. Every software is divided in two parts
+2. Every software is divided in **3 mandatory** parts
    1. ```lib```: contains the set of functions, classes, objects and properties needed to manage the software (something like the backend). There is no structure to respect for files and folders inside lib.
    2. ```view```: contains the set of functions, classes, objects and properties needed to show views of that software (something like the frontend)
       1. Every view folder has a ```view.py``` file
@@ -17,3 +17,4 @@ Consider the following requirements
             if __name__ == "__main__":
                 view(Config())
             ```
+    3. ```config.json``` file with some configurations about the software like its actual name ```"name": "Actual name"``` (mandatory) or the icon to use ```"icon": "icon_for_the_mandatory_software.png"``` (not mandatory)
