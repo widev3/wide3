@@ -35,7 +35,23 @@ def __update_sky_map(catalog_name):
 def view(config):
     config = Config(config)
     catalog_name = "I/151"
-    ra, dec = __update_sky_map(catalog_name)
+
+    def refresh_sky_map(event):
+        if isinstance(event, str):
+            catalog_name = event
+        else:
+            catalog_name = basic_view_text_input("Mount control", "Catalog name")
+        ra, dec = __update_sky_map(catalog_name)
+        
+        if "sky_map" in im:
+            im["sky_map"].remove()
+        
+        im["sky_map"] = ax["sky_map"].scatter(ra, dec, marker="o", color="blue", s=20)
+        ax["sky_map"].grid(True)
+        ax["sky_map"].set_title(f"{catalog_name} catalog")
+        ax["sky_map"].set_xlim([min(ra), max(ra)])
+        ax["sky_map"].set_ylim([min(dec), max(dec)])
+        plt.show()
 
     mosaic = [["catalogs", "options"], ["sky_map", "options"]]
     fig, ax = basic_view(
@@ -43,24 +59,8 @@ def view(config):
     )
 
     im = {}
-    im["sky_map"] = ax["sky_map"].scatter(
-        ra, dec, marker="o", color="red", s=20, label="Messier objects"
-    )
-
-    ax["sky_map"].grid(True)
-    ax["sky_map"].set_xlabel("Right Ascension")
-    ax["sky_map"].set_ylabel("Declination")
-    ax["sky_map"].set_title(f"{catalog_name} catalog")
-
-    def refresh_sky_map(event):
-        catalog_name = basic_view_text_input()
-        ra, dec = __update_sky_map(catalog_name)
-        ax["sky_map"].clear()
-        im["sky_map"] = ax["sky_map"].scatter(
-            ra, dec, marker="o", color="red", s=20, label="Messier objects"
-        )
-        plt.show()
-
+    refresh_sky_map(catalog_name)
+    
     text_box = Button(ax["catalogs"], "Display catalog")
     text_box.on_clicked(lambda x: refresh_sky_map(x))
 

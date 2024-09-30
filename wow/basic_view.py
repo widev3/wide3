@@ -69,13 +69,6 @@ def basic_view_show_message(title, message, icon):
 
 
 def basic_view_file_dialog():
-    def open_file_dialog():
-        # app = QApplication(sys.argv)
-        window = FileDialogView()
-        window.show()
-        app.exec_()
-        return window.selected_file
-
     class FileDialogView(QWidget):
         def __init__(self):
             super().__init__()
@@ -104,46 +97,41 @@ def basic_view_file_dialog():
             self.selected_file = file_name
             self.close()
 
-    return open_file_dialog()
+    window = FileDialogView()
+    window.show()
+    app.exec_()
+    return window.selected_file
 
 
-def basic_view_text_input():
-    class TextInputDialog(QDialog):
+def basic_view_text_input(title, message):
+    class TextInputDialogView(QDialog):
         def __init__(self):
             super().__init__()
-            self.init_ui()
 
-        def init_ui(self):
-            # Set the layout for the dialog
+            self.setWindowTitle(title)
+            self.setGeometry(500, 500, 500, 300)
+
             layout = QVBoxLayout()
 
-            # Create a QLineEdit for text input
             self.text_input = QLineEdit(self)
             layout.addWidget(self.text_input)
 
-            # Create an OK button
             self.ok_button = QPushButton("OK", self)
             self.ok_button.clicked.connect(self.on_ok_clicked)
             layout.addWidget(self.ok_button)
 
-            # Set the layout
             self.setLayout(layout)
 
         def on_ok_clicked(self):
-            # Get the text from the input field
             self.entered_text = self.text_input.text()
-
-            # Close the dialog after the OK button is clicked
             self.accept()
 
         def get_text(self):
-            # Show the dialog and return the entered text after it's closed
             if self.exec_() == QDialog.Accepted:
                 return self.entered_text
             return None
 
-    # app = QApplication(sys.argv)
-    dialog = TextInputDialog()
+    dialog = TextInputDialogView()
     input_text = dialog.get_text()
     app.exec_()
 
