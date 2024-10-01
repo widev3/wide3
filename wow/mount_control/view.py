@@ -32,9 +32,8 @@ def __update_sky_map(catalog_name):
     return ra, dec
 
 
-def view(config):
-    config = Config(config)
-    catalog_name = "I/151"
+def view():
+    config = Config()
 
     def refresh_sky_map(event):
         if isinstance(event, str):
@@ -53,13 +52,13 @@ def view(config):
         ax["sky_map"].set_ylim([min(dec) * 0.80, max(dec) * 1.20])
         plt.show()
 
-    mosaic = [["catalogs", "options"], ["sky_map", "options"]]
+    mosaic = [["sky_map", "catalogs"], ["sky_map", "options"]]
     fig, ax = basic_view(
-        "Mount control", mosaic=mosaic, width_ratios=[10, 1], height_ratios=[1, 50]
+        "Mount control", mosaic=mosaic, width_ratios=[10, 1], height_ratios=[1, 20]
     )
 
     im = {}
-    refresh_sky_map(catalog_name)
+    refresh_sky_map(config.data["catalog_name"])
 
     text_box = Button(ax["catalogs"], "Display catalog")
     text_box.on_clicked(lambda x: refresh_sky_map(x))
