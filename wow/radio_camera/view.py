@@ -1,7 +1,7 @@
 import os
 import numpy as np
-from radio_camera.lib.Config import Config
 from radio_camera.Lims import Lims
+from Config import Config
 from radio_camera.Cursor import Cursor
 from matplotlib import cm
 from matplotlib.widgets import RadioButtons, Slider
@@ -128,7 +128,7 @@ def __main_view(properties, frequencies, spectrogram, config):
     plt.show(block=True)
 
 def view():
-    config = Config()
+    config = Config("radio_camera")
     
     filename = ""
     if "filename" in config.data:

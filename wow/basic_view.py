@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import sys
 from PyQt5.QtWidgets import (
-    QApplication,
     QWidget,
     QPushButton,
     QFileDialog,
@@ -9,10 +7,9 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QLineEdit,
+    QLabel,
+    QHBoxLayout,
 )
-
-global app
-app = QApplication(sys.argv)
 
 
 def basic_view(
@@ -99,28 +96,36 @@ def basic_view_file_dialog():
 
     window = FileDialogView()
     window.show()
-    app.exec_()
     return window.selected_file
 
 
 def basic_view_text_input(title, message):
     class TextInputDialogView(QDialog):
-        def __init__(self):
+        def __init__(self, title=title, label_text=message):
             super().__init__()
 
             self.setWindowTitle(title)
-            self.setGeometry(500, 500, 500, 300)
+            self.setGeometry(500, 500, 500, 100)
 
             layout = QVBoxLayout()
+            h_layout = QHBoxLayout()
+
+            self.label = QLabel(label_text, self)  # Add your custom text here
+            h_layout.addWidget(self.label)
 
             self.text_input = QLineEdit(self)
-            layout.addWidget(self.text_input)
+            h_layout.addWidget(self.text_input)
+
+            layout.addLayout(h_layout)
 
             self.ok_button = QPushButton("OK", self)
             self.ok_button.clicked.connect(self.on_ok_clicked)
             layout.addWidget(self.ok_button)
 
             self.setLayout(layout)
+
+            layout.setSpacing(10)  # Adjust the vertical spacing if needed
+            layout.addStretch()  # Add stretchable space at the bottom
 
         def on_ok_clicked(self):
             self.entered_text = self.text_input.text()
@@ -133,6 +138,4 @@ def basic_view_text_input(title, message):
 
     dialog = TextInputDialogView()
     input_text = dialog.get_text()
-    app.exec_()
-
     return input_text

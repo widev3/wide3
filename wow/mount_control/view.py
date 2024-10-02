@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
 import astropy.units as u
+from matplotlib.widgets import Button, CheckButtons
 from basic_view import plt
-from mount_control.lib.Config import Config
+from Config import Config
 from astropy.coordinates import SkyCoord
 from astroquery.vizier import Vizier
 from basic_view import basic_view, basic_view_text_input
@@ -33,7 +33,23 @@ def __update_sky_map(catalog_name):
 
 
 def view():
-    config = Config()
+    config = Config("mount_control")
+
+    # check = CheckButtons(
+    #     ax=rax,
+    #     labels=lines_by_label.keys(),
+    #     actives=[l.get_visible() for l in lines_by_label.values()],
+    #     label_props={"color": line_colors},
+    #     frame_props={"edgecolor": line_colors},
+    #     check_props={"facecolor": line_colors},
+    # )
+
+    # def callback(label):
+    #     ln = lines_by_label[label]
+    #     ln.set_visible(not ln.get_visible())
+    #     ln.figure.canvas.draw_idle()
+
+    # check.on_clicked(callback)
 
     def refresh_sky_map(event):
         if isinstance(event, str):
@@ -60,7 +76,7 @@ def view():
     im = {}
     refresh_sky_map(config.data["catalog_name"])
 
-    text_box = Button(ax["catalogs"], "Display catalog")
+    text_box = Button(ax["catalogs"], "Load catalog")
     text_box.on_clicked(lambda x: refresh_sky_map(x))
 
     plt.show(block=True)
