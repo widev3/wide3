@@ -6,7 +6,7 @@ import datetime
 import re
 
 
-def __milliseconds(strptime):
+def milliseconds(strptime):
     return int(
         (
             strptime.microsecond
@@ -54,7 +54,7 @@ def spectrogram(file, config):
     # relative time interval with respect to start)
     relative_tss_zero_end = list(
         map(
-            lambda x: __milliseconds(datetime.datetime.strptime(x, "%H:%M:%S:%f")),
+            lambda x: milliseconds(datetime.datetime.strptime(x, "%H:%M:%S:%f")),
             pd.read_csv(
                 io.StringIO(file[1]), sep=config.data["separator"], header=None
             ).values[0][1:-1],

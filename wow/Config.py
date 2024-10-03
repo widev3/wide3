@@ -4,7 +4,7 @@ import json
 class Config:
     def __init__(self, folder):
         self.data = {}
-        configs = ["config.json", "config.jsonc"]
+        configs = ["config.json", "config.jsonc", "conf.json", "conf.jsonc"]
         for config in configs:
             lines = []
             try:

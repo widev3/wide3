@@ -3,7 +3,7 @@ from radio_camera.lib.frequencies import frequencies
 from radio_camera.lib.spectrogram import spectrogram
 
 
-def __split_file_by_empty_lines(filepath):
+def split_file_by_empty_lines(filepath):
     with open(filepath, "r") as file:
         lines = file.readlines()
         chunks = []
@@ -24,7 +24,7 @@ def __split_file_by_empty_lines(filepath):
 
 
 def reader(filename, config):
-    file = __split_file_by_empty_lines(filename)
+    file = split_file_by_empty_lines(filename)
     pr = properties(file[0], config)
     fr = frequencies(file[1], config)
     sp = spectrogram(file[2], config)

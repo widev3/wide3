@@ -1,11 +1,11 @@
 import matplotlib
 import matplotlib.text
 import numpy as np
+from BasicView import BasicView, plt
 from matplotlib import cm
 from matplotlib.backend_bases import MouseButton
 from matplotlib.widgets import CheckButtons, RadioButtons
 from scipy.signal import find_peaks
-from basic_view import basic_view, plt
 
 
 class Cursor:
@@ -85,7 +85,7 @@ class Cursor:
                 [target, "peaks"],
                 ["gamma_setting_slider", "peaks"],
             ]
-            self.__fig, self.inner_ax = basic_view(
+            self.__fig, self.inner_ax = BasicView.basic_view(
                 self.ax[target].get_title(),
                 mosaic=mosaic,
                 width_ratios=[5, 1],
@@ -216,7 +216,7 @@ class Cursor:
                     ax=self.inner_ax["peaks"],
                     labels=labels,
                     actives=list(map(lambda x: False, labels)),
-                    frame_props={"s": list(map(lambda x: 64, labels))},
+                    frame_props={"s": [64] * len(labels)},
                 )
                 self.__peaks_checkbuttons.on_clicked(
                     lambda x: (on_peaks_checkbuttons_clicked(x, data, dim))
@@ -224,9 +224,7 @@ class Cursor:
                 self.inner_ax[target].set_title(
                     f"{self.ax[target].get_title()} ({label})"
                 )
-                self.inner_ax[target].grid(
-                    True, linestyle="--", color="gray", alpha=0.7, which="both"
-                )
+                self.inner_ax[target].grid(**BasicView.grid_arguments())
 
                 self.__fig.canvas.draw()
 
