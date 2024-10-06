@@ -125,7 +125,6 @@ class BasicView:
                 self.selected_file = file_name
                 self.close()
 
-        BasicView()
         dialog = FileDialogView()
         dialog.show()
         BasicView().exec_()
@@ -134,7 +133,7 @@ class BasicView:
     @staticmethod
     def basic_view_text_input(title, message):
         class TextInputDialogView(QDialog):
-            def __init__(self, title=title, label_text=message):
+            def __init__(self, title, message):
                 super().__init__()
 
                 self.setWindowTitle(title)
@@ -143,7 +142,7 @@ class BasicView:
                 layout = QVBoxLayout()
                 h_layout = QHBoxLayout()
 
-                self.label = QLabel(label_text, self)
+                self.label = QLabel(message, self)
                 h_layout.addWidget(self.label)
 
                 self.text_input = QLineEdit(self)
@@ -169,71 +168,73 @@ class BasicView:
                     return self.entered_text
                 return None
 
-        BasicView()
-        dialog = TextInputDialogView()
+        dialog = TextInputDialogView(title, message)
         input_text = dialog.get_text()
         return input_text
 
     @staticmethod
-    def basic_view_checkbox_list(title, message, items):
+    def basic_view_checkbox_list(title, message, items, single=False):
         class CheckBoxListDialog(QDialog):
-            def __init__(self, items):
+            def __init__(self, title, message, items, single):
                 super().__init__()
 
-                self.setWindowTitle("Checkbox List Popup")
-                self.setGeometry(100, 100, 300, 300)
+                self.setWindowTitle(title)
+                self.setGeometry(500, 500, 500, 500)
 
-                # Create layout
+                self.label = QLabel(message, self)
+
                 layout = QVBoxLayout()
+                layout.addWidget(self.label)
 
-                # Create a QListWidget to hold the items
                 self.list_widget = QListWidget()
-
-                # Populate the list widget with items and checkboxes
                 for item in items:
-                    list_item = QListWidgetItem(item)
-                    checkbox = QCheckBox(item)  # Create a checkbox for each item
-                    checkbox.setChecked(False)  # Default state is unchecked
-                    list_item.setSizeHint(
-                        checkbox.sizeHint()
-                    )  # Adjust item size to checkbox size
-                    self.list_widget.addItem(
-                        list_item
-                    )  # Add the list item to the widget
-                    self.list_widget.setItemWidget(
-                        list_item, checkbox
-                    )  # Set the checkbox as the widget for the item
+                    list_item = QListWidgetItem()
+                    checkbox = QCheckBox(item)
+                    checkbox.setChecked(False)
+                    checkbox.stateChanged.connect(self.on_checkbox_stateChanged)
+                    list_item.setSizeHint(checkbox.sizeHint())
+                    self.list_widget.addItem(list_item)
+                    self.list_widget.setItemWidget(list_item, checkbox)
 
                 layout.addWidget(self.list_widget)
 
-                # Create OK and Cancel buttons
-                button_layout = QHBoxLayout()
                 ok_button = QPushButton("OK")
-                cancel_button = QPushButton("Cancel")
+                ok_button.clicked.connect(self.on_ok_button_clicked)
 
-                # Connect buttons to functions
-                ok_button.clicked.connect(self.on_ok)
+                cancel_button = QPushButton("Cancel")
                 cancel_button.clicked.connect(self.reject)
 
+                button_layout = QHBoxLayout()
                 button_layout.addWidget(ok_button)
                 button_layout.addWidget(cancel_button)
                 layout.addLayout(button_layout)
 
                 self.setLayout(layout)
 
-            def on_ok(self):
+            def on_checkbox_stateChanged(self):
+                if not single:
+                    print("state")
+
+            def on_ok_button_clicked(self):
                 selected_items = []
+                selected_indices = []
                 for index in range(self.list_widget.count()):
                     item = self.list_widget.item(index)
                     checkbox = self.list_widget.itemWidget(item)
                     if checkbox.isChecked():
                         selected_items.append(checkbox.text())
+                        selected_indices.append(index)
 
-                self.selected_items = selected_items
+                if single:
+                    self.selected_items = selected_items[0]
+                    self.selected_indices = selected_indices[0]
+
                 self.accept()
 
-        BasicView()
-        dialog = CheckBoxListDialog(items)
+        dialog = CheckBoxListDialog(title, message, items, single)
         dialog.show()
         dialog.exec_()
-        return dialog.selected_items
+        return dialog.selected_items, dialog.selected_indices
+
+
+BasicView()

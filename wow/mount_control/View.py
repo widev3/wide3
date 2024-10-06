@@ -1,12 +1,14 @@
 import random
 import matplotlib.colors as mcolors
 import astropy.units as u
+import traceback
 from BasicView import BasicView, plt
 from matplotlib.ticker import AutoMinorLocator
 from matplotlib.widgets import Button, CheckButtons
 from Config import Config
-from astropy.coordinates import SkyCoord
 from astroquery.vizier import Vizier
+from astropy.coordinates import SkyCoord, EarthLocation
+from mount_control.lib.CoordinateConverter import CoordinateConverter
 
 
 class View(object):
@@ -19,38 +21,13 @@ class View(object):
             for name, color in mcolors.CSS4_COLORS.items()
             if not self.__is_light_color(color)
         ]
-        self.__scatter_markers = [
-            ".",
-            ",",
-            "o",
-            "v",
-            "^",
-            "<",
-            ">",
-            "1",
-            "2",
-            "3",
-            "4",
-            "s",
-            "p",
-            "*",
-            "h",
-            "H",
-            "+",
-            "x",
-            "D",
-            "d",
-            "|",
-            "_",
-        ]
+        self.__scatter_markers = ".,ovo^<>1234sp*H+hxDd|_"
 
     def __is_light_color(self, color, threshold=0.8):
         rgb = mcolors.to_rgb(color)
-        return (
-            0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2] > threshold
-        )  # 0.299*R + 0.587*G + 0.114*B (ITU-R BT.601)
+        return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2] > threshold
 
-    def __update_sky_map(self, catalog_name):
+    def __get_sky_map_coordinates(self, catalog_name):
         vizier = Vizier(columns=["*", "+_r"], row_limit=-1)
         catalog_list = vizier.find_catalogs(catalog_name)
         if len(catalog_list) == 1 and list(catalog_list.keys())[0] == None:
@@ -60,15 +37,28 @@ class View(object):
             return [], []
 
         catalogs = vizier.get_catalogs(list(catalog_list.keys()))
-        catalog = catalogs[0]
+        catalog, index = BasicView.basic_view_checkbox_list(
+            "Mount control",
+            "Select a catalog",
+            list(
+                map(lambda x: f"{x} ({str(len(catalogs[x]))} records)", catalogs.keys())
+            ),
+            True,
+        )
 
-        BasicView.basic_view_checkbox_list("Mount control", "Select coordinated", catalog.columns.keys())
+        catalog = catalogs[index]
+        ra_field, index = BasicView.basic_view_checkbox_list(
+            "Mount control", "Select RA field", catalog.columns.keys(), True
+        )
+        dec_field, index = BasicView.basic_view_checkbox_list(
+            "Mount control", "Select DEC field", catalog.columns.keys(), True
+        )
 
         coords = list(
             map(
                 lambda x: SkyCoord(
-                    ra=x["RAJ2000"],
-                    dec=x["DEJ2000"],
+                    ra=x[ra_field],
+                    dec=x[dec_field],
                     unit=(u.deg, u.deg),
                     frame="icrs",
                 ),
@@ -76,12 +66,11 @@ class View(object):
             )
         )
 
-        ra = list(map(lambda x: x.ra.deg, coords))
-        dec = list(map(lambda x: x.dec.deg, coords))
+        magnitude = []
 
-        return ra, dec
+        return coords, magnitude
 
-    def __refresh_sky_map(self, event=None, clear_all=False):
+    def __setup_sky_map(self, event=None, clear_all=False):
         if isinstance(event, str):
             catalog_name = event
         elif event:
@@ -97,11 +86,16 @@ class View(object):
             self.__ax["sky_map"].cla()
 
         if catalog_name not in self.__im["sky_map"]:
-            ra, dec = self.__update_sky_map(catalog_name)
-            if ra and dec:
+            try:
+                coords, magnitude = self.__get_sky_map_coordinates(catalog_name)
+                coordinate_converter = CoordinateConverter(
+                    EarthLocation(lat=45 * u.deg, lon=10 * u.deg, height=20 * u.m),
+                    coords,
+                )
+                coords = coordinate_converter.eq_to_altaz()
                 self.__im["sky_map"][catalog_name] = self.__ax["sky_map"].scatter(
-                    ra,
-                    dec,
+                    [coord.az.deg for coord in coords],
+                    [coord.alt.deg for coord in coords],
                     marker=random.choice(self.__scatter_markers),
                     color=random.choice(self.__scatter_colors),
                     s=20,
@@ -111,8 +105,8 @@ class View(object):
                 self.__ax["sky_map"].yaxis.set_minor_locator(AutoMinorLocator(1))
                 self.__ax["sky_map"].grid(**BasicView.grid_arguments())
                 self.__ax["sky_map"].set_title(f"{catalog_name} catalog")
-                self.__ax["sky_map"].set_xlim([min(ra), max(ra)])
-                self.__ax["sky_map"].set_ylim([min(dec), max(dec)])
+                # self.__ax["sky_map"].set_xlim([min(az), max(az)])
+                # self.__ax["sky_map"].set_ylim([min(alt), max(alt)])
 
                 if hasattr(self, "__catalogs_check"):
                     self.__catalogs_check.ax.clear()
@@ -129,6 +123,12 @@ class View(object):
                 self.__catalogs_check.on_clicked(self.__hide_show_catalog)
 
                 plt.show()
+            except:
+                BasicView.basic_view_show_message(
+                    "Mount control",
+                    f"Error during the loading of catalog\n{traceback.format_exc()}",
+                    3,
+                )
 
     def __hide_show_catalog(self, label):
         self.__im["sky_map"][label].set_visible(
@@ -136,12 +136,17 @@ class View(object):
         )
         plt.draw()
 
+    def __on_full_sky_button_clicked(self, event):
+        self.__ax["sky_map"].set_xlim([-10, 370])
+        self.__ax["sky_map"].set_ylim([-100, 100])
+        plt.draw()
+
     def view(self):
         mosaic = [
             ["sky_map", "load_catalog"],
             ["sky_map", "clear_and_load_catalog"],
             ["sky_map", "clear"],
-            ["sky_map", "save_catalogs_as_default"],
+            ["sky_map", "full_sky"],
             ["sky_map", None],
         ]
         self.__fig, self.__ax = BasicView.basic_view(
@@ -153,28 +158,22 @@ class View(object):
 
         load_catalog_button = Button(self.__ax["load_catalog"], "Load catalog")
         load_catalog_button.on_clicked(
-            lambda x: self.__refresh_sky_map(event=x, clear_all=False)
+            lambda x: self.__setup_sky_map(event=x, clear_all=False)
         )
 
         clear_and_load_catalog_button = Button(
             self.__ax["clear_and_load_catalog"], "Clear and load catalog"
         )
         clear_and_load_catalog_button.on_clicked(
-            lambda x: self.__refresh_sky_map(event=x, clear_all=True)
+            lambda x: self.__setup_sky_map(event=x, clear_all=True)
         )
 
         clear_button = Button(self.__ax["clear"], "Clear")
-        clear_button.on_clicked(lambda x: self.__refresh_sky_map(clear_all=True))
+        clear_button.on_clicked(lambda x: self.__setup_sky_map(clear_all=True))
 
-        save_as_default_catalogs_button = Button(
-            self.__ax["save_catalogs_as_default"], "Save catalogs as default"
-        )
-        # save_as_default_catalogs_button.on_clicked(
-        #     lambda: self.__refresh_sky_map(clear_all=True)
-        # )
+        full_sky_button = Button(self.__ax["full_sky"], "Full sky")
+        full_sky_button.on_clicked(lambda x: self.__on_full_sky_button_clicked(x))
 
-        # inset = self.__ax["sky_map"].inset_axes([0.0, 0.0, 0.12, 0.2])
-        # self.__catalogs_check = CheckButtons(ax=inset, labels=[], actives=[])
-        self.__refresh_sky_map(self.__config.data["catalog_name"])
+        self.__setup_sky_map(self.__config.data["catalog_name"])
 
         plt.show(block=True)
