@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QCheckBox,
+    QRadioButton
 )
 
 
@@ -189,9 +190,12 @@ class BasicView:
                 self.list_widget = QListWidget()
                 for item in items:
                     list_item = QListWidgetItem()
-                    checkbox = QCheckBox(item)
-                    checkbox.setChecked(False)
-                    checkbox.stateChanged.connect(self.on_checkbox_stateChanged)
+                    if single:
+                        checkbox = QRadioButton(item)
+                    else:
+                        checkbox = QCheckBox(item)
+                        checkbox.setChecked(False)
+
                     list_item.setSizeHint(checkbox.sizeHint())
                     self.list_widget.addItem(list_item)
                     self.list_widget.setItemWidget(list_item, checkbox)
@@ -214,10 +218,6 @@ class BasicView:
                 self.selected_items = []
                 self.selected_indices = []
 
-            def on_checkbox_stateChanged(self):
-                if not single:
-                    print("state")
-
             def on_ok_button_clicked(self):
                 selected_items = []
                 selected_indices = []
@@ -228,9 +228,11 @@ class BasicView:
                         selected_items.append(checkbox.text())
                         selected_indices.append(index)
 
+                self.selected_items = selected_items
+                self.selected_indices = selected_indices
                 if single:
-                    self.selected_items = selected_items[0]
-                    self.selected_indices = selected_indices[0]
+                    self.selected_items = self.selected_items[0]
+                    self.selected_indices = self.selected_indices[0]
 
                 self.accept()
 
