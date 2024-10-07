@@ -202,7 +202,7 @@ class BasicView:
                 ok_button.clicked.connect(self.on_ok_button_clicked)
 
                 cancel_button = QPushButton("Cancel")
-                cancel_button.clicked.connect(self.reject)
+                cancel_button.clicked.connect(self.on_cancel_button_clicked)
 
                 button_layout = QHBoxLayout()
                 button_layout.addWidget(ok_button)
@@ -210,6 +210,9 @@ class BasicView:
                 layout.addLayout(button_layout)
 
                 self.setLayout(layout)
+
+                self.selected_items = []
+                self.selected_indices = []
 
             def on_checkbox_stateChanged(self):
                 if not single:
@@ -230,6 +233,9 @@ class BasicView:
                     self.selected_indices = selected_indices[0]
 
                 self.accept()
+
+            def on_cancel_button_clicked(self):
+                self.reject()
 
         dialog = CheckBoxListDialog(title, message, items, single)
         dialog.show()

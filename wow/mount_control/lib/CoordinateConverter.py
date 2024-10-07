@@ -2,6 +2,7 @@ import astropy.units as u
 from astropy.time import Time
 from astropy.coordinates import AltAz, SkyCoord
 from datetime import datetime, timezone
+from astropy.utils.iers.iers import conf
 
 
 class CatalogCoordinate:
@@ -18,8 +19,25 @@ class CatalogCoordinate:
             )
         )
 
-    def eq_to_altaz(self, coords, time=None):
+    def now(self):
+        return Time(datetime.now(tz=timezone.utc), scale="utc")
+
+    def eq_to_altaz(self, coord, time=None):
         if not time:
             time = Time(datetime.now(tz=timezone.utc), scale="utc")
-        altaz_converter = AltAz(location=self.location, obstime=time)
-        return list(map(lambda x: x.transform_to(altaz_converter), coords))
+
+        frame = AltAz(location=self.location, obstime=time)
+        return coord.transform_to(frame)
+
+    def altaz_to_eq(self, coord, time=None):
+        if not time:
+            time = Time(datetime.now(tz=timezone.utc), scale="utc")
+
+        coord = SkyCoord(
+            alt=coord.alt,
+            az=coord.az,
+            obstime=time,
+            frame="altaz",
+            location=self.location,
+        )
+        return coord.icrs

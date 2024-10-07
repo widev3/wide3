@@ -1,16 +1,17 @@
-import random
 import numpy as np
-import matplotlib.colors as mcolors
 import astropy.units as u
+import random
 import traceback
 from BasicView import BasicView, plt
 from matplotlib.ticker import AutoMinorLocator
 from matplotlib.widgets import Button, CheckButtons
 from Config import Config
 from astroquery.vizier import Vizier
-from astropy.coordinates import SkyCoord, EarthLocation
+from astropy.coordinates import EarthLocation
 from mount_control.lib.CoordinateConverter import CatalogCoordinate
 from matplotlib.animation import FuncAnimation
+from astropy.coordinates import SkyCoord
+from matplotlib.lines import Line2D
 
 
 class View(object):
@@ -18,17 +19,34 @@ class View(object):
         self.__config = Config("mount_control")
         self.ax = {}
         self.im = {}
-        self.all_coordinates = {}
+        self.loaded_catalogs = {}
+        self.__scatter_markers = ".,ov^<>12348sp*hH+xdD|_"
         self.__scatter_colors = [
-            name
-            for name, color in mcolors.CSS4_COLORS.items()
-            if not self.__is_light_color(color)
+            "darkslategray",
+            "lightcoral",
+            "peachpuff",
+            "deepskyblue",
+            "chartreuse",
+            "orangered",
+            "plum",
+            "navajowhite",
+            "khaki",
+            "mediumseagreen",
+            "thistle",
+            "powderblue",
+            "lightgreen",
+            "gold",
+            "mistyrose",
+            "slateblue",
+            "mediumvioletred",
+            "violet",
+            "dodgerblue",
+            "springgreen",
+            "lightsalmon",
+            "wheat",
+            "tomato",
+            "red",
         ]
-        self.__scatter_markers = ".,ovo^<>1234sp*H+hxDd|_"
-
-    def __is_light_color(self, color, threshold=0.8):
-        rgb = mcolors.to_rgb(color)
-        return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2] > threshold
 
     def __get_sky_map_coordinates(self, catalog_name):
         vizier = Vizier(columns=["*", "+_r"], row_limit=-1)
@@ -57,23 +75,61 @@ class View(object):
             "Mount control", "Select DEC field", catalog.columns.keys(), True
         )
 
-        self.coordinate_converter = CatalogCoordinate(
-            EarthLocation(lat=45 * u.deg, lon=10 * u.deg, height=20 * u.m)
-        )
-
         return self.coordinate_converter.extract_coordinate(
             catalog, ra_field, dec_field
         )
 
-    def __update(self, frame):
-        coords = self.coordinate_converter.eq_to_altaz(self.all_coordinates["I/151"])
-        self.im["sky_map"]["I/151"].set_offsets(
-            np.c_[
-                [coord.az.deg for coord in coords],
-                [coord.alt.deg for coord in coords],
-            ]
+    def __setup_observers(self):
+        self.observers_position = [
+            SkyCoord(
+                az=0 * u.deg,
+                alt=90 * u.deg,
+                location=self.coordinate_converter.location,
+                obstime=self.coordinate_converter.now(),
+                frame="altaz",
+            ),
+            SkyCoord(
+                az=12.5 * u.deg,
+                alt=60 * u.deg,
+                location=self.coordinate_converter.location,
+                obstime=self.coordinate_converter.now(),
+                frame="altaz",
+            ),
+        ]
+        coords = list(
+            map(
+                lambda x: self.coordinate_converter.altaz_to_eq(x),
+                self.observers_position,
+            )
         )
-        return (self.im["sky_map"]["I/151"],)
+        self.im["sky_map"] = self.ax["sky_map"].scatter(
+            [coord.ra.deg for coord in coords],
+            [coord.dec.deg for coord in coords],
+            color="black",
+            marker="X",
+            s=100,
+        )
+
+        def __update_observers(self, frame):
+            offsets = self.im["sky_map"].get_offsets()
+            for index in range(len(self.observers_position)):
+                offsets[index] = (
+                    offsets[index][0] + random.uniform(-1, 1),
+                    offsets[index][1] + random.uniform(-1, 1),
+                )
+
+            self.im["sky_map"].set_offsets(offsets)
+
+            return (self.im["sky_map"],)
+
+        if not hasattr(self, "animations"):
+            self.animations = FuncAnimation(
+                self.__fig,
+                lambda x: __update_observers(self, x),
+                interval=100,
+                blit=True,
+                cache_frame_data=False,
+            )
 
     def __setup_sky_map(self, event=None, clear_all=False):
         if isinstance(event, str):
@@ -83,52 +139,49 @@ class View(object):
                 "Mount control", "Catalog name"
             )
 
-        if "sky_map" not in self.im:
-            self.im["sky_map"] = {}
-
         if clear_all:
-            self.im["sky_map"] = {}
             self.ax["sky_map"].cla()
 
-        if catalog_name not in self.im["sky_map"]:
+        if catalog_name and catalog_name not in self.loaded_catalogs:
             try:
-                self.all_coordinates[catalog_name] = self.__get_sky_map_coordinates(
+                self.loaded_catalogs[catalog_name] = self.__get_sky_map_coordinates(
                     catalog_name
                 )
-                coords = self.coordinate_converter.eq_to_altaz(
-                    self.all_coordinates[catalog_name]
-                )
-                self.im["sky_map"][catalog_name] = self.ax["sky_map"].scatter(
-                    [coord.az.deg for coord in coords],
-                    [coord.alt.deg for coord in coords],
-                    marker=random.choice(self.__scatter_markers),
-                    color=random.choice(self.__scatter_colors),
+
+                ra = [coord.ra.deg for coord in self.loaded_catalogs[catalog_name]]
+                dec = [coord.dec.deg for coord in self.loaded_catalogs[catalog_name]]
+                self.im["sky_map"] = self.ax["sky_map"].scatter(
+                    ra,
+                    dec,
+                    color=self.__scatter_colors[len(self.loaded_catalogs) - 1],
+                    marker=self.__scatter_markers[len(self.loaded_catalogs) - 1],
                     s=20,
                 )
 
-                self.ax["sky_map"].xaxis.set_minor_locator(AutoMinorLocator(1))
-                self.ax["sky_map"].yaxis.set_minor_locator(AutoMinorLocator(1))
-                self.ax["sky_map"].grid(**BasicView.grid_arguments())
-                self.ax["sky_map"].set_title(f"{catalog_name} catalog")
-                # self.__ax["sky_map"].set_xlim([min(az), max(az)])
-                # self.__ax["sky_map"].set_ylim([min(alt), max(alt)])
-
-                if hasattr(self, "__catalogs_check"):
-                    self.__catalogs_check.ax.clear()
-
-                inset = self.ax["sky_map"].inset_axes([0.0, 0.0, 0.12, 0.2])
-                self.__catalogs_check = CheckButtons(
-                    ax=inset,
-                    labels=list(self.im["sky_map"]),
-                    actives=list(
-                        map(lambda x: x._visible, self.im["sky_map"].values())
+                self.ax["sky_map"].set_xlim([min(ra), max(ra)])
+                self.ax["sky_map"].set_ylim([min(dec), max(dec)])
+                self.ax["sky_map"].legend(
+                    handles=list(
+                        map(
+                            lambda x: Line2D(
+                                [0],
+                                [0],
+                                marker=self.__scatter_markers[x[0]],
+                                color="w",
+                                label=x[1],
+                                markerfacecolor=self.__scatter_colors[x[0]],
+                                markersize=10,
+                            ),
+                            enumerate(self.loaded_catalogs),
+                        )
                     ),
-                    frame_props={"s": [64] * len(self.im["sky_map"])},
+                    loc="upper center",
+                    bbox_to_anchor=(0.5, -0.05),
+                    fancybox=True,
+                    ncol=4,
                 )
-                self.__catalogs_check.on_clicked(self.__hide_show_catalog)
-                self.__ani = FuncAnimation(
-                    self.__fig, self.__update, interval=100, blit=True
-                )
+
+                self.__setup_observers()
 
                 plt.show()
             except:
@@ -137,10 +190,6 @@ class View(object):
                     f"Error during the loading of catalog\n{traceback.format_exc()}",
                     3,
                 )
-
-    def __hide_show_catalog(self, label):
-        self.im["sky_map"][label].set_visible(not self.im["sky_map"][label]._visible)
-        plt.draw()
 
     def __on_full_sky_button_clicked(self, event):
         self.ax["sky_map"].set_xlim([-10, 370])
@@ -180,6 +229,18 @@ class View(object):
         full_sky_button = Button(self.ax["full_sky"], "Full sky")
         full_sky_button.on_clicked(lambda x: self.__on_full_sky_button_clicked(x))
 
+        self.coordinate_converter = CatalogCoordinate(
+            EarthLocation(lat=45 * u.deg, lon=10 * u.deg, height=20 * u.m)
+        )
+
+        self.ax["sky_map"].set_xlabel("RA")
+        self.ax["sky_map"].set_ylabel("DEC")
+        self.ax["sky_map"].xaxis.set_minor_locator(AutoMinorLocator(1))
+        self.ax["sky_map"].yaxis.set_minor_locator(AutoMinorLocator(1))
+        self.ax["sky_map"].grid(**BasicView.grid_arguments())
+        self.ax["sky_map"].set_title("Sky map")
+
+        self.__setup_observers()
         self.__setup_sky_map(self.__config.data["catalog_name"])
 
         plt.show(block=True)
