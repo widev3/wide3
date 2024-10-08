@@ -1,0 +1,22 @@
+{
+    "icon": "radio_camera/icon/settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png",
+    "name": "Radio camera",
+    "filename": "radio_camera/input/Spectrogram_crop.csv",
+    "separator": ",",
+    "gamma": 0.3,
+    "cmap": "magma",
+    "bands": {
+        "A": [
+            12,
+            123
+        ],
+        "B": [
+            123,
+            1234
+        ],
+        "C": [
+            1,
+            2
+        ]
+    }
+}

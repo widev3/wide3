@@ -1,0 +1,66 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>f1cd21cc-5822-4280-ae03-1c6c73cc7327</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>tools.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>tools</Name>
+    <RootNamespace>tools</RootNamespace>
+    <PublishUrl>C:\</PublishUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BasicView.py" />
+    <Compile Include="Config.py" />
+    <Compile Include="mount_control\lib\CoordinateConverter.py" />
+    <Compile Include="mount_control\View.py" />
+    <Compile Include="radio_camera\Cursor.py" />
+    <Compile Include="radio_camera\lib\frequencies.py" />
+    <Compile Include="radio_camera\lib\properties.py" />
+    <Compile Include="radio_camera\lib\spectrogram.py" />
+    <Compile Include="radio_camera\lib\spectrogram_reader.py" />
+    <Compile Include="radio_camera\Lims.py" />
+    <Compile Include="radio_camera\View.py" />
+    <Compile Include="tools.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="mount_control\" />
+    <Folder Include="mount_control\lib\" />
+    <Folder Include="radio_camera\" />
+    <Folder Include="radio_camera\input\" />
+    <Folder Include="radio_camera\lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="mount_control\config.json" />
+    <Content Include="radio_camera\config.json" />
+    <Content Include="radio_camera\input\Spectrogram.csv" />
+    <Content Include="radio_camera\input\Spectrogram001.spm" />
+    <Content Include="radio_camera\input\Spectrogram003.spm" />
+    <Content Include="radio_camera\input\Spectrogram2.spm" />
+    <Content Include="radio_camera\input\Spectrogram_crop.csv" />
+    <Content Include="radio_camera\input\Spectrogram_wave.csv" />
+    <Content Include="radio_camera\input\Spectrogram_wave_long.csv" />
+    <Content Include="radio_camera\settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
