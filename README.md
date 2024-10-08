@@ -1,5 +1,8 @@
 # Whistle of Wind radio telescope
-![Whistle of Wind](https://github.com/user-attachments/assets/c5fb736e-5ffb-4102-8ebd-a200df3dfa0d)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c5fb736e-5ffb-4102-8ebd-a200df3dfa0d" width="256">
+</p>
 
 ## Installation
 ```bash
