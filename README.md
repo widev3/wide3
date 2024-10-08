@@ -10,3 +10,13 @@ https://arxiv.org/pdf/1702.00844
 https://leo.phys.unm.edu/~gbtaylor/
 https://www.atnf.csiro.au/research/radio-school/2011/index.html
 https://websites.umich.edu/~lowbrows/reflections/2007/jabshier.1.html
+
+## Installation
+```bash
+sudo apt install python3 -y
+sudo apt install python3-matplotlib -y
+sudo apt install python3-pyqt5 -y
+sudo apt install python3-pandas -y
+sudo apt install python3-astropy -y
+sudo apt install python3-astroquery -y
+```
