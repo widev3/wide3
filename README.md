@@ -20,3 +20,8 @@ sudo apt install python3-pandas -y
 sudo apt install python3-astropy -y
 sudo apt install python3-astroquery -y
 ```
+
+## Execution in [wow](./wow) folder
+```bash
+python3 wow.py
+```
