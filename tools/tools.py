@@ -40,7 +40,16 @@ def start_a_module(module):
 
 
 parser = argparse.ArgumentParser(description="wow command line")
-parser.add_argument("tool", type=str, help="The name of the tool you want to use.")
+parser.add_argument(
+    "tool", type=str, nargs="?", help="The name of the tool you want to use."
+)
 args = parser.parse_args()
 if args.tool:
-    start_a_module(args.tool)
+    tool = args.tool
+else:
+    tool, index = BasicView.basic_view_checkbox_list(
+        "WOW", "Select a tool", ["radio_camera", "mount_control"], True
+    )
+
+if tool:
+    start_a_module(tool)
