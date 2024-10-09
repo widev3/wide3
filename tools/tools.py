@@ -1,6 +1,8 @@
 import importlib
 import argparse
 import traceback
+import utils
+import os
 from BasicView import BasicView
 
 
@@ -47,8 +49,19 @@ args = parser.parse_args()
 if args.tool:
     tool = args.tool
 else:
+    modules = list(
+        map(
+            lambda x: (x, utils.module_to_name(x)),
+            list(
+                filter(
+                    lambda x: not x.startswith("__"), utils.list_folders(os.getcwd())
+                )
+            ),
+        )
+    )
+
     tool, index = BasicView.basic_view_checkbox_list(
-        "WOW", "Select a tool", ["radio_camera", "mount_control"], True
+        "WOW", "Select a tool", dict(modules).values(), True
     )
 
 if tool:
