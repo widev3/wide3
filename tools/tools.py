@@ -49,9 +49,9 @@ args = parser.parse_args()
 if args.tool:
     tool = args.tool
 else:
-    modules = list(
+    modules = dict(
         map(
-            lambda x: (x, utils.module_to_name(x)),
+            lambda x: (utils.module_to_name(x), x),
             list(
                 filter(
                     lambda x: not x.startswith("__"), utils.list_folders(os.getcwd())
@@ -61,8 +61,8 @@ else:
     )
 
     tool, index = BasicView.basic_view_checkbox_list(
-        "WOW", "Select a tool", dict(modules).values(), True
+        "WOW", "Select a tool", modules.keys(), True
     )
 
 if tool:
-    start_a_module(tool)
+    start_a_module(modules[tool])
