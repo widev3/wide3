@@ -1,5 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator
 from PyQt5.QtWidgets import (
     QWidget,
     QPushButton,
@@ -35,15 +36,19 @@ class BasicView:
         return self.__app.exec_()
 
     @staticmethod
-    def grid_arguments():
-        return {
-            "visible": True,
-            "linestyle": "--",
-            "linewidth": 0.5,
-            "alpha": 0.7,
-            "color": "gray",
-            "which": "both",
-        }
+    def set_grid(ax):
+        ax.grid(
+            **{
+                "visible": True,
+                "linestyle": "--",
+                "linewidth": 0.5,
+                "alpha": 0.7,
+                "color": "gray",
+                "which": "both",
+            }
+        )
+        ax.xaxis.set_minor_locator(AutoMinorLocator(5))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
     @staticmethod
     def basic_view(title, mosaic, width_ratios, height_ratios, unwanted_buttons=[]):
@@ -97,36 +102,39 @@ class BasicView:
         window = MainWindow()
 
     @staticmethod
-    def basic_view_file_dialog():
+    def basic_view_file_dialog(
+        title, message, filter="All Files (*);;csv Files (*.csv)"
+    ):
         class FileDialogView(QWidget):
-            def __init__(self):
+            def __init__(self, title, message, filter):
                 super().__init__()
+                self.filter = filter
 
                 self.selected_file = None
-                self.setWindowTitle("Select a file")
+                self.setWindowTitle(title)
                 self.setGeometry(500, 500, 500, 100)
 
                 layout = QVBoxLayout()
-                self.button = QPushButton("Open File", self)
+                self.button = QPushButton(message, self)
                 self.button.clicked.connect(self.show_file_dialog)
                 layout.addWidget(self.button)
 
                 self.setLayout(layout)
 
-            def show_file_dialog(self):
+            def show_file_dialog(self, filter):
                 options = QFileDialog.Options()
                 file_name, _ = QFileDialog.getOpenFileName(
                     self,
                     "Open File",
                     "",
-                    "All Files (*);;csv Files (*.csv)",
+                    self.filter,
                     options=options,
                 )
 
                 self.selected_file = file_name
                 self.close()
 
-        dialog = FileDialogView()
+        dialog = FileDialogView(title, message, filter)
         dialog.show()
         BasicView().exec_()
         return dialog.selected_file
