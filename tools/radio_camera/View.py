@@ -5,7 +5,7 @@ from matplotlib.ticker import AutoMinorLocator
 from Config import Config
 from radio_camera.Cursor import Cursor
 from matplotlib import cm
-from matplotlib.widgets import RadioButtons, Slider
+from matplotlib.widgets import RadioButtons, Slider, Button
 from radio_camera.lib.spectrogram_reader import reader
 from BasicView import BasicView, plt
 
@@ -20,18 +20,12 @@ class View(object):
         im.set_norm(cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
         self.__fig.canvas.draw_idle()
 
-    def __main_view(self, properties=[], frequencies=[], spectrogram=[]):
-        vmax = np.max(spectrogram["magnitude"])
-        vmin = np.min(spectrogram["magnitude"])
-        power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
-        t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
-        f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
-
+    def __main_view(self, properties=None, frequencies=None, spectrogram=None):
         mosaic = [
             ["spectrogram", "colorbar", "f_proj", "t_power"],
             ["t_proj", "band_selection", "band_selection", "f_power"],
             ["t_proj", "gamma_setting_slider", "gamma_setting_slider", "f_power"],
-            [None, None, None, None],
+            ["load_csv", None, None, None],
         ]
         self.__fig, self.__ax = BasicView.basic_view(
             "Radio camera",
@@ -39,6 +33,35 @@ class View(object):
             width_ratios=[15, 1, 3, 15],
             height_ratios=[6, 2, 0.1, 0.5],
         )
+
+        self.__ax["spectrogram"].set_title("Spectrogram")
+        self.__ax["t_proj"].set_title("Time projection")
+        self.__ax["f_proj"].set_title("Frequency projection")
+        self.__ax["t_power"].set_title("Time power")
+        self.__ax["f_power"].set_title("Frequency power")
+
+        self.__ax["band_selection"].set_title("Band [MHz-MHz]")
+        self.__band_selection_radiobuttons = RadioButtons(
+            ax=self.__ax["band_selection"],
+            radio_props={"s": [64] * len(self.__config.data["bands"])},
+            labels=list(
+                map(
+                    lambda x: f"{x} {self.__config.data['bands'][x]}",
+                    self.__config.data["bands"].keys(),
+                )
+            ),
+        )
+
+        self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
+
+        if not properties or not frequencies or not spectrogram:
+            return
+
+        vmax = np.max(spectrogram["magnitude"])
+        vmin = np.min(spectrogram["magnitude"])
+        power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
+        t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
+        f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
 
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
             X=spectrogram["magnitude"],
@@ -61,7 +84,6 @@ class View(object):
         lims = Lims(self.__im)
         self.__ax["spectrogram"].callbacks.connect("xlim_changed", lims.on_xlim_changed)
         self.__ax["spectrogram"].callbacks.connect("ylim_changed", lims.on_ylim_changed)
-        self.__ax["spectrogram"].set_title("Spectrogram")
         self.__ax["spectrogram"].set_xlabel("Relative time from start [ms]")
         self.__ax["spectrogram"].set_ylabel("Frequency [MHz]")
         BasicView.set_grid(self.__ax["spectrogram"])
@@ -69,7 +91,6 @@ class View(object):
         self.__fig.colorbar(self.__im["spectrogram"], cax=self.__ax["colorbar"])
 
         (self.__im["t_proj"],) = self.__ax["t_proj"].plot([], [])
-        self.__ax["t_proj"].set_title("Time projection")
         self.__ax["t_proj"].set_xlabel("Relative time from start [ms]")
         self.__ax["t_proj"].set_ylabel(
             f"Magnitude [{spectrogram["um"]["magnitude"][1]}]"
@@ -79,7 +100,6 @@ class View(object):
         BasicView.set_grid(self.__ax["t_proj"])
 
         (self.__im["f_proj"],) = self.__ax["f_proj"].plot([], [])
-        self.__ax["f_proj"].set_title("Frequency projection")
         self.__ax["f_proj"].set_xlabel("Frequency [MHz]")
         self.__ax["f_proj"].set_ylabel(
             f"Magnitude [{spectrogram["um"]["magnitude"][1]}]"
@@ -104,18 +124,6 @@ class View(object):
             )
         )
 
-        self.__ax["band_selection"].set_title("Band [MHz-MHz]")
-        self.__band_selection_radiobuttons = RadioButtons(
-            ax=self.__ax["band_selection"],
-            radio_props={"s": [64] * len(self.__config.data["bands"])},
-            labels=list(
-                map(
-                    lambda x: f"{x} {self.__config.data['bands'][x]}",
-                    self.__config.data["bands"].keys(),
-                )
-            ),
-        )
-
         (self.__im["t_power"],) = self.__ax["t_power"].plot(
             np.linspace(
                 min(spectrogram["relative_time"]),
@@ -124,7 +132,6 @@ class View(object):
             ),
             t_power_spectrogram,
         )
-        self.__ax["t_power"].set_title("Time power")
         self.__ax["t_power"].set_xlabel("Relative time from start [ms]")
         self.__ax["t_power"].set_ylabel("Magnitude [µW]")
         BasicView.set_grid(self.__ax["t_power"])
@@ -137,7 +144,6 @@ class View(object):
             ),
             f_power_spectrogram,
         )
-        self.__ax["f_power"].set_title("Frequency power")
         self.__ax["f_power"].set_xlabel("Frequency [MHz]")
         self.__ax["f_power"].set_ylabel("Magnitude [log10(µW)]")
         BasicView.set_grid(self.__ax["f_power"])
@@ -152,10 +158,10 @@ class View(object):
                 if os.path.isfile(self.__config.data["filename"]):
                     filename = self.__config.data["filename"]
 
-        if not filename:
-            filename = BasicView.basic_view_file_dialog(
-                "Radio camera", "Select a spectrogram file"
-            )
+        # if not filename:
+        #     filename = BasicView.basic_view_file_dialog(
+        #         "Radio camera", "Select a spectrogram file"
+        #     )
 
         if filename:
             pr, fr, sp = reader(filename, self.__config)

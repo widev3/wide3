@@ -105,3 +105,24 @@ def start():
             time.sleep(0.1)
 
         print(spectrogram)
+
+        # spectrogram = {}
+        # for x in np.arange(12, 14, 0.1):
+        #     spectrogram_x = {}
+        #     for y in np.arange(67, 69, 0.1):
+        #         spectrum_values = np.random.rand(2034)
+        #         slice = time_slice(spectrum_values, cent=1.4e9, span=12e6)
+        #         spectrogram_x[y] = slice
+
+        #     spectrogram[x] = spectrogram_x
+
+        # # for i in range(10):
+        # #     spectrum_values = np.random.rand(2034)
+        # #     slice = time_slice(spectrum_values, cent=1.4e9, span=12e6)
+        # #     spectrogram[datetime.now()] = slice
+
+        # #     print(
+        # #         f"{i} acquired spectrum data. Total power (W): {sum(spectrum_values)}"
+        # #     )
+
+        # # print(spectrogram)
