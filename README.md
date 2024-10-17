@@ -16,6 +16,8 @@ sudo apt install python3-astropy -y
 sudo apt install python3-astroquery -y
 pip3 install RsInstrument --break-system-packages
 sudo apt install python3-pyvisa -y
+sudo apt install python3-flask -y
+sudo apt install python3-psycopg2 -y
 ```
 
 ```bat
@@ -26,6 +28,8 @@ pip install scipy
 pip install astropy
 pip install astroquery
 pip install RsInstrument
+pip install Flask
+pip install psycopg2
 ```
 
 ## Execution in [tools](./tools) folder
