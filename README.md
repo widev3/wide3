@@ -37,7 +37,7 @@ pip install pyinstaller
 ## Build the executable file in [tools](./tools) folder
 
 ```bash
-python3 -m PyInstaller --noconsole --onefile --icon=settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png tools.py
+python3 -m PyInstaller --onefile tools.py
 ```
 
 ## Execution in [tools](./tools) folder
