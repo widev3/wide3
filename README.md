@@ -18,6 +18,7 @@ pip3 install RsInstrument --break-system-packages
 sudo apt install python3-pyvisa -y
 sudo apt install python3-flask -y
 sudo apt install python3-psycopg2 -y
+pip3 install pyinstaller --break-system-packages
 ```
 
 ```bat
@@ -30,6 +31,13 @@ pip install astroquery
 pip install RsInstrument
 pip install Flask
 pip install psycopg2
+pip install pyinstaller
+```
+
+## Build the executable file in [tools](./tools) folder
+
+```bash
+python3 -m PyInstaller --noconsole --onefile --icon=settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png tools.py
 ```
 
 ## Execution in [tools](./tools) folder

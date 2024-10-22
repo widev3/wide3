@@ -1,3 +1,6 @@
 *__pycache__*
 *.vsidx
 *.vs
+*/build
+*/dist
+tools/tools.spec
