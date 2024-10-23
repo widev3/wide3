@@ -1,11 +1,15 @@
-import matplotlib
-import matplotlib.text
+from BasicView import (
+    cm,
+    BasicView,
+    CheckButtons,
+    RadioButtons,
+    MouseButton,
+    Line2D,
+    AxesImage,
+)
 import numpy as np
-from BasicView import BasicView, plt
-from matplotlib import cm
-from matplotlib.backend_bases import MouseButton
-from matplotlib.widgets import CheckButtons, RadioButtons
 from scipy.signal import find_peaks
+from Mosaic import Mosaic
 
 
 class Cursor:
@@ -80,16 +84,17 @@ class Cursor:
 
     def __left_button_double_press_event(self, event, target):
         if target in self.im:
-            mosaic = [
-                [target, "options"],
-                [target, "peaks"],
-                ["gamma_setting_slider", "peaks"],
-            ]
+            mosaic = Mosaic.generate_array(50, 50)
+
+            # first column
+            Mosaic.fill_with_string(mosaic, (1, 2), (40, 50), target)
+
+            # second column
+            Mosaic.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
+            Mosaic.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
+
             self.__fig, self.inner_ax = BasicView.basic_view(
-                self.ax[target].get_title(),
-                mosaic=mosaic,
-                width_ratios=[5, 1],
-                height_ratios=[1, 10, 1],
+                self.ax[target].get_title(), mosaic=mosaic
             )
 
             def on_options_radiobuttons_clicked(label):
@@ -100,13 +105,13 @@ class Cursor:
 
                 dim = 0
                 data = {}
-                if isinstance(self.im[target], matplotlib.lines.Line2D):
+                if isinstance(self.im[target], Line2D):
                     dim = 1
                     data = {
                         "x": self.im[target].get_data()[1 if is_rotated else 0],
                         "y": self.im[target].get_data()[0 if is_rotated else 1],
                     }
-                elif isinstance(self.im[target], matplotlib.image.AxesImage):
+                elif isinstance(self.im[target], AxesImage):
                     dim = 2
                     data = {"X": self.im[target]._A}
 
@@ -210,7 +215,7 @@ class Cursor:
                         )
 
                 self.inner_ax["peaks"].set_title(
-                    f"{self.inner_ax[target].get_xlabel()} ({self.inner_ax[target].get_ylabel()})"
+                    f"{self.inner_ax[target].get_xlabel()}\n({self.inner_ax[target].get_ylabel()})"
                 )
                 self.__peaks_checkbuttons = CheckButtons(
                     ax=self.inner_ax["peaks"],
@@ -224,7 +229,7 @@ class Cursor:
                 self.inner_ax[target].set_title(
                     f"{self.ax[target].get_title()} ({label})"
                 )
-                self.inner_ax[target].grid(**BasicView.grid_arguments())
+                BasicView.set_grid(self.inner_ax[target])
 
                 self.__fig.canvas.draw()
 
@@ -239,7 +244,7 @@ class Cursor:
                 self.__options_radiobuttons.labels[0].get_text()
             )
 
-            plt.show(block=True)
+            BasicView.show()
 
     def __left_button_press_event(self, event, target):
         if target == "spectrogram":

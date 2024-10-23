@@ -1,18 +1,23 @@
 import os
 import numpy as np
 from radio_camera.Lims import Lims
-from matplotlib.ticker import AutoMinorLocator
-from Config import Config
 from radio_camera.Cursor import Cursor
-from matplotlib import cm
-from matplotlib.widgets import RadioButtons, Slider, Button
-from radio_camera.lib.spectrogram_reader import reader
-from BasicView import BasicView, plt
+from radio_camera.lib.spectrogram import reader
+from BasicView import BasicView, cm, RadioButtons, Button, Slider
+from Mosaic import Mosaic
 
 
 class View(object):
-    def __init__(self):
-        self.__config = Config("radio_camera")
+    def __init__(self, config):
+        if not config:
+            config = {}
+            config["bands"] = {}
+            config["bands"]["A"] = [10, 12]
+            config["separator"] = ","
+            config["gamma"] = 0.3
+            config["cmap"] = "magma"
+
+        self.config = config
         self.__ax = {}
         self.__im = {}
 
@@ -20,43 +25,7 @@ class View(object):
         im.set_norm(cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
         self.__fig.canvas.draw_idle()
 
-    def __main_view(self, properties=None, frequencies=None, spectrogram=None):
-        mosaic = [
-            ["spectrogram", "colorbar", "f_proj", "t_power"],
-            ["t_proj", "band_selection", "band_selection", "f_power"],
-            ["t_proj", "gamma_setting_slider", "gamma_setting_slider", "f_power"],
-            ["load_csv", None, None, None],
-        ]
-        self.__fig, self.__ax = BasicView.basic_view(
-            "Radio camera",
-            mosaic=mosaic,
-            width_ratios=[15, 1, 3, 15],
-            height_ratios=[6, 2, 0.1, 0.5],
-        )
-
-        self.__ax["spectrogram"].set_title("Spectrogram")
-        self.__ax["t_proj"].set_title("Time projection")
-        self.__ax["f_proj"].set_title("Frequency projection")
-        self.__ax["t_power"].set_title("Time power")
-        self.__ax["f_power"].set_title("Frequency power")
-
-        self.__ax["band_selection"].set_title("Band [MHz-MHz]")
-        self.__band_selection_radiobuttons = RadioButtons(
-            ax=self.__ax["band_selection"],
-            radio_props={"s": [64] * len(self.__config.data["bands"])},
-            labels=list(
-                map(
-                    lambda x: f"{x} {self.__config.data['bands'][x]}",
-                    self.__config.data["bands"].keys(),
-                )
-            ),
-        )
-
-        self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
-
-        if not properties or not frequencies or not spectrogram:
-            return
-
+    def __populate(self, properties=None, frequencies=None, spectrogram=None):
         vmax = np.max(spectrogram["magnitude"])
         vmin = np.min(spectrogram["magnitude"])
         power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
@@ -65,10 +34,8 @@ class View(object):
 
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
             X=spectrogram["magnitude"],
-            norm=cm.colors.PowerNorm(
-                gamma=self.__config.data["gamma"], vmin=vmin, vmax=vmax
-            ),
-            cmap=self.__config.data["cmap"],
+            norm=cm.colors.PowerNorm(gamma=self.config["gamma"], vmin=vmin, vmax=vmax),
+            cmap=self.config["cmap"],
             aspect="auto",
             origin="lower",
             extent=[
@@ -110,7 +77,7 @@ class View(object):
         BasicView.set_grid(self.__ax["f_proj"])
 
         self.__gamma_slider = Slider(
-            ax=self.__ax["gamma_setting_slider"],
+            ax=self.__ax["gamma_slider"],
             label="Gamma",
             valmin=0,
             valmax=1,
@@ -149,24 +116,74 @@ class View(object):
         BasicView.set_grid(self.__ax["f_power"])
 
         self.__cursor = Cursor(self.__ax, self.__im)
-        plt.connect("button_press_event", self.__cursor.button_press_event)
+        BasicView.connect("button_press_event", self.__cursor.button_press_event)
 
-    def view(self):
-        filename = ""
-        if "filename" in self.__config.data:
-            if self.__config.data["filename"]:
-                if os.path.isfile(self.__config.data["filename"]):
-                    filename = self.__config.data["filename"]
+    def __draw(self, filename=None):
+        if not filename and "filename" in self.config:
+            if self.config["filename"]:
+                filename = self.config["filename"]
 
-        # if not filename:
-        #     filename = BasicView.basic_view_file_dialog(
-        #         "Radio camera", "Select a spectrogram file"
-        #     )
+        properties = None
+        frequencies = None
+        spectrogram = None
+        if filename and os.path.isfile(filename):
+            properties, frequencies, spectrogram = reader(filename, self.config)
 
-        if filename:
-            pr, fr, sp = reader(filename, self.__config)
-            self.__main_view(properties=pr, frequencies=fr, spectrogram=sp)
-        else:
-            self.__main_view()
+        if properties is None or frequencies is None or spectrogram is None:
+            return
 
-        plt.show(block=True)
+        if len(properties) == 0 or len(frequencies) == 0 or len(spectrogram) == 0:
+            return
+
+        self.__populate(properties, frequencies, spectrogram)
+        BasicView.refresh()
+
+    def view(self, filename=None):
+        mosaic = Mosaic.generate_array(50, 50)
+        buttons = ["load_csv", None, None, None, None, None]
+        Mosaic.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
+
+        # first column
+        Mosaic.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (0, 2))
+        Mosaic.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (0, 5))
+
+        # second column
+        Mosaic.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
+        Mosaic.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
+        Mosaic.fill_with_string(mosaic, (25, 30), (38, 45), "bands", (1, 5))
+        Mosaic.fill_with_string(mosaic, (25, 45), (38, 50), "gamma_slider", (3, 2))
+
+        # third column
+        Mosaic.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
+        Mosaic.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
+
+        self.__fig, self.__ax = BasicView.basic_view("Radio camera", mosaic=mosaic)
+
+        self.__ax["spectrogram"].set_title("Spectrogram")
+        self.__ax["t_proj"].set_title("Time projection")
+        self.__ax["f_proj"].set_title("Frequency projection")
+        self.__ax["f_power"].set_title("Frequency power")
+        self.__ax["t_power"].set_title("Time power")
+
+        self.__ax["bands"].set_title("Band [MHz-MHz]")
+        self.__bands_radiobuttons = RadioButtons(
+            ax=self.__ax["bands"],
+            radio_props={"s": [64] * len(self.config["bands"])},
+            labels=list(
+                map(
+                    lambda x: f"{x} {self.config["bands"][x]}",
+                    self.config["bands"].keys(),
+                )
+            ),
+        )
+
+        self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
+        self.__load_csv_button.on_clicked(
+            lambda x: self.__draw(
+                BasicView.basic_view_file_dialog("Radio camera", "Load CSV")
+            )
+        )
+
+        self.__draw(filename)
+
+        BasicView.show()

@@ -1,6 +1,18 @@
 import sys
+import matplotlib
+
+matplotlib.use("qtagg")
 import matplotlib.pyplot as plt
+import matplotlib.text
+
+from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
+from matplotlib.animation import FuncAnimation
+from matplotlib.lines import Line2D
+from matplotlib.image import AxesImage
+from matplotlib import cm
+from matplotlib.backend_bases import MouseButton
 from matplotlib.ticker import AutoMinorLocator
+
 from PyQt5.QtWidgets import (
     QWidget,
     QPushButton,
@@ -51,27 +63,48 @@ class BasicView:
         ax.yaxis.set_minor_locator(AutoMinorLocator(5))
 
     @staticmethod
-    def basic_view(title, mosaic, width_ratios, height_ratios, unwanted_buttons=[]):
+    def basic_view(title, mosaic, unwanted_buttons=[]):
         plt.ion()
-        plt.switch_backend("qtagg")
         fig, ax = plt.subplot_mosaic(
-            constrained_layout=True,
             mosaic=mosaic,
             empty_sentinel=None,
-            width_ratios=width_ratios,
-            height_ratios=height_ratios,
+            width_ratios=[1] * len(mosaic[0]),
+            height_ratios=[1] * len(mosaic),
         )
-        fig.canvas.manager.set_window_title(title=title)
 
+        plt.subplots_adjust(
+            left=0.08,
+            bottom=0.08,
+            right=0.96,
+            top=0.96,
+            wspace=1,
+            hspace=1,
+        )
+
+        from PyQt5 import QtGui
+        fig.canvas.manager.set_window_title(title=title)
         mng = plt.get_current_fig_manager()
+        mng.window.setWindowIcon(QtGui.QIcon("settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"))
         mng.window.setWindowTitle(title)
-        mng.window.showMaximized()
+        mng.resize(1500, 800)
 
         for x in mng.toolbar.actions():
             if x.text() in unwanted_buttons:
                 mng.toolbar.removeAction(x)
 
         return fig, ax
+
+    @staticmethod
+    def show():
+        plt.show(block=True)
+
+    @staticmethod
+    def refresh():
+        plt.show()
+
+    @staticmethod
+    def connect(string, event):
+        plt.connect(string, event)
 
     @staticmethod
     def basic_view_show_message(title, message, icon):
@@ -114,14 +147,16 @@ class BasicView:
                 self.setWindowTitle(title)
                 self.setGeometry(500, 500, 500, 100)
 
-                layout = QVBoxLayout()
-                self.button = QPushButton(message, self)
-                self.button.clicked.connect(self.show_file_dialog)
-                layout.addWidget(self.button)
+                # layout = QVBoxLayout()
+                # self.button = QPushButton(message, self)
+                # self.button.clicked.connect(self.show_file_dialog)
+                # layout.addWidget(self.button)
 
-                self.setLayout(layout)
+                # self.setLayout(layout)
 
-            def show_file_dialog(self, filter):
+                self.show_file_dialog()
+
+            def show_file_dialog(self):
                 options = QFileDialog.Options()
                 file_name, _ = QFileDialog.getOpenFileName(
                     self,
@@ -136,7 +171,7 @@ class BasicView:
 
         dialog = FileDialogView(title, message, filter)
         dialog.show()
-        BasicView().exec_()
+        # BasicView().exec_()
         return dialog.selected_file
 
     @staticmethod

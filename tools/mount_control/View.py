@@ -2,21 +2,19 @@ import numpy as np
 import astropy.units as u
 import random
 import traceback
-from BasicView import BasicView, plt
-from matplotlib.ticker import AutoMinorLocator
-from matplotlib.widgets import Button, CheckButtons
-from Config import Config
+from BasicView import BasicView, FuncAnimation, Line2D, Button
 from astroquery.vizier import Vizier
 from astropy.coordinates import EarthLocation
 from mount_control.lib.CoordinateConverter import CatalogCoordinate
-from matplotlib.animation import FuncAnimation
 from astropy.coordinates import SkyCoord
-from matplotlib.lines import Line2D
 
 
 class View(object):
-    def __init__(self):
-        self.__config = Config("mount_control")
+    def __init__(self, config):
+        if not config:
+            config = {}
+
+        self.__config = config
         self.ax = {}
         self.im = {}
         self.loaded_catalogs = {}
@@ -235,12 +233,10 @@ class View(object):
 
         self.ax["sky_map"].set_xlabel("RA")
         self.ax["sky_map"].set_ylabel("DEC")
-        self.ax["sky_map"].xaxis.set_minor_locator(AutoMinorLocator(1))
-        self.ax["sky_map"].yaxis.set_minor_locator(AutoMinorLocator(1))
-        self.ax["sky_map"].grid(**BasicView.grid_arguments())
         self.ax["sky_map"].set_title("Sky map")
+        BasicView.set_grid(self.ax["sky_map"])
 
         self.__setup_observers()
         self.__setup_sky_map(self.__config.data["catalog_name"])
 
-        plt.show(block=True)
+        BasicView.show()

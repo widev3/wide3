@@ -14,11 +14,12 @@ sudo apt install python3-pandas -y
 sudo apt install python3-scipy -y
 sudo apt install python3-astropy -y
 sudo apt install python3-astroquery -y
-pip3 install RsInstrument --break-system-packages
 sudo apt install python3-pyvisa -y
 sudo apt install python3-flask -y
 sudo apt install python3-psycopg2 -y
+pip3 install RsInstrument --break-system-packages
 pip3 install pyinstaller --break-system-packages
+pip3 install matplotlib --break-system-packages
 ```
 
 ```bat
@@ -34,16 +35,10 @@ pip install psycopg2
 pip install pyinstaller
 ```
 
-## Build the executable file in [tools](./tools) folder
+## Build a standalone executable of tools
 
 ```bash
-python3 -m PyInstaller --onefile tools.py
-```
-
-## Execution in [tools](./tools) folder
-
-```bash
-python3 tools.py
+./compile
 ```
 
 ## Tools structure

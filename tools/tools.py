@@ -1,12 +1,7 @@
 import argparse
 import os
 import json
-
-
-def start_a_module(module):
-    from radio_camera import View as radio_camera_view
-
-    radio_camera_view.View().view()
+from radio_camera import View as rcv
 
 
 parser = argparse.ArgumentParser(description="Whistle of Wind command line")
@@ -31,4 +26,7 @@ if config_file:
     with open(config_file) as f:
         config = json.load(f)
 
-start_a_module(config)
+
+module_config = list(filter(lambda x: x["module"] == "radio_camera", config))
+module_config = module_config[0] if len(module_config) > 0 else None
+rcv.View(module_config).view()
