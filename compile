@@ -1,6 +1,2 @@
 cd tools
-rm -rf build
-rm -rf dist
-rm -rf tools.spec
-python3 -m PyInstaller --onefile --noconsole --icon=settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png tools.py
-./dist/tools
+python3 -OO -m PyInstaller --clean --onefile --noconsole --noconfirm --icon=settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png tools.py
