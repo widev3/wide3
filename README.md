@@ -25,7 +25,7 @@ pip3 install matplotlib --break-system-packages
 ```bat
 pip install matplotlib
 pip install pyqt5
-pip instal pandas
+pip install pandas
 pip install scipy
 pip install astropy
 pip install astroquery
