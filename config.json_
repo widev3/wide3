@@ -1,6 +1,6 @@
 [
     {
-        "module": "radio_camera",
+        "package": "radio_camera",
         "name": "Radio camera",
         "filename": "input/Spectrogram_crop.csv",
         "separator": ",",
@@ -22,7 +22,7 @@
         }
     },
     {
-        "module": "mount_control",
+        "package": "mount_control",
         "name": "Mount control",
         "site_latitude": 45.383793533354634,
         "site_longitude": 10.668466638347189,

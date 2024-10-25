@@ -1,9 +1,10 @@
 import os
+import utils
 import numpy as np
 from radio_camera.Lims import Lims
 from radio_camera.Cursor import Cursor
 from radio_camera.lib.spectrogram import reader
-from BasicView import BasicView, cm, RadioButtons, Button, Slider
+from BasicView import BasicView, cm, RadioButtons, Button, Slider, plt
 from Mosaic import Mosaic
 
 
@@ -11,13 +12,15 @@ class View(object):
     def __init__(self, config):
         if not config:
             config = {}
+            config["package"] = __package__
+            config["name"] = utils.package_to_name(__package__)
             config["bands"] = {}
             config["bands"]["A"] = [10, 12]
             config["separator"] = ","
             config["gamma"] = 0.3
             config["cmap"] = "magma"
 
-        self.config = config
+        self.__config = config
         self.__ax = {}
         self.__im = {}
 
@@ -34,8 +37,10 @@ class View(object):
 
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
             X=spectrogram["magnitude"],
-            norm=cm.colors.PowerNorm(gamma=self.config["gamma"], vmin=vmin, vmax=vmax),
-            cmap=self.config["cmap"],
+            norm=cm.colors.PowerNorm(
+                gamma=self.__config["gamma"], vmin=vmin, vmax=vmax
+            ),
+            cmap=self.__config["cmap"],
             aspect="auto",
             origin="lower",
             extent=[
@@ -119,15 +124,21 @@ class View(object):
         BasicView.connect("button_press_event", self.__cursor.button_press_event)
 
     def __draw(self, filename=None):
-        if not filename and "filename" in self.config:
-            if self.config["filename"]:
-                filename = self.config["filename"]
+        if not filename and "filename" in self.__config:
+            if self.__config["filename"]:
+                filename = self.__config["filename"]
 
         properties = None
         frequencies = None
         spectrogram = None
         if filename and os.path.isfile(filename):
-            properties, frequencies, spectrogram = reader(filename, self.config)
+            properties, frequencies, spectrogram = reader(filename, self.__config)
+            if properties is None or frequencies is None or spectrogram is None:
+                BasicView.basic_view_show_message(
+                    self.__config["name"],
+                    f"Current file {filename} is not readable or incorrectly formatted",
+                    2,
+                )
 
         if properties is None or frequencies is None or spectrogram is None:
             return
@@ -144,8 +155,8 @@ class View(object):
         Mosaic.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
 
         # first column
-        Mosaic.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (0, 2))
-        Mosaic.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (0, 5))
+        Mosaic.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (1, 2))
+        Mosaic.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (1, 5))
 
         # second column
         Mosaic.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
@@ -157,7 +168,9 @@ class View(object):
         Mosaic.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
         Mosaic.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
 
-        self.__fig, self.__ax = BasicView.basic_view("Radio camera", mosaic=mosaic)
+        self.__fig, self.__ax = BasicView.basic_view(
+            self.__config["name"], mosaic=mosaic
+        )
 
         self.__ax["spectrogram"].set_title("Spectrogram")
         self.__ax["t_proj"].set_title("Time projection")
@@ -168,11 +181,11 @@ class View(object):
         self.__ax["bands"].set_title("Band [MHz-MHz]")
         self.__bands_radiobuttons = RadioButtons(
             ax=self.__ax["bands"],
-            radio_props={"s": [64] * len(self.config["bands"])},
+            radio_props={"s": [64] * len(self.__config["bands"])},
             labels=list(
                 map(
-                    lambda x: f"{x} {self.config["bands"][x]}",
-                    self.config["bands"].keys(),
+                    lambda x: f"{x} {self.__config["bands"][x]}",
+                    self.__config["bands"].keys(),
                 )
             ),
         )
@@ -180,7 +193,7 @@ class View(object):
         self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
         self.__load_csv_button.on_clicked(
             lambda x: self.__draw(
-                BasicView.basic_view_file_dialog("Radio camera", "Load CSV")
+                BasicView.basic_view_file_dialog(self.__config["name"], "Load CSV")
             )
         )
 

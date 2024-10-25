@@ -26,6 +26,9 @@ def extract_quantity_and_unit(string):
 
 
 def spectrogram(file, config):
+    if len(file) < 3:
+        return None
+
     # absolute timestamp
     absolute_tss = []
     try:
@@ -40,26 +43,32 @@ def spectrogram(file, config):
             )
         )
     except:
-        absolute_tss = list(
+        try:
+            absolute_tss = list(
+                map(
+                    lambda x: time.mktime(
+                        datetime.datetime.strptime(x, "%H:%M:%S %m/%d/%Y").timetuple()
+                    ),
+                    pd.read_csv(
+                        io.StringIO(file[0]), sep=config["separator"], header=None
+                    ).values[0][1:-1],
+                )
+            )
+        except:
+            return None
+
+    # relative time interval with respect to start)
+    try:
+        relative_tss_zero_end = list(
             map(
-                lambda x: time.mktime(
-                    datetime.datetime.strptime(x, "%H:%M:%S %m/%d/%Y").timetuple()
-                ),
+                lambda x: milliseconds(datetime.datetime.strptime(x, "%H:%M:%S:%f")),
                 pd.read_csv(
-                    io.StringIO(file[0]), sep=config["separator"], header=None
+                    io.StringIO(file[1]), sep=config["separator"], header=None
                 ).values[0][1:-1],
             )
         )
-
-    # relative time interval with respect to start)
-    relative_tss_zero_end = list(
-        map(
-            lambda x: milliseconds(datetime.datetime.strptime(x, "%H:%M:%S:%f")),
-            pd.read_csv(
-                io.StringIO(file[1]), sep=config["separator"], header=None
-            ).values[0][1:-1],
-        )
-    )
+    except:
+        return None
 
     relative_tss_zero_start = list(
         map(lambda x: relative_tss_zero_end[0] - x, relative_tss_zero_end)

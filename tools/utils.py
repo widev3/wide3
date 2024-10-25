@@ -9,7 +9,7 @@ def list_folders(directory):
     ]
 
 
-def module_to_name(s):
+def package_to_name(s):
     words = s.split("_")
     transformed = " ".join(
         word.lower() if i != 0 else word.capitalize() for i, word in enumerate(words)
@@ -17,7 +17,7 @@ def module_to_name(s):
     return transformed
 
 
-def name_to_module(s):
+def name_to_package(s):
     words = s.split()
     transformed = "_".join(word.lower() for word in words)
     return transformed

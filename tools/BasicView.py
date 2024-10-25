@@ -73,18 +73,23 @@ class BasicView:
         )
 
         plt.subplots_adjust(
-            left=0.08,
-            bottom=0.08,
-            right=0.96,
-            top=0.96,
+            left=0.03,
+            bottom=0.05,
+            right=0.98,
+            top=0.98,
             wspace=1,
             hspace=1,
         )
 
         from PyQt5 import QtGui
+
         fig.canvas.manager.set_window_title(title=title)
         mng = plt.get_current_fig_manager()
-        mng.window.setWindowIcon(QtGui.QIcon("settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"))
+        mng.window.setWindowIcon(
+            QtGui.QIcon(
+                "settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
+            )
+        )
         mng.window.setWindowTitle(title)
         mng.resize(1500, 800)
 

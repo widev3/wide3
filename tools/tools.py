@@ -27,6 +27,6 @@ if config_file:
         config = json.load(f)
 
 
-module_config = list(filter(lambda x: x["module"] == "radio_camera", config))
-module_config = module_config[0] if len(module_config) > 0 else None
-rcv.View(module_config).view()
+package_config = list(filter(lambda x: x["package"] == "radio_camera", config))
+package_config = package_config[0] if len(package_config) > 0 else None
+rcv.View(package_config).view()
