@@ -1,38 +1,43 @@
 # Whistle of Wind radio telescope
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c5fb736e-5ffb-4102-8ebd-a200df3dfa0d" width="256">
+  <img src="whistle_of_wind.png" width="256">
 </p>
 
 ## Installation
 
-```bash
+<!-- ```bash
 sudo apt install python3 -y
-sudo apt install python3-matplotlib -y
-sudo apt install python3-pyqt5 -y
-sudo apt install python3-pandas -y
-sudo apt install python3-scipy -y
-sudo apt install python3-astropy -y
-sudo apt install python3-astroquery -y
-sudo apt install python3-pyvisa -y
-sudo apt install python3-flask -y
-sudo apt install python3-psycopg2 -y
-pip3 install RsInstrument --break-system-packages
-pip3 install pyinstaller --break-system-packages
-pip3 install matplotlib --break-system-packages
-```
+sudo apt install python3-full -y
+sudo apt purge python3-matplotlib* -y
+sudo apt purge python3-pyqt5* -y
+sudo apt purge python3-pandas* -y
+sudo apt purge python3-scipy* -y
+sudo apt purge python3-astropy* -y
+sudo apt purge python3-astroquery* -y
+sudo apt purge python3-pyvisa* -y
+sudo apt purge python3-flask* -y
+sudo apt purge python3-psycopg2* -y
+sudo pip3 uninstall RsInstrument --break-system-packages
+sudo pip3 uninstall pyinstaller --break-system-packages
+sudo pip3 uninstall matplotlib --break-system-packages
+``` -->
 
-```bat
-pip install matplotlib
-pip install pyqt5
-pip install pandas
-pip install scipy
-pip install astropy
-pip install astroquery
-pip install RsInstrument
-pip install Flask
-pip install psycopg2
-pip install pyinstaller
+<!-- sudo apt install python3-virtualenv -y -->
+<!-- virtualenv venv -->
+
+```bash
+virtualenv ./venv/bin/activate
+pip3 install matplotlib
+pip3 install pyqt5
+pip3 install pandas
+pip3 install scipy
+pip3 install astropy
+pip3 install --update --pre astroquery[all]
+pip3 install RsInstrument
+pip3 install Flask
+pip3 install psycopg2
+pip3 install pyinstaller
 ```
 
 ## Build a standalone executable of tools

@@ -9,7 +9,6 @@ from BasicView import (
 )
 import numpy as np
 from scipy.signal import find_peaks
-from Mosaic import Mosaic
 
 
 class Cursor:
@@ -84,17 +83,17 @@ class Cursor:
 
     def __left_button_double_press_event(self, event, target):
         if target in self.im:
-            mosaic = Mosaic.generate_array(50, 50)
+            mosaic = BasicView.generate_array(50, 50)
 
             # first column
-            Mosaic.fill_with_string(mosaic, (1, 2), (40, 50), target)
+            BasicView.fill_with_string(mosaic, (1, 2), (40, 50), target)
 
             # second column
-            Mosaic.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
-            Mosaic.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
+            BasicView.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
+            BasicView.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
 
             self.__fig, self.inner_ax = BasicView.basic_view(
-                self.ax[target].get_title(), mosaic=mosaic
+                self.ax[target].get_title(), mosaic
             )
 
             def on_options_radiobuttons_clicked(label):

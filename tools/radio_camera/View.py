@@ -1,11 +1,11 @@
 import os
 import utils
 import numpy as np
+import Viewer
 from radio_camera.Lims import Lims
 from radio_camera.Cursor import Cursor
 from radio_camera.lib.spectrogram import reader
 from BasicView import BasicView, cm, RadioButtons, Button, Slider, plt
-from Mosaic import Mosaic
 
 
 class View(object):
@@ -150,27 +150,54 @@ class View(object):
         BasicView.refresh()
 
     def view(self, filename=None):
-        mosaic = Mosaic.generate_array(50, 50)
-        buttons = ["load_csv", None, None, None, None, None]
-        Mosaic.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
+        mosaic = BasicView.generate_array(50, 50)
+        buttons = [
+            "radio_camera",
+            "mount_control",
+            None,
+            None,
+            None,
+            None,
+            "-",
+            None,
+            None,
+            None,
+            "load_csv",
+        ]
+        BasicView.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
 
         # first column
-        Mosaic.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (1, 2))
-        Mosaic.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (1, 5))
+        BasicView.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (1, 2))
+        BasicView.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (1, 5))
 
         # second column
-        Mosaic.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
-        Mosaic.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
-        Mosaic.fill_with_string(mosaic, (25, 30), (38, 45), "bands", (1, 5))
-        Mosaic.fill_with_string(mosaic, (25, 45), (38, 50), "gamma_slider", (3, 2))
+        BasicView.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
+        BasicView.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
+        BasicView.fill_with_string(mosaic, (25, 30), (38, 45), "bands", (1, 5))
+        BasicView.fill_with_string(mosaic, (25, 45), (38, 50), "gamma_slider", (3, 2))
 
         # third column
-        Mosaic.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
-        Mosaic.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
+        BasicView.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
+        BasicView.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
 
-        self.__fig, self.__ax = BasicView.basic_view(
-            self.__config["name"], mosaic=mosaic
+        self.__fig, self.__ax = BasicView.basic_view(self.__config["name"], mosaic)
+
+        self.__radio_camera_button = Button(
+            ax=self.__ax["radio_camera"], label="Radio camera"
         )
+        self.__radio_camera_button.on_clicked(lambda event: None)
+        self.__radio_camera_button.color = "gray"
+        self.__radio_camera_button.hovercolor = self.__radio_camera_button.color
+
+        self.__mount_control_button = Button(
+            ax=self.__ax["mount_control"], label="Mount control"
+        )
+        self.__mount_control_button.on_clicked(
+            lambda event: Viewer.Viewer().instance()._mount_control.view()
+        )
+
+        self.__ax["-"].axvline(x=0.5, color="black", linestyle="-", linewidth=5)
+        self.__ax["-"].axis("off")
 
         self.__ax["spectrogram"].set_title("Spectrogram")
         self.__ax["t_proj"].set_title("Time projection")
