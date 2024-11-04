@@ -6,37 +6,20 @@
 
 ## Installation
 
-<!-- ```bash
-sudo apt install python3 -y
-sudo apt install python3-full -y
-sudo apt purge python3-matplotlib* -y
-sudo apt purge python3-pyqt5* -y
-sudo apt purge python3-pandas* -y
-sudo apt purge python3-scipy* -y
-sudo apt purge python3-astropy* -y
-sudo apt purge python3-astroquery* -y
-sudo apt purge python3-pyvisa* -y
-sudo apt purge python3-flask* -y
-sudo apt purge python3-psycopg2* -y
-sudo pip3 uninstall RsInstrument --break-system-packages
-sudo pip3 uninstall pyinstaller --break-system-packages
-sudo pip3 uninstall matplotlib --break-system-packages
-``` -->
-
-<!-- sudo apt install python3-virtualenv -y -->
-<!-- virtualenv venv -->
 
 ```bash
-virtualenv ./venv/bin/activate
+sudo apt install python3-virtualenv -y
+sudo apt install python3-venv -y
+python3 -m venv env
+source ./venv/bin/activate
 pip3 install matplotlib
 pip3 install pyqt5
 pip3 install pandas
 pip3 install scipy
 pip3 install astropy
-pip3 install --update --pre astroquery[all]
+pip3 install -U --pre astroquery[all]
 pip3 install RsInstrument
 pip3 install Flask
-pip3 install psycopg2
 pip3 install pyinstaller
 ```
 
