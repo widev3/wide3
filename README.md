@@ -6,21 +6,22 @@
 
 ## Installation
 
-
 ```bash
 sudo apt install python3-virtualenv -y
 sudo apt install python3-venv -y
 python3 -m venv env
-source ./venv/bin/activate
+source env/bin/activate
 pip3 install matplotlib
 pip3 install pyqt5
 pip3 install pandas
 pip3 install scipy
 pip3 install astropy
-pip3 install -U --pre astroquery[all]
 pip3 install RsInstrument
-pip3 install Flask
 pip3 install pyinstaller
+```
+
+```bash
+rm -rf env include bin lib
 ```
 
 ## Build a standalone executable of tools
@@ -28,25 +29,6 @@ pip3 install pyinstaller
 ```bash
 ./compile
 ```
-
-## Tools structure
-
-Consider the following requirements
-
-1. Every folder is an independent python software
-2. Every software is divided in **3 mandatory** parts
-   1. ```lib```: contains the set of functions, classes, objects and properties needed to manage the software (something like the backend). There is no structure to respect for files and folders inside lib.
-   2. ```view```: contains the set of functions, classes, objects and properties needed to show views of that software (something like the frontend)
-      1. Every view folder has a ```view.py``` file
-      2. Every ```view.py``` file has a public ```def view(args)``` function which is called at the beginning
-      3. Every ```view.py``` file has a ```main``` function in order to test the independence of each software:
-
-            ```python
-            if __name__ == "__main__":
-                view(Config())
-            ```
-
-   3. ```config.json``` file with some configurations about the software like its actual name ```"name": "Actual name"``` (mandatory) or the icon to use ```"icon": "icon_for_the_mandatory_software.png"``` (not mandatory)
 
 ## Usefull links
 

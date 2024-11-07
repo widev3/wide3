@@ -9,18 +9,18 @@ from BasicView import BasicView, cm, RadioButtons, Button, Slider, plt
 
 
 class View(object):
-    def __init__(self, config):
-        if not config:
-            config = {}
-            config["package"] = __package__
-            config["name"] = utils.package_to_name(__package__)
-            config["bands"] = {}
-            config["bands"]["A"] = [10, 12]
-            config["separator"] = ","
-            config["gamma"] = 0.3
-            config["cmap"] = "magma"
+    def __init__(self, conf):
+        if not conf:
+            conf = {}
+            conf["package"] = __package__
+            conf["name"] = utils.package_to_name(__package__)
+            conf["bands"] = {}
+            conf["bands"]["A"] = [10, 12]
+            conf["separator"] = ","
+            conf["gamma"] = 0.3
+            conf["cmap"] = "magma"
 
-        self.__config = config
+        self.__config = conf
         self.__ax = {}
         self.__im = {}
 
@@ -153,8 +153,8 @@ class View(object):
         mosaic = BasicView.generate_array(50, 50)
         buttons = [
             "radio_camera",
+            "receiver",
             "mount_control",
-            None,
             None,
             None,
             None,
@@ -181,20 +181,8 @@ class View(object):
         BasicView.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
 
         self.__fig, self.__ax = BasicView.basic_view(self.__config["name"], mosaic)
-
-        self.__radio_camera_button = Button(
-            ax=self.__ax["radio_camera"], label="Radio camera"
-        )
-        self.__radio_camera_button.on_clicked(lambda event: None)
-        self.__radio_camera_button.color = "gray"
-        self.__radio_camera_button.hovercolor = self.__radio_camera_button.color
-
-        self.__mount_control_button = Button(
-            ax=self.__ax["mount_control"], label="Mount control"
-        )
-        self.__mount_control_button.on_clicked(
-            lambda event: Viewer.Viewer().instance()._mount_control.view()
-        )
+        
+        BasicView.buttons_frame(self, self.__ax, self.__config["package"])
 
         self.__ax["-"].axvline(x=0.5, color="black", linestyle="-", linewidth=5)
         self.__ax["-"].axis("off")

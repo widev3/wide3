@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use("qtagg")
 import matplotlib.pyplot as plt
 import matplotlib.text
+import Viewer
 
 from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
 from matplotlib.animation import FuncAnimation
@@ -61,6 +62,25 @@ class BasicView:
         )
         ax.xaxis.set_minor_locator(AutoMinorLocator(5))
         ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+
+    @staticmethod
+    def buttons_frame(s, ax, current_package):
+        s.__buttons_frame = {}
+        for package, view in Viewer.Viewer().instance().packages.items():
+            s.__buttons_frame[package] = Button(
+                ax=ax[view._View__config["package"]], label=view._View__config["name"]
+            )
+            if view._View__config["package"] == current_package:
+                s.__buttons_frame[package].on_clicked(lambda event: None)
+                s.__buttons_frame[package].color = "gray"
+                s.__buttons_frame[package].hovercolor = "gray"
+            else:
+                s.__buttons_frame[package].on_clicked(
+                    lambda event: Viewer.Viewer()
+                    .instance()
+                    .packages[view._View__config["package"]]
+                    .view()
+                )
 
     @staticmethod
     def basic_view(title, mosaic, unwanted_buttons=[]):
@@ -291,7 +311,7 @@ class BasicView:
         dialog.show()
         dialog.exec_()
         return dialog.selected_items, dialog.selected_indices
-    
+
     @staticmethod
     def generate_array(x, y, element=None):
         return [[element for _ in range(x)] for _ in range(y)]
