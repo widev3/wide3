@@ -1,7 +1,6 @@
 import os
 import utils
 import numpy as np
-import Viewer
 from radio_camera.Lims import Lims
 from radio_camera.Cursor import Cursor
 from radio_camera.lib.spectrogram import reader
@@ -9,13 +8,12 @@ from BasicView import BasicView, cm, RadioButtons, Button, Slider, plt
 
 
 class View(object):
-    def __init__(self, conf):
+    def __init__(self, conf=None):
         if not conf:
             conf = {}
             conf["package"] = __package__
             conf["name"] = utils.package_to_name(__package__)
-            conf["bands"] = {}
-            conf["bands"]["A"] = [10, 12]
+            conf["lo"] = [9750, 10270, 15860]
             conf["separator"] = ","
             conf["gamma"] = 0.3
             conf["cmap"] = "magma"
@@ -123,27 +121,28 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         BasicView.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __draw(self, filename=None):
-        if not filename and "filename" in self.__config:
-            if self.__config["filename"]:
-                filename = self.__config["filename"]
-
+    def __draw(self, filename):
         properties = None
         frequencies = None
         spectrogram = None
         if filename and os.path.isfile(filename):
             properties, frequencies, spectrogram = reader(filename, self.__config)
             if properties is None or frequencies is None or spectrogram is None:
-                BasicView.basic_view_show_message(
+                BasicView.show_message(
                     self.__config["name"],
                     f"Current file {filename} is not readable or incorrectly formatted",
                     2,
                 )
 
-        if properties is None or frequencies is None or spectrogram is None:
-            return
-
-        if len(properties) == 0 or len(frequencies) == 0 or len(spectrogram) == 0:
+        if (properties is None or frequencies is None or spectrogram is None) or (
+            len(properties) == 0 or len(frequencies) == 0 or len(spectrogram) == 0
+        ):
+            BasicView.cla_leaving_attributes(self.__ax["spectrogram"])
+            BasicView.cla_leaving_attributes(self.__ax["t_proj"])
+            BasicView.cla_leaving_attributes(self.__ax["colorbar"])
+            BasicView.cla_leaving_attributes(self.__ax["f_proj"])
+            BasicView.cla_leaving_attributes(self.__ax["f_power"])
+            BasicView.cla_leaving_attributes(self.__ax["t_power"])
             return
 
         self.__populate(properties, frequencies, spectrogram)
@@ -153,7 +152,6 @@ class View(object):
         mosaic = BasicView.generate_array(50, 50)
         buttons = [
             "radio_camera",
-            "receiver",
             "mount_control",
             None,
             None,
@@ -161,7 +159,7 @@ class View(object):
             "-",
             None,
             None,
-            None,
+            "clear",
             "load_csv",
         ]
         BasicView.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
@@ -173,7 +171,7 @@ class View(object):
         # second column
         BasicView.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
         BasicView.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
-        BasicView.fill_with_string(mosaic, (25, 30), (38, 45), "bands", (1, 5))
+        BasicView.fill_with_string(mosaic, (25, 30), (38, 45), "lo", (1, 5))
         BasicView.fill_with_string(mosaic, (25, 45), (38, 50), "gamma_slider", (3, 2))
 
         # third column
@@ -181,7 +179,7 @@ class View(object):
         BasicView.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
 
         self.__fig, self.__ax = BasicView.basic_view(self.__config["name"], mosaic)
-        
+
         BasicView.buttons_frame(self, self.__ax, self.__config["package"])
 
         self.__ax["-"].axvline(x=0.5, color="black", linestyle="-", linewidth=5)
@@ -193,25 +191,27 @@ class View(object):
         self.__ax["f_power"].set_title("Frequency power")
         self.__ax["t_power"].set_title("Time power")
 
-        self.__ax["bands"].set_title("Band [MHz-MHz]")
-        self.__bands_radiobuttons = RadioButtons(
-            ax=self.__ax["bands"],
-            radio_props={"s": [64] * len(self.__config["bands"])},
-            labels=list(
-                map(
-                    lambda x: f"{x} {self.__config["bands"][x]}",
-                    self.__config["bands"].keys(),
-                )
-            ),
+        self.__ax["lo"].set_title("LO freq [MHz]")
+        self.__lo_radiobuttons = RadioButtons(
+            ax=self.__ax["lo"],
+            radio_props={"s": [64] * len(self.__config["lo"])},
+            labels=self.__config["lo"],
         )
+
+        self.__clear_button = Button(ax=self.__ax["clear"], label="Clear")
+        self.__clear_button.on_clicked(lambda x: self.__draw(filename=None))
 
         self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
         self.__load_csv_button.on_clicked(
             lambda x: self.__draw(
-                BasicView.basic_view_file_dialog(self.__config["name"], "Load CSV")
+                BasicView.file_dialog(self.__config["name"], "Load CSV")
             )
         )
 
-        self.__draw(filename)
+        self.__draw(
+            self.__config["filename"]
+            if "filename" in self.__config and self.__config["filename"]
+            else None
+        )
 
         BasicView.show()

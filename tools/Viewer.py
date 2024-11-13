@@ -1,5 +1,5 @@
-import radio_camera.View
-import mount_control.View
+import radio_camera.View as rcv
+import mount_control.View as mcv
 
 
 class Viewer:
@@ -13,16 +13,15 @@ class Viewer:
     def __init__(self, conf=None):
         if not hasattr(self, "initialized"):
             self.packages = {}
-            pack_conf = list(filter(lambda x: x["package"] == "radio_camera", conf))
-            self.packages["radio_camera"] = radio_camera.View.View(
-                pack_conf[0] if len(pack_conf) > 0 else None
-            )
-
-            pack_conf = list(filter(lambda x: x["package"] == "mount_control", conf))
-            self.packages["mount_control"] = mount_control.View.View(
-                pack_conf[0] if len(pack_conf) > 0 else None
-            )
             self.initialized = True
+
+            name = "radio_camera"
+            pack = list(filter(lambda x: x["package"] == name, conf))
+            self.packages[name] = rcv.View(pack[0] if len(pack) > 0 else None)
+
+            name = "mount_control"
+            pack = list(filter(lambda x: x["package"] == name, conf))
+            self.packages[name] = mcv.View(pack[0] if len(pack) > 0 else None)
 
     def instance(self):
         return self._instance

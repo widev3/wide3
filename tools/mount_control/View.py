@@ -2,7 +2,6 @@ import astropy.units as u
 import random
 import traceback
 import utils
-import Viewer
 from BasicView import BasicView, FuncAnimation, Line2D, Button
 from astropy.coordinates import EarthLocation
 from mount_control.lib.CoordinateConverter import CatalogCoordinate
@@ -10,7 +9,7 @@ from astropy.coordinates import SkyCoord
 
 
 class View(object):
-    def __init__(self, conf):
+    def __init__(self, conf=None):
         if not conf:
             conf = {}
             conf["package"] = __package__
@@ -53,13 +52,13 @@ class View(object):
         vizier = astroquery.vizier.Vizier(columns=["*", "+_r"], row_limit=-1)
         catalog_list = vizier.find_catalogs(catalog_name)
         if len(catalog_list) == 1 and list(catalog_list.keys())[0] == None:
-            BasicView.basic_view_show_message(
+            BasicView.show_message(
                 self.__config["name"], f"No catalog called {catalog_name}", 2
             )
             return [], []
 
         catalogs = vizier.get_catalogs(list(catalog_list.keys()))
-        catalog, index = BasicView.basic_view_checkbox_list(
+        catalog, index = BasicView.checkbox_list(
             self.__config["name"],
             "Select a catalog",
             list(
@@ -69,10 +68,10 @@ class View(object):
         )
 
         catalog = catalogs[index]
-        ra_field, index = BasicView.basic_view_checkbox_list(
+        ra_field, index = BasicView.checkbox_list(
             self.__config["name"], "Select RA field", catalog.columns.keys(), True
         )
-        dec_field, index = BasicView.basic_view_checkbox_list(
+        dec_field, index = BasicView.checkbox_list(
             self.__config["name"], "Select DEC field", catalog.columns.keys(), True
         )
 
@@ -136,7 +135,7 @@ class View(object):
         if isinstance(event, str):
             catalog_name = event
         elif event:
-            catalog_name = BasicView.basic_view_text_input(
+            catalog_name = BasicView.text_input(
                 self.__config["name"], "Catalog name"
             )
 
@@ -184,7 +183,7 @@ class View(object):
 
                 self.__setup_observers()
             except:
-                BasicView.basic_view_show_message(
+                BasicView.show_message(
                     self.__config["name"],
                     f"Error during the loading of catalog\n{traceback.format_exc()}",
                     3,

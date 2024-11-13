@@ -35,14 +35,14 @@ def time_slice(spectrum_values, cent=None, span=None, start=None, stop=None):
 def start():
     instr_list = RsInstrument.list_resources("?*")
     if instr_list:
-        device, device_index = BasicView.basic_view_checkbox_list(
+        device, device_index = BasicView.checkbox_list(
             "Radio camera", "Select a backend device", instr_list, single=True
         )
 
         try:
             instr = RsInstrument(device, id_query=True, reset=True)
         except:
-            BasicView.basic_view_show_message(
+            BasicView.show_message(
                 "Radio camera",
                 f"Cannot connect to backend device {device}:\n{traceback.format_exc()}",
                 3,

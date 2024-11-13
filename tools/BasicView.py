@@ -78,7 +78,7 @@ class BasicView:
                 s.__buttons_frame[package].on_clicked(
                     lambda event: Viewer.Viewer()
                     .instance()
-                    .packages[view._View__config["package"]]
+                    .packages[event.inaxes._label]
                     .view()
                 )
 
@@ -132,7 +132,7 @@ class BasicView:
         plt.connect(string, event)
 
     @staticmethod
-    def basic_view_show_message(title, message, icon):
+    def show_message(title, message, icon):
         """
         Instantiate a popup to show a message
 
@@ -160,9 +160,7 @@ class BasicView:
         window = MainWindow()
 
     @staticmethod
-    def basic_view_file_dialog(
-        title, message, filter="All Files (*);;csv Files (*.csv)"
-    ):
+    def file_dialog(title, message, filter="All Files (*);;csv Files (*.csv)"):
         class FileDialogView(QWidget):
             def __init__(self, title, message, filter):
                 super().__init__()
@@ -200,7 +198,7 @@ class BasicView:
         return dialog.selected_file
 
     @staticmethod
-    def basic_view_text_input(title, message):
+    def text_input(title, message):
         class TextInputDialogView(QDialog):
             def __init__(self, title, message):
                 super().__init__()
@@ -242,7 +240,7 @@ class BasicView:
         return input_text
 
     @staticmethod
-    def basic_view_checkbox_list(title, message, items, single=False):
+    def checkbox_list(title, message, items, single=False):
         class CheckBoxListDialog(QDialog):
             def __init__(self, title, message, items, single):
                 super().__init__()
@@ -343,6 +341,16 @@ class BasicView:
                 index = int((y - start_y) / int((end_y - start_y + 1) / len(fill)))
                 if len(fill) > index:
                     array[y][x] = fill[index]
+
+    @staticmethod
+    def cla_leaving_attributes(axes):
+        title = axes.get_title()
+        x_label = axes.get_xlabel()
+        y_label = axes.get_ylabel()
+        axes.cla()
+        axes.set_title(title)
+        axes.set_xlabel(x_label)
+        axes.set_ylabel(y_label)
 
 
 BasicView()
