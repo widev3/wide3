@@ -92,7 +92,7 @@ class Cursor:
             BasicView.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
             BasicView.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
 
-            self.__fig, self.inner_ax = BasicView.basic_view(
+            self.__fig, self.inner_ax = BasicView.create(
                 self.ax[target].get_title(), mosaic
             )
 

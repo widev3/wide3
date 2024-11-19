@@ -135,9 +135,7 @@ class View(object):
         if isinstance(event, str):
             catalog_name = event
         elif event:
-            catalog_name = BasicView.text_input(
-                self.__config["name"], "Catalog name"
-            )
+            catalog_name = BasicView.text_input(self.__config["name"], "Catalog name")
 
         if clear_all:
             self.__ax["sky_map"].cla()
@@ -205,7 +203,7 @@ class View(object):
             None,
             None,
             None,
-            "-",
+            None,
             "load",
             "clear_and_load",
             "clear",
@@ -215,12 +213,9 @@ class View(object):
 
         BasicView.fill_with_string(mosaic, (1, 2), (50, 50), "sky_map", (1, 2))
 
-        self.__fig, self.__ax = BasicView.basic_view(self.__config["name"], mosaic)
+        self.__fig, self.__ax = BasicView.create(self.__config["name"], mosaic)
 
         BasicView.buttons_frame(self, self.__ax, self.__config["package"])
-
-        self.__ax["-"].axvline(x=0.5, color="black", linestyle="-", linewidth=5)
-        self.__ax["-"].axis("off")
 
         self.__load_button = Button(self.__ax["load"], "Load")
         self.__load_button.on_clicked(

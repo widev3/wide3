@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.text
 import Viewer
 
+from PyQt5 import QtGui
 from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
 from matplotlib.animation import FuncAnimation
 from matplotlib.lines import Line2D
@@ -83,7 +84,7 @@ class BasicView:
                 )
 
     @staticmethod
-    def basic_view(title, mosaic, unwanted_buttons=[]):
+    def create(title, mosaic, unwanted_buttons=[]):
         plt.ion()
         fig, ax = plt.subplot_mosaic(
             mosaic=mosaic,
@@ -101,23 +102,37 @@ class BasicView:
             hspace=1,
         )
 
-        from PyQt5 import QtGui
-
-        fig.canvas.manager.set_window_title(title=title)
+        BasicView.set_title(fig=fig, title=title)
         mng = plt.get_current_fig_manager()
-        mng.window.setWindowIcon(
-            QtGui.QIcon(
-                "settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
-            )
-        )
-        mng.window.setWindowTitle(title)
         mng.resize(1500, 800)
+
+        # mng.window.setWindowIcon(
+        #     QtGui.QIcon(
+        #         "settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
+        #     )
+        # )
 
         for x in mng.toolbar.actions():
             if x.text() in unwanted_buttons:
                 mng.toolbar.removeAction(x)
 
         return fig, ax
+
+    @staticmethod
+    def set_title(fig, title, subtitle=None):
+        if not title:
+            title = fig.canvas.manager.get_window_title()
+
+        if not title and not subtitle:
+            return
+
+        complete_title = title if title else ""
+        if complete_title and subtitle:
+            complete_title += "-"
+
+        fig.canvas.manager.set_window_title(title=title)
+        mng = plt.get_current_fig_manager()
+        mng.window.setWindowTitle(title)
 
     @staticmethod
     def show():
@@ -160,7 +175,7 @@ class BasicView:
         window = MainWindow()
 
     @staticmethod
-    def file_dialog(title, message, filter="All Files (*);;csv Files (*.csv)"):
+    def file_dialog(title, message, filter):
         class FileDialogView(QWidget):
             def __init__(self, title, message, filter):
                 super().__init__()

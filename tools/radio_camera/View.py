@@ -134,6 +134,8 @@ class View(object):
                     2,
                 )
 
+        BasicView.set_title(fig=self.__fig, subtitle=filename)
+
         if (properties is None or frequencies is None or spectrogram is None) or (
             len(properties) == 0 or len(frequencies) == 0 or len(spectrogram) == 0
         ):
@@ -148,7 +150,7 @@ class View(object):
         self.__populate(properties, frequencies, spectrogram)
         BasicView.refresh()
 
-    def view(self, filename=None):
+    def view(self):
         mosaic = BasicView.generate_array(50, 50)
         buttons = [
             "radio_camera",
@@ -156,7 +158,7 @@ class View(object):
             None,
             None,
             None,
-            "-",
+            None,
             None,
             None,
             "clear",
@@ -166,24 +168,21 @@ class View(object):
 
         # first column
         BasicView.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (1, 2))
-        BasicView.fill_with_string(mosaic, (1, 30), (25, 50), "t_proj", (1, 5))
+        BasicView.fill_with_string(mosaic, (1, 30), (25, 49), "t_proj", (1, 5))
 
         # second column
         BasicView.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
         BasicView.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
         BasicView.fill_with_string(mosaic, (25, 30), (38, 45), "lo", (1, 5))
-        BasicView.fill_with_string(mosaic, (25, 45), (38, 50), "gamma_slider", (3, 2))
+        BasicView.fill_with_string(mosaic, (25, 45), (38, 49), "gamma_slider", (3, 2))
 
         # third column
         BasicView.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
-        BasicView.fill_with_string(mosaic, (38, 27), (50, 50), "t_power", (3, 5))
+        BasicView.fill_with_string(mosaic, (38, 27), (50, 49), "t_power", (3, 5))
 
-        self.__fig, self.__ax = BasicView.basic_view(self.__config["name"], mosaic)
+        self.__fig, self.__ax = BasicView.create(self.__config["name"], mosaic)
 
         BasicView.buttons_frame(self, self.__ax, self.__config["package"])
-
-        self.__ax["-"].axvline(x=0.5, color="black", linestyle="-", linewidth=5)
-        self.__ax["-"].axis("off")
 
         self.__ax["spectrogram"].set_title("Spectrogram")
         self.__ax["t_proj"].set_title("Time projection")
@@ -204,7 +203,11 @@ class View(object):
         self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
         self.__load_csv_button.on_clicked(
             lambda x: self.__draw(
-                BasicView.file_dialog(self.__config["name"], "Load CSV")
+                BasicView.file_dialog(
+                    title=self.__config["name"],
+                    message="Load CSV",
+                    filter="csv Files (*.csv)",
+                )
             )
         )
 
