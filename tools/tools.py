@@ -14,12 +14,11 @@ if args.conf:
     if os.path.isfile(args.conf):
         config_file = args.conf
 elif not os.path.isfile(config_file):
-    config_file = ""
+    raise Exception(f"Please, provide a valid configuration file {config_file}")
 
 conf = []
-if config_file:
-    with open(config_file) as f:
-        conf = json.load(f)
+with open(config_file) as f:
+    conf = json.load(f)
 
 viewer = Viewer.Viewer(conf)
 viewer.instance().packages["radio_camera"].view()

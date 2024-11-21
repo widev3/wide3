@@ -69,9 +69,9 @@ class BasicView:
         s.__buttons_frame = {}
         for package, view in Viewer.Viewer().instance().packages.items():
             s.__buttons_frame[package] = Button(
-                ax=ax[view._View__config["package"]], label=view._View__config["name"]
+                ax=ax[view._View__conf["package"]], label=view._View__conf["name"]
             )
-            if view._View__config["package"] == current_package:
+            if view._View__conf["package"] == current_package:
                 s.__buttons_frame[package].on_clicked(lambda event: None)
                 s.__buttons_frame[package].color = "gray"
                 s.__buttons_frame[package].hovercolor = "gray"
@@ -119,17 +119,14 @@ class BasicView:
         return fig, ax
 
     @staticmethod
-    def set_title(fig, title, subtitle=None):
+    def set_title(fig, title=None, subtitle=None):
         if not title:
-            title = fig.canvas.manager.get_window_title()
+            title = fig.canvas.manager.get_window_title().split(" - ", 1)[0]
 
         if not title and not subtitle:
             return
 
-        complete_title = title if title else ""
-        if complete_title and subtitle:
-            complete_title += "-"
-
+        title = title + (" - " + subtitle if subtitle else "")
         fig.canvas.manager.set_window_title(title=title)
         mng = plt.get_current_fig_manager()
         mng.window.setWindowTitle(title)

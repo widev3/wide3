@@ -7,9 +7,18 @@
         "gamma": 0.3,
         "cmap": "magma",
         "lo": [
-            9750,
-            10270,
-            15860
+            {
+                "value": 5150,
+                "band": "C"
+            },
+            {
+                "value": 9750,
+                "band": "Ku Tone OFF"
+            },
+            {
+                "value": 10600,
+                "band": "Ku Tone ON"
+            }
         ]
     },
     {

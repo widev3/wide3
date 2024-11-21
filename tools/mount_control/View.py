@@ -1,7 +1,6 @@
 import astropy.units as u
 import random
 import traceback
-import utils
 from BasicView import BasicView, FuncAnimation, Line2D, Button
 from astropy.coordinates import EarthLocation
 from mount_control.lib.CoordinateConverter import CatalogCoordinate
@@ -9,14 +8,8 @@ from astropy.coordinates import SkyCoord
 
 
 class View(object):
-    def __init__(self, conf=None):
-        if not conf:
-            conf = {}
-            conf["package"] = __package__
-            conf["name"] = utils.package_to_name(__package__)
-            conf["catalog_name"] = ""
-
-        self.__config = conf
+    def __init__(self, conf):
+        self.__conf = conf
         self.__ax = {}
         self.__im = {}
         self.loaded_catalogs = {}
@@ -53,13 +46,13 @@ class View(object):
         catalog_list = vizier.find_catalogs(catalog_name)
         if len(catalog_list) == 1 and list(catalog_list.keys())[0] == None:
             BasicView.show_message(
-                self.__config["name"], f"No catalog called {catalog_name}", 2
+                self.__conf["name"], f"No catalog called {catalog_name}", 2
             )
             return [], []
 
         catalogs = vizier.get_catalogs(list(catalog_list.keys()))
         catalog, index = BasicView.checkbox_list(
-            self.__config["name"],
+            self.__conf["name"],
             "Select a catalog",
             list(
                 map(lambda x: f"{x} ({str(len(catalogs[x]))} records)", catalogs.keys())
@@ -69,10 +62,10 @@ class View(object):
 
         catalog = catalogs[index]
         ra_field, index = BasicView.checkbox_list(
-            self.__config["name"], "Select RA field", catalog.columns.keys(), True
+            self.__conf["name"], "Select RA field", catalog.columns.keys(), True
         )
         dec_field, index = BasicView.checkbox_list(
-            self.__config["name"], "Select DEC field", catalog.columns.keys(), True
+            self.__conf["name"], "Select DEC field", catalog.columns.keys(), True
         )
 
         return self.__coordinate_converter.extract_coordinate(
@@ -135,7 +128,7 @@ class View(object):
         if isinstance(event, str):
             catalog_name = event
         elif event:
-            catalog_name = BasicView.text_input(self.__config["name"], "Catalog name")
+            catalog_name = BasicView.text_input(self.__conf["name"], "Catalog name")
 
         if clear_all:
             self.__ax["sky_map"].cla()
@@ -182,7 +175,7 @@ class View(object):
                 self.__setup_observers()
             except:
                 BasicView.show_message(
-                    self.__config["name"],
+                    self.__conf["name"],
                     f"Error during the loading of catalog\n{traceback.format_exc()}",
                     3,
                 )
@@ -213,9 +206,9 @@ class View(object):
 
         BasicView.fill_with_string(mosaic, (1, 2), (50, 50), "sky_map", (1, 2))
 
-        self.__fig, self.__ax = BasicView.create(self.__config["name"], mosaic)
+        self.__fig, self.__ax = BasicView.create(self.__conf["name"], mosaic)
 
-        BasicView.buttons_frame(self, self.__ax, self.__config["package"])
+        BasicView.buttons_frame(self, self.__ax, self.__conf["package"])
 
         self.__load_button = Button(self.__ax["load"], "Load")
         self.__load_button.on_clicked(
@@ -247,6 +240,6 @@ class View(object):
         BasicView.set_grid(self.__ax["sky_map"])
 
         self.__setup_observers()
-        self.__setup_sky_map(self.__config["catalog_name"])
+        self.__setup_sky_map(self.__conf["catalog_name"])
 
         BasicView.show()

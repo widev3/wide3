@@ -1,24 +1,14 @@
 import os
-import utils
 import numpy as np
 from radio_camera.Lims import Lims
 from radio_camera.Cursor import Cursor
 from radio_camera.lib.spectrogram import reader
-from BasicView import BasicView, cm, RadioButtons, Button, Slider, plt
+from BasicView import BasicView, cm, RadioButtons, Button, Slider
 
 
 class View(object):
-    def __init__(self, conf=None):
-        if not conf:
-            conf = {}
-            conf["package"] = __package__
-            conf["name"] = utils.package_to_name(__package__)
-            conf["lo"] = [9750, 10270, 15860]
-            conf["separator"] = ","
-            conf["gamma"] = 0.3
-            conf["cmap"] = "magma"
-
-        self.__config = conf
+    def __init__(self, conf):
+        self.__conf = conf
         self.__ax = {}
         self.__im = {}
 
@@ -35,10 +25,8 @@ class View(object):
 
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
             X=spectrogram["magnitude"],
-            norm=cm.colors.PowerNorm(
-                gamma=self.__config["gamma"], vmin=vmin, vmax=vmax
-            ),
-            cmap=self.__config["cmap"],
+            norm=cm.colors.PowerNorm(gamma=self.__conf["gamma"], vmin=vmin, vmax=vmax),
+            cmap=self.__conf["cmap"],
             aspect="auto",
             origin="lower",
             extent=[
@@ -126,28 +114,36 @@ class View(object):
         frequencies = None
         spectrogram = None
         if filename and os.path.isfile(filename):
-            properties, frequencies, spectrogram = reader(filename, self.__config)
+            properties, frequencies, spectrogram = reader(filename, self.__conf)
             if properties is None or frequencies is None or spectrogram is None:
                 BasicView.show_message(
-                    self.__config["name"],
+                    self.__conf["name"],
                     f"Current file {filename} is not readable or incorrectly formatted",
                     2,
                 )
 
-        BasicView.set_title(fig=self.__fig, subtitle=filename)
+        BasicView.set_title(
+            fig=self.__fig,
+            subtitle=os.path.basename(filename) if filename else filename,
+        )
 
-        if (properties is None or frequencies is None or spectrogram is None) or (
-            len(properties) == 0 or len(frequencies) == 0 or len(spectrogram) == 0
+        BasicView.cla_leaving_attributes(self.__ax["spectrogram"])
+        BasicView.cla_leaving_attributes(self.__ax["t_proj"])
+        BasicView.cla_leaving_attributes(self.__ax["colorbar"])
+        BasicView.cla_leaving_attributes(self.__ax["f_proj"])
+        BasicView.cla_leaving_attributes(self.__ax["f_power"])
+        BasicView.cla_leaving_attributes(self.__ax["t_power"])
+
+        if not (
+            properties is None
+            or frequencies is None
+            or spectrogram is None
+            or len(properties) == 0
+            or len(frequencies) == 0
+            or len(spectrogram) == 0
         ):
-            BasicView.cla_leaving_attributes(self.__ax["spectrogram"])
-            BasicView.cla_leaving_attributes(self.__ax["t_proj"])
-            BasicView.cla_leaving_attributes(self.__ax["colorbar"])
-            BasicView.cla_leaving_attributes(self.__ax["f_proj"])
-            BasicView.cla_leaving_attributes(self.__ax["f_power"])
-            BasicView.cla_leaving_attributes(self.__ax["t_power"])
-            return
+            self.__populate(properties, frequencies, spectrogram)
 
-        self.__populate(properties, frequencies, spectrogram)
         BasicView.refresh()
 
     def view(self):
@@ -180,40 +176,50 @@ class View(object):
         BasicView.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
         BasicView.fill_with_string(mosaic, (38, 27), (50, 49), "t_power", (3, 5))
 
-        self.__fig, self.__ax = BasicView.create(self.__config["name"], mosaic)
+        self.__fig, self.__ax = BasicView.create(self.__conf["name"], mosaic)
 
-        BasicView.buttons_frame(self, self.__ax, self.__config["package"])
+        BasicView.buttons_frame(self, self.__ax, self.__conf["package"])
 
         self.__ax["spectrogram"].set_title("Spectrogram")
         self.__ax["t_proj"].set_title("Time projection")
         self.__ax["f_proj"].set_title("Frequency projection")
         self.__ax["f_power"].set_title("Frequency power")
         self.__ax["t_power"].set_title("Time power")
-
         self.__ax["lo"].set_title("LO freq [MHz]")
+
+        def switch_lo(freq):
+            print(freq)
+
         self.__lo_radiobuttons = RadioButtons(
             ax=self.__ax["lo"],
-            radio_props={"s": [64] * len(self.__config["lo"])},
-            labels=self.__config["lo"],
+            radio_props={"s": [64] * len(self.__conf["lo"])},
+            labels=list(
+                map(
+                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
+                    self.__conf["lo"],
+                )
+            ),
         )
+        self.__lo_radiobuttons.on_clicked(lambda x: switch_lo(float(x.split(" ")[0])))
 
         self.__clear_button = Button(ax=self.__ax["clear"], label="Clear")
         self.__clear_button.on_clicked(lambda x: self.__draw(filename=None))
 
-        self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
-        self.__load_csv_button.on_clicked(
-            lambda x: self.__draw(
-                BasicView.file_dialog(
-                    title=self.__config["name"],
-                    message="Load CSV",
-                    filter="csv Files (*.csv)",
-                )
+        def load_csv():
+            file = BasicView.file_dialog(
+                title=self.__conf["name"],
+                message="Load CSV",
+                filter="csv Files (*.csv)",
             )
-        )
+            if file:
+                self.__draw(filename=file)
+
+        self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
+        self.__load_csv_button.on_clicked(lambda x: load_csv())
 
         self.__draw(
-            self.__config["filename"]
-            if "filename" in self.__config and self.__config["filename"]
+            self.__conf["filename"]
+            if "filename" in self.__conf and self.__conf["filename"]
             else None
         )
 
