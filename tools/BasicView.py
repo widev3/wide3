@@ -7,6 +7,7 @@ import matplotlib.text
 import Viewer
 
 from PyQt5 import QtGui
+from PyQt5.QtCore import Qt
 from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
 from matplotlib.animation import FuncAnimation
 from matplotlib.lines import Line2D
@@ -30,24 +31,25 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
     QCheckBox,
     QRadioButton,
+    QMainWindow,
 )
 
 
 class BasicView:
-    _instance = None
+    # _instance = None
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(BasicView, cls).__new__(cls)
-        return cls._instance
+    # def __new__(cls):
+    #     if cls._instance is None:
+    #         cls._instance = super(BasicView, cls).__new__(cls)
+    #     return cls._instance
 
-    def __init__(self, custom_property=None):
-        if not hasattr(self, "initialized"):
-            self.__app = QApplication(sys.argv)
-            self.initialized = True
+    # def __init__(self, custom_property=None):
+    #     if not hasattr(self, "initialized"):
+    #         self.__app = QApplication(sys.argv)
+    #         self.initialized = True
 
-    def exec_(self):
-        return self.__app.exec_()
+    # def exec_(self):
+    #     return self.__app.exec_()
 
     @staticmethod
     def set_grid(ax):
@@ -173,41 +175,46 @@ class BasicView:
 
     @staticmethod
     def file_dialog(title, message, filter):
-        class FileDialogView(QWidget):
-            def __init__(self, title, message, filter):
+        class TextInputDialogView(QDialog):
+            def __init__(self, title, message):
                 super().__init__()
-                self.filter = filter
 
-                self.selected_file = None
                 self.setWindowTitle(title)
                 self.setGeometry(500, 500, 500, 100)
 
-                # layout = QVBoxLayout()
-                # self.button = QPushButton(message, self)
-                # self.button.clicked.connect(self.show_file_dialog)
-                # layout.addWidget(self.button)
+                layout = QVBoxLayout()
+                h_layout = QHBoxLayout()
 
-                # self.setLayout(layout)
+                self.label = QLabel(message, self)
+                h_layout.addWidget(self.label)
 
-                self.show_file_dialog()
+                self.text_input = QLineEdit(self)
+                h_layout.addWidget(self.text_input)
 
-            def show_file_dialog(self):
-                options = QFileDialog.Options()
-                file_name, _ = QFileDialog.getOpenFileName(
-                    self,
-                    "Open File",
-                    "",
-                    self.filter,
-                    options=options,
-                )
+                layout.addLayout(h_layout)
 
-                self.selected_file = file_name
-                self.close()
+                self.ok_button = QPushButton("OK", self)
+                self.ok_button.clicked.connect(self.on_ok_clicked)
+                layout.addWidget(self.ok_button)
 
-        dialog = FileDialogView(title, message, filter)
+                self.setLayout(layout)
+
+                layout.setSpacing(10)
+                layout.addStretch()
+
+            def on_ok_clicked(self):
+                self.entered_text = self.text_input.text()
+                self.accept()
+
+            def get_text(self):
+                if self.exec_() == QDialog.Accepted:
+                    return self.entered_text
+                return None
+
+        dialog = TextInputDialogView(title, message)
         dialog.show()
-        # BasicView().exec_()
-        return dialog.selected_file
+        input_text = dialog.get_text()
+        return input_text
 
     @staticmethod
     def text_input(title, message):
@@ -248,6 +255,7 @@ class BasicView:
                 return None
 
         dialog = TextInputDialogView(title, message)
+        dialog.show()
         input_text = dialog.get_text()
         return input_text
 

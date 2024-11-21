@@ -3,5 +3,5 @@
 *.vs
 *build/
 *dist/
-tools/tools.spec
+*.spec
 *env/

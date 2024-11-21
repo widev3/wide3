@@ -16,24 +16,58 @@ class View(object):
         im.set_norm(cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
         self.__fig.canvas.draw_idle()
 
-    def __populate(self, properties=None, frequencies=None, spectrogram=None):
-        vmax = np.max(spectrogram["magnitude"])
-        vmin = np.min(spectrogram["magnitude"])
-        power_spectrogram = np.power(10, (spectrogram["magnitude"] - 30) / 10)
+    def __clear_axes(self):
+        self.__filename = None
+        self.__lo = 0
+        BasicView.cla_leaving_attributes(self.__ax["spectrogram"])
+        BasicView.cla_leaving_attributes(self.__ax["t_proj"])
+        BasicView.cla_leaving_attributes(self.__ax["colorbar"])
+        BasicView.cla_leaving_attributes(self.__ax["f_proj"])
+        BasicView.cla_leaving_attributes(self.__ax["lo"])
+        BasicView.cla_leaving_attributes(self.__ax["gamma_slider"])
+        BasicView.cla_leaving_attributes(self.__ax["f_power"])
+        BasicView.cla_leaving_attributes(self.__ax["t_power"])
+        BasicView.set_title(fig=self.__fig, subtitle=None)
+
+    def __populate(self):
+        self.__clear_axes()
+
+        vmax = np.max(self.__spectrogram["magnitude"])
+        vmin = np.min(self.__spectrogram["magnitude"])
+        power_spectrogram = np.power(10, (self.__spectrogram["magnitude"] - 30) / 10)
         t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
         f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
 
+        def switch_lo(freq):
+            self.__lo = freq
+            self.__populate()
+
+        self.__lo_radiobuttons = RadioButtons(
+            ax=self.__ax["lo"],
+            radio_props={"s": [64] * len(self.__conf["lo"])},
+            labels=list(
+                map(
+                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
+                    self.__conf["lo"],
+                )
+            ),
+        )
+        self.__lo_radiobuttons.on_clicked(lambda x: switch_lo(float(x.split(" ")[0])))
+        self.__lo = float(
+            self.__conf["lo"][self.__lo_radiobuttons.index_selected]["value"]
+        )
+
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
-            X=spectrogram["magnitude"],
+            X=self.__spectrogram["magnitude"],
             norm=cm.colors.PowerNorm(gamma=self.__conf["gamma"], vmin=vmin, vmax=vmax),
             cmap=self.__conf["cmap"],
             aspect="auto",
             origin="lower",
             extent=[
-                min(spectrogram["relative_time"]),
-                max(spectrogram["relative_time"]),
-                min(spectrogram["frequency"]) / 1000000,
-                max(spectrogram["frequency"]) / 1000000,
+                self.__lo + min(self.__spectrogram["relative_time"]),
+                self.__lo + max(self.__spectrogram["relative_time"]),
+                self.__lo + min(self.__spectrogram["frequency"]) / 1000000,
+                self.__lo + max(self.__spectrogram["frequency"]) / 1000000,
             ],
         )
         self.__ax["spectrogram"].set_xlim(self.__im["spectrogram"].get_extent()[0:2])
@@ -51,7 +85,7 @@ class View(object):
         (self.__im["t_proj"],) = self.__ax["t_proj"].plot([], [])
         self.__ax["t_proj"].set_xlabel("Relative time from start [ms]")
         self.__ax["t_proj"].set_ylabel(
-            f"Magnitude [{spectrogram["um"]["magnitude"][1]}]"
+            f"Magnitude [{self.__spectrogram["um"]["magnitude"][1]}]"
         )
         self.__ax["t_proj"].set_xlim(self.__ax["spectrogram"].get_xlim()[0:2])
         self.__ax["t_proj"].margins(x=0)
@@ -60,7 +94,7 @@ class View(object):
         (self.__im["f_proj"],) = self.__ax["f_proj"].plot([], [])
         self.__ax["f_proj"].set_xlabel("Frequency [MHz]")
         self.__ax["f_proj"].set_ylabel(
-            f"Magnitude [{spectrogram["um"]["magnitude"][1]}]"
+            f"Magnitude [{self.__spectrogram["um"]["magnitude"][1]}]"
         )
         self.__ax["f_proj"].set_ylim(self.__ax["spectrogram"].get_ylim()[0:2])
         self.__ax["f_proj"].margins(y=0)
@@ -84,8 +118,8 @@ class View(object):
 
         (self.__im["t_power"],) = self.__ax["t_power"].plot(
             np.linspace(
-                min(spectrogram["relative_time"]),
-                max(spectrogram["relative_time"]),
+                self.__im["spectrogram"].get_extent()[0],
+                self.__im["spectrogram"].get_extent()[1],
                 num=len(t_power_spectrogram),
             ),
             t_power_spectrogram,
@@ -96,8 +130,8 @@ class View(object):
 
         (self.__im["f_power"],) = self.__ax["f_power"].plot(
             np.linspace(
-                min(spectrogram["frequency"] / 1000000),
-                max(spectrogram["frequency"] / 1000000),
+                self.__im["spectrogram"].get_extent()[2],
+                self.__im["spectrogram"].get_extent()[3],
                 num=len(f_power_spectrogram),
             ),
             f_power_spectrogram,
@@ -109,40 +143,36 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         BasicView.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __draw(self, filename):
-        properties = None
-        frequencies = None
-        spectrogram = None
-        if filename and os.path.isfile(filename):
-            properties, frequencies, spectrogram = reader(filename, self.__conf)
-            if properties is None or frequencies is None or spectrogram is None:
+    def __load(self, filename):
+        self.__properties = None
+        self.__frequencies = None
+        self.__spectrogram = None
+        if filename:
+            if not os.path.isfile(filename):
                 BasicView.show_message(
                     self.__conf["name"],
                     f"Current file {filename} is not readable or incorrectly formatted",
                     2,
                 )
-
-        BasicView.set_title(
-            fig=self.__fig,
-            subtitle=os.path.basename(filename) if filename else filename,
-        )
-
-        BasicView.cla_leaving_attributes(self.__ax["spectrogram"])
-        BasicView.cla_leaving_attributes(self.__ax["t_proj"])
-        BasicView.cla_leaving_attributes(self.__ax["colorbar"])
-        BasicView.cla_leaving_attributes(self.__ax["f_proj"])
-        BasicView.cla_leaving_attributes(self.__ax["f_power"])
-        BasicView.cla_leaving_attributes(self.__ax["t_power"])
-
-        if not (
-            properties is None
-            or frequencies is None
-            or spectrogram is None
-            or len(properties) == 0
-            or len(frequencies) == 0
-            or len(spectrogram) == 0
-        ):
-            self.__populate(properties, frequencies, spectrogram)
+            else:
+                self.__properties, self.__frequencies, self.__spectrogram = reader(
+                    filename, self.__conf
+                )
+                if (
+                    self.__properties is None
+                    or self.__frequencies is None
+                    or self.__spectrogram is None
+                ):
+                    BasicView.show_message(
+                        self.__conf["name"],
+                        f"Current file {filename} is not readable or incorrectly formatted",
+                        2,
+                    )
+                else:
+                    self.__filename = filename
+                    self.__populate()
+        else:
+            self.__clear_axes()
 
         BasicView.refresh()
 
@@ -187,37 +217,22 @@ class View(object):
         self.__ax["t_power"].set_title("Time power")
         self.__ax["lo"].set_title("LO freq [MHz]")
 
-        def switch_lo(freq):
-            print(freq)
-
-        self.__lo_radiobuttons = RadioButtons(
-            ax=self.__ax["lo"],
-            radio_props={"s": [64] * len(self.__conf["lo"])},
-            labels=list(
-                map(
-                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
-                    self.__conf["lo"],
-                )
-            ),
-        )
-        self.__lo_radiobuttons.on_clicked(lambda x: switch_lo(float(x.split(" ")[0])))
-
         self.__clear_button = Button(ax=self.__ax["clear"], label="Clear")
-        self.__clear_button.on_clicked(lambda x: self.__draw(filename=None))
+        self.__clear_button.on_clicked(lambda x: self.__load(filename=None))
 
-        def load_csv():
+        def load():
             file = BasicView.file_dialog(
                 title=self.__conf["name"],
                 message="Load CSV",
                 filter="csv Files (*.csv)",
             )
             if file:
-                self.__draw(filename=file)
+                self.__load(filename=file)
 
         self.__load_csv_button = Button(ax=self.__ax["load_csv"], label="Load CSV")
-        self.__load_csv_button.on_clicked(lambda x: load_csv())
+        self.__load_csv_button.on_clicked(lambda x: load())
 
-        self.__draw(
+        self.__load(
             self.__conf["filename"]
             if "filename" in self.__conf and self.__conf["filename"]
             else None
