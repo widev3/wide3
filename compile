@@ -1,2 +1,2 @@
 rm -rf build dist tools.spec
-python3 -OO -m PyInstaller --clean --onefile --noconsole --noconfirm --icon=tools/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png -F tools/tools.py
+python3 -OO -m PyInstaller --clean --onefile --noconsole --noconfirm --icon=src/icon/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png -F src/main.py
