@@ -1,4 +1,5 @@
-import radio_camera.View as rcv
+import viewer.View as vv
+import controller.View as cv
 import mount_control.View as mcv
 
 
@@ -20,17 +21,25 @@ class Viewer:
         if not hasattr(self, "initialized"):
             if not conf:
                 raise Exception("Cannot instance Viewer without a configuration file")
-            
+
             self.packages = {}
             self.initialized = True
 
-            name = "radio_camera"
+            name = "viewer"
             pack = list(filter(lambda x: x["package"] == name, conf))
             if len(pack) == 0:
                 raise Exception(f"No configurations for package {name}")
             if len(pack) > 1:
                 raise Exception(f"More than one configuration for {name}")
-            self.packages[name] = rcv.View(pack[0])
+            self.packages[name] = vv.View(pack[0])
+
+            name = "controller"
+            pack = list(filter(lambda x: x["package"] == name, conf))
+            if len(pack) == 0:
+                raise Exception(f"No configurations for package {name}")
+            if len(pack) > 1:
+                raise Exception(f"More than one configuration for {name}")
+            self.packages[name] = cv.View(pack[0])
 
             name = "mount_control"
             pack = list(filter(lambda x: x["package"] == name, conf))

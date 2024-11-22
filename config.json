@@ -1,9 +1,29 @@
 [
     {
-        "package": "radio_camera",
-        "name": "Radio camera",
+        "package": "viewer",
+        "name": "Viewer",
         "filename": "input/Spectrogram_crop.csv",
         "separator": ",",
+        "gamma": 0.3,
+        "cmap": "magma",
+        "lo": [
+            {
+                "value": 5150,
+                "band": "C"
+            },
+            {
+                "value": 9750,
+                "band": "Ku Tone OFF"
+            },
+            {
+                "value": 10600,
+                "band": "Ku Tone ON"
+            }
+        ]
+    },
+    {
+        "package": "controller",
+        "name": "Controller",
         "gamma": 0.3,
         "cmap": "magma",
         "lo": [

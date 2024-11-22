@@ -36,21 +36,6 @@ from PyQt5.QtWidgets import (
 
 
 class BasicView:
-    # _instance = None
-
-    # def __new__(cls):
-    #     if cls._instance is None:
-    #         cls._instance = super(BasicView, cls).__new__(cls)
-    #     return cls._instance
-
-    # def __init__(self, custom_property=None):
-    #     if not hasattr(self, "initialized"):
-    #         self.__app = QApplication(sys.argv)
-    #         self.initialized = True
-
-    # def exec_(self):
-    #     return self.__app.exec_()
-
     @staticmethod
     def set_grid(ax):
         ax.grid(
@@ -70,20 +55,21 @@ class BasicView:
     def buttons_frame(s, ax, current_package):
         s.__buttons_frame = {}
         for package, view in Viewer.Viewer().instance().packages.items():
-            s.__buttons_frame[package] = Button(
-                ax=ax[view._View__conf["package"]], label=view._View__conf["name"]
-            )
-            if view._View__conf["package"] == current_package:
-                s.__buttons_frame[package].on_clicked(lambda event: None)
-                s.__buttons_frame[package].color = "gray"
-                s.__buttons_frame[package].hovercolor = "gray"
-            else:
-                s.__buttons_frame[package].on_clicked(
-                    lambda event: Viewer.Viewer()
-                    .instance()
-                    .packages[event.inaxes._label]
-                    .view()
+            if view._View__conf["package"] in ax:
+                s.__buttons_frame[package] = Button(
+                    ax=ax[view._View__conf["package"]], label=view._View__conf["name"]
                 )
+                if view._View__conf["package"] == current_package:
+                    s.__buttons_frame[package].on_clicked(lambda event: None)
+                    s.__buttons_frame[package].color = "gray"
+                    s.__buttons_frame[package].hovercolor = "gray"
+                else:
+                    s.__buttons_frame[package].on_clicked(
+                        lambda event: Viewer.Viewer()
+                        .instance()
+                        .packages[event.inaxes._label]
+                        .view()
+                    )
 
     @staticmethod
     def create(title, mosaic, unwanted_buttons=[]):

@@ -26,33 +26,33 @@
     <Compile Include="Config.py" />
     <Compile Include="mount_control\lib\CoordinateConverter.py" />
     <Compile Include="mount_control\View.py" />
-    <Compile Include="radio_camera\Cursor.py" />
-    <Compile Include="radio_camera\lib\frequencies.py" />
-    <Compile Include="radio_camera\lib\properties.py" />
-    <Compile Include="radio_camera\lib\spectrogram.py" />
-    <Compile Include="radio_camera\lib\spectrogram_reader.py" />
-    <Compile Include="radio_camera\Lims.py" />
-    <Compile Include="radio_camera\View.py" />
+    <Compile Include="viewer\Cursor.py" />
+    <Compile Include="viewer\lib\frequencies.py" />
+    <Compile Include="viewer\lib\properties.py" />
+    <Compile Include="viewer\lib\spectrogram.py" />
+    <Compile Include="viewer\lib\spectrogram_reader.py" />
+    <Compile Include="viewer\Lims.py" />
+    <Compile Include="viewer\View.py" />
     <Compile Include="tools.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mount_control\" />
     <Folder Include="mount_control\lib\" />
-    <Folder Include="radio_camera\" />
-    <Folder Include="radio_camera\input\" />
-    <Folder Include="radio_camera\lib\" />
+    <Folder Include="viewer\" />
+    <Folder Include="viewer\input\" />
+    <Folder Include="viewer\lib\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="mount_control\config.json" />
-    <Content Include="radio_camera\config.json" />
-    <Content Include="radio_camera\input\Spectrogram.csv" />
-    <Content Include="radio_camera\input\Spectrogram001.spm" />
-    <Content Include="radio_camera\input\Spectrogram003.spm" />
-    <Content Include="radio_camera\input\Spectrogram2.spm" />
-    <Content Include="radio_camera\input\Spectrogram_crop.csv" />
-    <Content Include="radio_camera\input\Spectrogram_wave.csv" />
-    <Content Include="radio_camera\input\Spectrogram_wave_long.csv" />
-    <Content Include="radio_camera\settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png" />
+    <Content Include="viewer\config.json" />
+    <Content Include="viewer\input\Spectrogram.csv" />
+    <Content Include="viewer\input\Spectrogram001.spm" />
+    <Content Include="viewer\input\Spectrogram003.spm" />
+    <Content Include="viewer\input\Spectrogram2.spm" />
+    <Content Include="viewer\input\Spectrogram_crop.csv" />
+    <Content Include="viewer\input\Spectrogram_wave.csv" />
+    <Content Include="viewer\input\Spectrogram_wave_long.csv" />
+    <Content Include="viewer\settings_input_antenna_32dp_FFFFFF_FILL0_wght400_GRAD0_opsz40.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

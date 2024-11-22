@@ -1,8 +1,8 @@
 import os
 import numpy as np
-from radio_camera.Lims import Lims
-from radio_camera.Cursor import Cursor
-from radio_camera.lib.spectrogram import reader
+from viewer.Lims import Lims
+from viewer.Cursor import Cursor
+from viewer.lib.spectrogram import reader
 from BasicView import BasicView, cm, RadioButtons, Button, Slider
 
 
@@ -179,9 +179,9 @@ class View(object):
     def view(self):
         mosaic = BasicView.generate_array(50, 50)
         buttons = [
-            "radio_camera",
+            "viewer",
+            "controller",
             "mount_control",
-            None,
             None,
             None,
             None,

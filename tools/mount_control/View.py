@@ -190,9 +190,8 @@ class View(object):
     def view(self):
         mosaic = BasicView.generate_array(50, 50)
         buttons = [
-            "radio_camera",
+            "viewer",
             "mount_control",
-            None,
             None,
             None,
             None,

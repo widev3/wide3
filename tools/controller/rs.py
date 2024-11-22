@@ -36,14 +36,14 @@ def start():
     instr_list = RsInstrument.list_resources("?*")
     if instr_list:
         device, device_index = BasicView.checkbox_list(
-            "Radio camera", "Select a backend device", instr_list, single=True
+            "Viewer", "Select a backend device", instr_list, single=True
         )
 
         try:
             instr = RsInstrument(device, id_query=True, reset=True)
         except:
             BasicView.show_message(
-                "Radio camera",
+                "Viewer",
                 f"Cannot connect to backend device {device}:\n{traceback.format_exc()}",
                 3,
             )
