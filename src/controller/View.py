@@ -17,7 +17,6 @@ class View(object):
         self.__fig.canvas.draw_idle()
 
     def __clear_axes(self):
-        self.__filename = None
         self.__lo = 0
         basic_view.cla_leaving_attributes(self.__ax["spectrogram"])
         basic_view.cla_leaving_attributes(self.__ax["t_proj"])
@@ -145,38 +144,60 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         basic_view.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __load(self, filename):
-        self.__properties = None
-        self.__frequencies = None
-        self.__spectrogram = None
-        if filename:
-            if not os.path.isfile(filename):
-                basic_view.show_message(
-                    self.__conf["name"],
-                    f"Current file {filename} is not readable or incorrectly formatted",
-                    2,
-                )
-            else:
-                self.__properties, self.__frequencies, self.__spectrogram = (
-                    spectrogram.reader(filename, self.__conf)
-                )
-                if (
-                    self.__properties is None
-                    or self.__frequencies is None
-                    or self.__spectrogram is None
-                ):
-                    basic_view.show_message(
-                        self.__conf["name"],
-                        f"Current file {filename} is not readable or incorrectly formatted",
-                        2,
-                    )
-                else:
-                    self.__filename = filename
-                    self.__populate()
-        else:
-            self.__clear_axes()
+    def __connect_sa(self, filename):
+        import time
+        import numpy as np
+        import basic_view
+        import traceback
+        from RsInstrument import RsInstrument
+        from datetime import datetime
 
-        basic_view.refresh()
+        try:
+            instr_list = RsInstrument.list_resources("?*")
+            if instr_list:
+                value, index, key = basic_view.checkbox_list(
+                    self.__conf["name"],
+                    "Select a backend device",
+                    items_key=instr_list,
+                    items_value=instr_list,
+                    single=True,
+                )
+
+            if not key:
+                return
+
+            self.__instr = RsInstrument(key, id_query=True, reset=True)
+            idn = self.__instr.query_str("*IDN?")
+
+            now = datetime.now()
+            self.__instr.write("SYST:BEEP:KEY:VOL 0")
+            self.__instr.write("SYST:BEEP:POV ON")
+            self.__instr.write("SYST:BEEP:VOL 1")
+            self.__instr.write("SYST:DISP:UPD ON")
+            self.__instr.write(f"SYST:DATE {now.year},{now.month},{now.day}")
+            self.__instr.write(f"SYST:TIME {now.hour},{now.minute},{now.second}")
+            self.__instr.write("SYST:TZON 01,00")
+            self.__instr.write("UNIT:LENG MET")
+            self.__instr.write("INST:SEL SAN")
+            self.__instr.write("UNIT:POW W")
+
+            basic_view.set_title(fig=self.__fig, subtitle=key)
+            return basic_view.show_message(
+                self.__conf["name"],
+                f"""Device {key} is connected!
+IDN:\t{idn}
+Driver version:\t{self.__instr.driver_version}
+Visa manufacturer:\t{self.__instr.visa_manufacturer}
+Instrument full name:\t{self.__instr.full_instrument_model_name}
+Instrument options:\t{",".join(self.__instr.instrument_options)}""",
+                icon=1,
+            )
+        except:
+            return basic_view.show_message(
+                self.__conf["name"],
+                f"Cannot connect to backend device {value}:\n{traceback.format_exc()}",
+                icon=3,
+            )
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
@@ -189,8 +210,8 @@ class View(object):
             None,
             None,
             None,
-            "clear",
-            "load_csv",
+            None,
+            "connect_sa",
         ]
         basic_view.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
 
@@ -219,27 +240,9 @@ class View(object):
         self.__ax["t_power"].set_title("Time power")
         self.__ax["lo"].set_title("LO freq [MHz]")
 
-        self.__clear_button = basic_view.Button(ax=self.__ax["clear"], label="Clear")
-        self.__clear_button.on_clicked(lambda x: self.__load(filename=None))
-
-        def load():
-            file = basic_view.file_dialog(
-                title=self.__conf["name"],
-                message="Load CSV",
-                filter="csv Files (*.csv)",
-            )
-            if file:
-                self.__load(filename=file)
-
-        self.__load_csv_button = basic_view.Button(
-            ax=self.__ax["load_csv"], label="Load CSV"
+        self.__connect_sa_button = basic_view.Button(
+            ax=self.__ax["connect_sa"], label="Connect SA"
         )
-        self.__load_csv_button.on_clicked(lambda x: load())
-
-        self.__load(
-            self.__conf["filename"]
-            if "filename" in self.__conf and self.__conf["filename"]
-            else None
-        )
+        self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(filename=None))
 
         basic_view.show()

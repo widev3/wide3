@@ -1,4 +1,3 @@
-import sys
 import matplotlib
 
 matplotlib.use("qtagg")
@@ -17,9 +16,7 @@ from matplotlib.backend_bases import MouseButton
 from matplotlib.ticker import AutoMinorLocator
 
 from PyQt5.QtWidgets import (
-    QWidget,
     QPushButton,
-    QFileDialog,
     QVBoxLayout,
     QMessageBox,
     QDialog,
@@ -31,7 +28,10 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
     QCheckBox,
     QRadioButton,
-    QMainWindow,
+    QTableWidget,
+    QTableWidgetItem,
+    QFileDialog,
+    QHeaderView,
 )
 
 
@@ -93,13 +93,13 @@ def create(title, mosaic, unwanted_buttons=[]):
 
     set_title(fig=fig, title=title)
     mng = plt.get_current_fig_manager()
-    mng.resize(1500, 800)
+    mng.window.showMaximized()
 
-    # mng.window.setWindowIcon(
-    #     QtGui.QIcon(
-    #         "settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
-    #     )
-    # )
+    mng.window.setWindowIcon(
+        QtGui.QIcon(
+            "icons/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
+        )
+    )
 
     for x in mng.toolbar.actions():
         if x.text() in unwanted_buttons:
@@ -153,6 +153,7 @@ def show_message(title, message, icon):
             super().__init__()
             msg_box = QMessageBox()
             msg_box.setWindowTitle(title)
+            msg_box.resize(800, 600)
             msg_box.setText(message)
             msg_box.setIcon(icon)
             msg_box.setStandardButtons(QMessageBox.Ok)
@@ -165,9 +166,8 @@ def file_dialog(title, message, filter):
     class TextInputDialogView(QDialog):
         def __init__(self, title, message):
             super().__init__()
-
             self.setWindowTitle(title)
-            self.setGeometry(500, 500, 500, 100)
+            self.resize(800, 600)
 
             layout = QVBoxLayout()
             h_layout = QHBoxLayout()
@@ -208,9 +208,8 @@ def text_input(title, message):
     class TextInputDialogView(QDialog):
         def __init__(self, title, message):
             super().__init__()
-
             self.setWindowTitle(title)
-            self.setGeometry(500, 500, 500, 100)
+            self.resize(800, 600)
 
             layout = QVBoxLayout()
             h_layout = QHBoxLayout()
@@ -247,13 +246,12 @@ def text_input(title, message):
     return input_text
 
 
-def checkbox_list(title, message, items, single=False):
+def checkbox_list(title, message, items_key, items_value, single):
     class CheckBoxListDialog(QDialog):
-        def __init__(self, title, message, items, single):
+        def __init__(self, title, message, items_key, items_value, single):
             super().__init__()
-
             self.setWindowTitle(title)
-            self.setGeometry(500, 500, 500, 500)
+            self.resize(800, 600)
 
             self.label = QLabel(message, self)
 
@@ -261,7 +259,7 @@ def checkbox_list(title, message, items, single=False):
             layout.addWidget(self.label)
 
             self.list_widget = QListWidget()
-            for item in items:
+            for item in items_value:
                 list_item = QListWidgetItem()
                 if single:
                     checkbox = QRadioButton(item)
@@ -288,8 +286,9 @@ def checkbox_list(title, message, items, single=False):
 
             self.setLayout(layout)
 
-            self.selected_items = []
+            self.selected_items_value = []
             self.selected_indices = []
+            self.selected_items_key = []
 
         def on_ok_button_clicked(self):
             selected_items = []
@@ -301,21 +300,70 @@ def checkbox_list(title, message, items, single=False):
                     selected_items.append(checkbox.text())
                     selected_indices.append(index)
 
-            self.selected_items = selected_items
+            self.selected_items_value = selected_items
             self.selected_indices = selected_indices
+            self.selected_items_key = list(
+                map(lambda x: items_key[x], self.selected_indices)
+            )
+
             if single:
-                self.selected_items = self.selected_items[0]
+                self.selected_items_value = self.selected_items_value[0]
                 self.selected_indices = self.selected_indices[0]
+                self.selected_items_key = self.selected_items_key[0]
 
             self.accept()
 
         def on_cancel_button_clicked(self):
             self.reject()
 
-    dialog = CheckBoxListDialog(title, message, items, single)
+    dialog = CheckBoxListDialog(title, message, items_key, items_value, single)
     dialog.show()
     dialog.exec_()
-    return dialog.selected_items, dialog.selected_indices
+    return (
+        dialog.selected_items_value,
+        dialog.selected_indices,
+        dialog.selected_items_key,
+    )
+
+
+def table(title, dataframe):
+    class TablePopup(QDialog):
+        def __init__(self, title, dataframe):
+            super().__init__()
+            self.setWindowTitle(title)
+            self.resize(800, 600)
+
+            layout = QVBoxLayout()
+            self.setLayout(layout)
+
+            table = QTableWidget(self)
+            table.setRowCount(dataframe.shape[0])
+            table.setColumnCount(dataframe.shape[1])
+            table.setHorizontalHeaderLabels(dataframe.columns)
+
+            for row_idx in range(dataframe.shape[0]):
+                for col_idx in range(dataframe.shape[1]):
+                    cell_value = str(dataframe.iat[row_idx, col_idx])
+                    table.setItem(row_idx, col_idx, QTableWidgetItem(cell_value))
+
+            header = table.horizontalHeader()
+            header.setSectionResizeMode(QHeaderView.Stretch)
+
+            layout.addWidget(table)
+
+            close_btn = QPushButton("Close")
+            close_btn.clicked.connect(self.close)
+            layout.addWidget(close_btn)
+
+    popup = TablePopup(title=title, dataframe=dataframe)
+    popup.exec_()
+
+
+def file_dialog():
+    file_dialog = QFileDialog()
+    csv_file, _ = file_dialog.getOpenFileName(
+        None, "Open CSV File", "", "CSV Files (*.csv)"
+    )
 
 
 def generate_array(x, y, element=None):

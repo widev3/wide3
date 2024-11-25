@@ -17,6 +17,11 @@ pip3 install pandas
 pip3 install scipy
 pip3 install astropy
 pip3 install RsInstrument
+pip3 install pyvisa
+pip3 install pyvisa-py
+pip3 install visa
+pip3 install psutil
+pip3 install zeroconf
 pip3 install pyinstaller
 ```
 

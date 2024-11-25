@@ -206,7 +206,8 @@ class Cursor:
                         )
 
                 self.inner_ax["peaks"].set_title(
-                    f"{self.inner_ax[target].get_xlabel()}\n({self.inner_ax[target].get_ylabel()})"
+                    f"""{self.inner_ax[target].get_xlabel()}
+({self.inner_ax[target].get_ylabel()})"""
                 )
                 self.__peaks_checkbuttons = basic_view.CheckButtons(
                     ax=self.inner_ax["peaks"],

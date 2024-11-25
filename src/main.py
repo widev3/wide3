@@ -1,3 +1,7 @@
+import sys
+
+sys.dont_write_bytecode = True
+
 import argparse
 import os
 import json
@@ -19,13 +23,13 @@ if args.conf:
         basic_view.show_message(
             "Whistle of Wind",
             f"Please, provide a valid configuration file {config_file}",
-            3,
+            icon=3,
         )
 elif not os.path.isfile(config_file):
     basic_view.show_message(
         "Whistle of Wind",
         f"Please, provide a valid configuration file {config_file}",
-        3,
+        icon=3,
     )
 
 if config_file:
@@ -34,11 +38,24 @@ if config_file:
         conf = json.load(f)
 
     try:
-        viewer = PackageViewer.PackageViewer(conf)
-        viewer.instance().packages["viewer"].view()
+        startup_pack = "viewer"
+        startup_pack_conf = next(
+            sub
+            for sub in list(
+                map(
+                    lambda x: x["startup_package"] if "startup_package" in x else None,
+                    conf,
+                )
+            )
+        )
+        startup_pack = startup_pack_conf if startup_pack_conf else startup_pack
+        pv = PackageViewer.PackageViewer(conf)
+        startup_package = pv.instance().packages[startup_pack]
+        startup_package.view()
     except:
         basic_view.show_message(
             "Whistle of Wind",
-            f"Oops! Unhandled error during execution:\n{traceback.format_exc()}",
-            3,
+            f"""Oops! Unhandled error during execution:
+{traceback.format_exc()}""",
+            icon=3,
         )

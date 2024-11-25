@@ -46,7 +46,7 @@ class View(object):
         catalog_list = vizier.find_catalogs(catalog_name)
         if len(catalog_list) == 1 and list(catalog_list.keys())[0] == None:
             BasicView.show_message(
-                self.__conf["name"], f"No catalog called {catalog_name}", 2
+                self.__conf["name"], f"No catalog called {catalog_name}", icon=2
             )
             return [], []
 
@@ -176,8 +176,9 @@ class View(object):
             except:
                 BasicView.show_message(
                     self.__conf["name"],
-                    f"Error during the loading of catalog\n{traceback.format_exc()}",
-                    3,
+                    f"""Error during the loading of catalog
+{traceback.format_exc()}""",
+                    icon=3,
                 )
         else:
             self.__on_full_sky_button_clicked(None)

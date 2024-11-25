@@ -1,9 +1,9 @@
 import time
 import numpy as np
+import basic_view
+import traceback
 from RsInstrument import RsInstrument
 from datetime import datetime
-from basic_view import BasicView, plt
-import traceback
 
 
 def time_slice(spectrum_values, cent=None, span=None, start=None, stop=None):
@@ -33,45 +33,6 @@ def time_slice(spectrum_values, cent=None, span=None, start=None, stop=None):
 
 
 def start():
-    instr_list = RsInstrument.list_resources("?*")
-    if instr_list:
-        device, device_index = BasicView.checkbox_list(
-            "Viewer", "Select a backend device", instr_list, single=True
-        )
-
-        try:
-            instr = RsInstrument(device, id_query=True, reset=True)
-        except:
-            BasicView.show_message(
-                "Viewer",
-                f"Cannot connect to backend device {device}:\n{traceback.format_exc()}",
-                3,
-            )
-            return
-
-        idn = instr.query_str("*IDN?")
-        print(f"\nHello, I am: '{idn}'")
-        print(f"RsInstrument driver version: {instr.driver_version}")
-        print(f"Visa manufacturer: {instr.visa_manufacturer}")
-        print(f"Instrument full name: {instr.full_instrument_model_name}")
-        print(f'Instrument installed options: {",".join(instr.instrument_options)}')
-
-        instr.write("SYST:BEEP:KEY:VOL 0")
-        instr.write("SYST:BEEP:POV ON")
-        instr.write("SYST:BEEP:VOL 1")
-        instr.write("SYST:DISP:UPD ON")
-
-        current_dateTime = datetime.now()
-        instr.write(
-            f"SYST:DATE {current_dateTime.year},{current_dateTime.month},{current_dateTime.day}"
-        )
-        instr.write(
-            f"SYST:TIME {current_dateTime.hour},{current_dateTime.minute},{current_dateTime.second}"
-        )
-        instr.write("SYST:TZON 01,00")
-        instr.write("UNIT:LENG MET")
-
-        instr.write("INST:SEL SAN")
         central_frequency = 2.45e9  # Hz
         instr.write(f"SENS:FREQ:CENT {central_frequency}")
 
@@ -84,7 +45,6 @@ def start():
         # instr.write('SENS:BAND:RES 1000KHZ')  # Resolution bandwidth
         # instr.write('SENS:BAND:RES 1000KHZ')  # Video bandwidth
 
-        instr.write("UNIT:POW W")
         instr.write("INIT:CONT OFF")
         time.sleep(1)
 

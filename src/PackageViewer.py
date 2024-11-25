@@ -28,7 +28,11 @@ class PackageViewer:
             self.packages = {}
             self.initialized = True
             for el in views_dict:
-                pack = list(filter(lambda x: x["package"] == el, conf))
+                pack = list(
+                    filter(
+                        lambda x: (x["package"] if "package" in x else None) == el, conf
+                    )
+                )
                 if len(pack) == 0:
                     raise Exception(f"No configurations for package {el}")
                 if len(pack) > 1:

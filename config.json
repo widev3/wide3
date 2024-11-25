@@ -1,5 +1,8 @@
 [
     {
+        "startup_package": "viewer"
+    },
+    {
         "package": "viewer",
         "name": "Viewer",
         "filename": "input/Spectrogram_crop.csv",
