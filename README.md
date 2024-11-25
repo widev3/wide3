@@ -1,7 +1,7 @@
 # Whistle of Wind radio telescope
 
 <p align="center">
-  <img src="whistle_of_wind.png" width="256">
+  <img src="icons/whistle_of_wind.png" width="256">
 </p>
 
 ## Installation

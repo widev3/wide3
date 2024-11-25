@@ -7,7 +7,7 @@ import PackageViewer
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider
+from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider, TextBox
 from matplotlib.animation import FuncAnimation
 from matplotlib.lines import Line2D
 from matplotlib.image import AxesImage

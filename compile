@@ -1,3 +1,3 @@
-rm -rf build dist main.spec
+rm -rf build dist Whistle\ of\ Wind.spec 
 find . -name "__pycache__" -type d -exec rm -r {} +
 python3 -OO -m PyInstaller --clean --onefile --noconsole --noconfirm --icon=icons/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png -F src/main.py --name 'Whistle of Wind'

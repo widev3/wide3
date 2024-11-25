@@ -1,6 +1,6 @@
 [
     {
-        "startup_package": "viewer"
+        "startup_package": "controller"
     },
     {
         "package": "viewer",
@@ -27,22 +27,10 @@
     {
         "package": "controller",
         "name": "Controller",
-        "gamma": 0.3,
-        "cmap": "magma",
-        "lo": [
-            {
-                "value": 5150,
-                "band": "C"
-            },
-            {
-                "value": 9750,
-                "band": "Ku Tone OFF"
-            },
-            {
-                "value": 10600,
-                "band": "Ku Tone ON"
-            }
-        ]
+        "instrument": "TCPIP::172.16.10.10::INSTR",
+        "central_frequency": 2158,
+        "span_frequency": 40,
+        "sweep_time": 12
     },
     {
         "package": "mount_control",

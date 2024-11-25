@@ -1,9 +1,10 @@
-import os
 import numpy as np
-import spectrogram
 import basic_view
+import traceback
+from datetime import datetime
 from viewer.Lims import Lims
 from viewer.Cursor import Cursor
+from RsInstrument import RsInstrument
 
 
 class View(object):
@@ -144,27 +145,26 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         basic_view.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __connect_sa(self, filename):
-        import time
-        import numpy as np
-        import basic_view
-        import traceback
-        from RsInstrument import RsInstrument
-        from datetime import datetime
+    def __disconnect_sa(self, instr):
+        if self.__instr.is_connection_active:
+            self.__instr.close()
 
+    def __connect_sa(self, instr=None):
         try:
-            instr_list = RsInstrument.list_resources("?*")
-            if instr_list:
-                value, index, key = basic_view.checkbox_list(
-                    self.__conf["name"],
-                    "Select a backend device",
-                    items_key=instr_list,
-                    items_value=instr_list,
-                    single=True,
-                )
+            key = instr
+            if not instr:
+                instr_list = RsInstrument.list_resources("?*")
+                if instr_list:
+                    value, index, key = basic_view.checkbox_list(
+                        self.__conf["name"],
+                        "Select a backend device",
+                        items_key=instr_list,
+                        items_value=instr_list,
+                        single=True,
+                    )
 
-            if not key:
-                return
+                if not key:
+                    return
 
             self.__instr = RsInstrument(key, id_query=True, reset=True)
             idn = self.__instr.query_str("*IDN?")
@@ -181,8 +181,14 @@ class View(object):
             self.__instr.write("INST:SEL SAN")
             self.__instr.write("UNIT:POW W")
 
+            self.__ax["connect_sa"].cla()
+            self.__connect_sa_button = basic_view.Button(
+                ax=self.__ax["connect_sa"], label="Disconnect SA"
+            )
+            self.__connect_sa_button.on_clicked(self.__disconnect_sa)
+
             basic_view.set_title(fig=self.__fig, subtitle=key)
-            return basic_view.show_message(
+            basic_view.show_message(
                 self.__conf["name"],
                 f"""Device {key} is connected!
 IDN:\t{idn}
@@ -193,11 +199,13 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                 icon=1,
             )
         except:
-            return basic_view.show_message(
+            basic_view.show_message(
                 self.__conf["name"],
                 f"Cannot connect to backend device {value}:\n{traceback.format_exc()}",
                 icon=3,
             )
+
+        basic_view.refresh()
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
@@ -216,33 +224,66 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         basic_view.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
 
         # first column
-        basic_view.fill_with_string(mosaic, (1, 2), (25, 30), "spectrogram", (1, 2))
-        basic_view.fill_with_string(mosaic, (1, 30), (25, 49), "t_proj", (1, 5))
+        basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central_freq", (0, 3))
 
         # second column
-        basic_view.fill_with_string(mosaic, (25, 2), (27, 30), "colorbar", (1, 2))
-        basic_view.fill_with_string(mosaic, (27, 2), (38, 30), "f_proj", (4, 2))
-        basic_view.fill_with_string(mosaic, (25, 30), (38, 45), "lo", (1, 5))
-        basic_view.fill_with_string(mosaic, (25, 45), (38, 49), "gamma_slider", (3, 2))
+        basic_view.fill_with_string(mosaic, (6, 2), (10, 6), "span_freq", (0, 3))
 
         # third column
-        basic_view.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
-        basic_view.fill_with_string(mosaic, (38, 27), (50, 49), "t_power", (3, 5))
+        basic_view.fill_with_string(mosaic, (11, 2), (15, 6), "sweep_time", (0, 3))
 
         self.__fig, self.__ax = basic_view.create(self.__conf["name"], mosaic)
 
         basic_view.buttons_frame(self, self.__ax, self.__conf["package"])
 
-        self.__ax["spectrogram"].set_title("Spectrogram")
-        self.__ax["t_proj"].set_title("Time projection")
-        self.__ax["f_proj"].set_title("Frequency projection")
-        self.__ax["f_power"].set_title("Frequency power")
-        self.__ax["t_power"].set_title("Time power")
-        self.__ax["lo"].set_title("LO freq [MHz]")
+        self.__ax["central_freq"].set_title("Central frequency [MHz]")
+        self.__ax["span_freq"].set_title("Span frequency [MHz]")
+        self.__ax["sweep_time"].set_title("Sweep time [ms]")
 
         self.__connect_sa_button = basic_view.Button(
             ax=self.__ax["connect_sa"], label="Connect SA"
         )
-        self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(filename=None))
+        self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(instr=None))
+
+        self.__central_freq_text_box = basic_view.TextBox(
+            ax=self.__ax["central_freq"],
+            label=None,
+            textalignment="left",
+        )
+        self.__central_freq_text_box.on_submit(
+            lambda x: self.__instr.write(f"SENS:FREQ:CENT {float(x)*10**6}")
+        )
+        self.__central_freq_text_box.set_val(
+            self.__conf["central_frequency"]
+            if "central_frequency" in self.__conf
+            else None
+        )
+
+        self.__span_freq_text_box = basic_view.TextBox(
+            ax=self.__ax["span_freq"],
+            label=None,
+            textalignment="left",
+        )
+        self.__span_freq_text_box.on_submit(
+            lambda x: self.__instr.write(f"SENS:FREQ:SPAN {float(x)*10**6}")
+        )
+        self.__span_freq_text_box.set_val(
+            self.__conf["span_frequency"] if "span_frequency" in self.__conf else None
+        )
+
+        self.__sweep_time_text_box = basic_view.TextBox(
+            ax=self.__ax["sweep_time"],
+            label=None,
+            textalignment="left",
+        )
+        self.__sweep_time_text_box.on_submit(
+            lambda x: self.__instr.write(f"SENS:SWE:TIME {float(x)*10**-3}")
+        )
+        self.__sweep_time_text_box.set_val(
+            self.__conf["sweep_time"] if "sweep_time" in self.__conf else None
+        )
+
+        if "instrument" in self.__conf:
+            self.__connect_sa(instr=self.__conf["instrument"])
 
         basic_view.show()
