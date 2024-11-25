@@ -1,12 +1,4 @@
-from BasicView import (
-    cm,
-    BasicView,
-    CheckButtons,
-    RadioButtons,
-    MouseButton,
-    Line2D,
-    AxesImage,
-)
+import basic_view
 import numpy as np
 from scipy.signal import find_peaks
 
@@ -83,16 +75,16 @@ class Cursor:
 
     def __left_button_double_press_event(self, event, target):
         if target in self.im:
-            mosaic = BasicView.generate_array(50, 50)
+            mosaic = basic_view.generate_array(50, 50)
 
             # first column
-            BasicView.fill_with_string(mosaic, (1, 2), (40, 50), target)
+            basic_view.fill_with_string(mosaic, (1, 2), (40, 50), target)
 
             # second column
-            BasicView.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
-            BasicView.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
+            basic_view.fill_with_string(mosaic, (40, 2), (50, 10), "options", (1, 0))
+            basic_view.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
 
-            self.__fig, self.inner_ax = BasicView.create(
+            self.__fig, self.inner_ax = basic_view.create(
                 self.ax[target].get_title(), mosaic
             )
 
@@ -104,13 +96,13 @@ class Cursor:
 
                 dim = 0
                 data = {}
-                if isinstance(self.im[target], Line2D):
+                if isinstance(self.im[target], basic_view.Line2D):
                     dim = 1
                     data = {
                         "x": self.im[target].get_data()[1 if is_rotated else 0],
                         "y": self.im[target].get_data()[0 if is_rotated else 1],
                     }
-                elif isinstance(self.im[target], AxesImage):
+                elif isinstance(self.im[target], basic_view.AxesImage):
                     dim = 2
                     data = {"X": self.im[target]._A}
 
@@ -186,7 +178,7 @@ class Cursor:
                     vmin = np.min(data["X"])
                     self.inner_ax[target].imshow(
                         X=data["X"],
-                        norm=cm.colors.PowerNorm(
+                        norm=basic_view.cm.colors.PowerNorm(
                             gamma=self.im[target].norm.gamma, vmin=vmin, vmax=vmax
                         ),
                         cmap=self.im[target].get_cmap(),
@@ -216,7 +208,7 @@ class Cursor:
                 self.inner_ax["peaks"].set_title(
                     f"{self.inner_ax[target].get_xlabel()}\n({self.inner_ax[target].get_ylabel()})"
                 )
-                self.__peaks_checkbuttons = CheckButtons(
+                self.__peaks_checkbuttons = basic_view.CheckButtons(
                     ax=self.inner_ax["peaks"],
                     labels=labels,
                     actives=list(map(lambda x: False, labels)),
@@ -228,12 +220,12 @@ class Cursor:
                 self.inner_ax[target].set_title(
                     f"{self.ax[target].get_title()} ({label})"
                 )
-                BasicView.set_grid(self.inner_ax[target])
+                basic_view.set_grid(self.inner_ax[target])
 
                 self.__fig.canvas.draw()
 
             self.inner_ax["options"].set_title("Options")
-            self.__options_radiobuttons = RadioButtons(
+            self.__options_radiobuttons = basic_view.RadioButtons(
                 ax=self.inner_ax["options"],
                 labels=["Data", "FFT (frequency)", "FFT (time)"],
                 radio_props={"s": [64, 64, 64]},
@@ -243,7 +235,7 @@ class Cursor:
                 self.__options_radiobuttons.labels[0].get_text()
             )
 
-            BasicView.show()
+            basic_view.show()
 
     def __left_button_press_event(self, event, target):
         if target == "spectrogram":
@@ -258,7 +250,7 @@ class Cursor:
 
     def button_press_event(self, event):
         target = self.__target(event=event)
-        if event.button is MouseButton.LEFT:
+        if event.button is basic_view.MouseButton.LEFT:
             if event.dblclick:
                 self.__left_button_double_press_event(event, target)
             else:

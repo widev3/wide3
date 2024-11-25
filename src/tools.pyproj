@@ -24,8 +24,6 @@
   <ItemGroup>
     <Compile Include="BasicView.py" />
     <Compile Include="Config.py" />
-    <Compile Include="mount_control\lib\CoordinateConverter.py" />
-    <Compile Include="mount_control\View.py" />
     <Compile Include="viewer\Cursor.py" />
     <Compile Include="viewer\lib\frequencies.py" />
     <Compile Include="viewer\lib\properties.py" />
@@ -36,14 +34,11 @@
     <Compile Include="tools.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="mount_control\" />
-    <Folder Include="mount_control\lib\" />
     <Folder Include="viewer\" />
     <Folder Include="viewer\input\" />
     <Folder Include="viewer\lib\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mount_control\config.json" />
     <Content Include="viewer\config.json" />
     <Content Include="viewer\input\Spectrogram.csv" />
     <Content Include="viewer\input\Spectrogram001.spm" />

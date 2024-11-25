@@ -2,7 +2,7 @@ import time
 import numpy as np
 from RsInstrument import RsInstrument
 from datetime import datetime
-from BasicView import BasicView, plt
+from basic_view import BasicView, plt
 import traceback
 
 

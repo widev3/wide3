@@ -1,7 +1,7 @@
 import astropy.units as u
 import random
 import traceback
-from BasicView import BasicView, FuncAnimation, Line2D, Button
+from basic_view import BasicView, FuncAnimation, Line2D, Button
 from astropy.coordinates import EarthLocation
 from mount_control.lib.CoordinateConverter import CatalogCoordinate
 from astropy.coordinates import SkyCoord
