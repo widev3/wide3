@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import basic_view
 import traceback
@@ -146,10 +147,11 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         basic_view.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __disconnect_sa(self, x):
+    def __disconnect_sa(self, x=None):
         try:
-            if self.__instr.is_connection_active:
+            if self.__instr and self.__instr.is_connection_active:
                 self.__instr.close()
+                self.__instr = None
 
             self.__connect_sa_button = basic_view.Button(
                 ax=self.__ax["connect_sa"], label="Connect SA"
@@ -158,7 +160,7 @@ class View(object):
         except:
             basic_view.show_message(
                 self.__conf["name"],
-                f"Error during disconnection to device {x}:\n{traceback.format_exc()}",
+                f"Error during disconnection to device {self.__instr}:\n{traceback.format_exc()}",
                 icon=3,
             )
 
@@ -184,7 +186,7 @@ class View(object):
                     icon=2,
                 )
 
-            # self.__disconnect_sa(self.__instr) # TODO manage disconnection first
+            self.__disconnect_sa()
             self.__instr = RsInstrument(key, id_query=True, reset=True)
             idn = self.__instr.query_str("*IDN?")
 
@@ -226,7 +228,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         except:
             basic_view.show_message(
                 self.__conf["name"],
-                f"Cannot connect to backend device {value}:\n{traceback.format_exc()}",
+                f"Error during connection device {value}:\n{traceback.format_exc()}",
                 icon=3,
             )
 
@@ -246,12 +248,13 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         )
         self.__record_button.on_clicked(self.__stop_record)
 
-    def __instr_write(self, x):
-        self.__instr.write(
-            f"SENS:FREQ:CENT {float(self.__central_text_box.text)*10**6}"
-        )
-        self.__instr.write(f"SENS:FREQ:SPAN {float(self.__span_text_box.text)*10**6}")
-        self.__instr.write(f"SENS:SWE:TIME {float(self.__sweep_text_box.text)*10**-3}")
+    def __instr_write(self, x=None):
+        freq = float(self.__central_text_box.text) * 10**6
+        span = float(self.__span_text_box.text) * 10**6
+        sweep = float(self.__sweep_text_box.text) * 10**-3
+        self.__instr.write(f"SENS:FREQ:CENT {freq}") if self.__instr else None
+        self.__instr.write(f"SENS:FREQ:SPAN {span}") if self.__instr else None
+        self.__instr.write(f"SENS:SWE:TIME {sweep}") if self.__instr else None
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
@@ -271,14 +274,14 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
 
         # first column
         basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central", (0, 3))
-        basic_view.fill_with_string(mosaic, (1, 7), (5, 10), "span", (0, 2))
-        basic_view.fill_with_string(mosaic, (1, 11), (5, 14), "sweep", (0, 2))
-        basic_view.fill_with_string(mosaic, (1, 15), (5, 18), "confirm", (0, 2))
+        basic_view.fill_with_string(mosaic, (1, 7), (5, 8), "span", (0, 0))
+        basic_view.fill_with_string(mosaic, (1, 9), (5, 10), "sweep", (0, 0))
+        basic_view.fill_with_string(mosaic, (1, 11), (5, 12), "confirm", (0, 0))
 
         # second column
         basic_view.fill_with_string(mosaic, (6, 2), (25, 6), "central_slider", (0, 3))
-        basic_view.fill_with_string(mosaic, (6, 7), (25, 10), "span_slider", (0, 2))
-        basic_view.fill_with_string(mosaic, (6, 11), (25, 14), "sweep_slider", (0, 2))
+        basic_view.fill_with_string(mosaic, (6, 7), (25, 8), "span_slider", (0, 0))
+        basic_view.fill_with_string(mosaic, (6, 9), (25, 10), "sweep_slider", (0, 0))
 
         self.__fig, self.__ax = basic_view.create(self.__conf["name"], mosaic)
 
@@ -357,12 +360,15 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         )
         self.__sweep_slider.on_changed(lambda x: self.__sweep_text_box.set_val(int(x)))
 
-        def set_sliders(x):
+        def set_sliders_and_write(x):
             self.__central_slider.set_val(float(self.__central_text_box.text))
             self.__span_slider.set_val(float(self.__span_text_box.text))
             self.__sweep_slider.set_val(float(self.__sweep_text_box.text))
+            sys.stdout.flush()
+            if x.key == "enter":
+                self.__instr_write()
 
-        basic_view.connect("key_press_event", set_sliders)
+        basic_view.connect("key_press_event", set_sliders_and_write)
 
         if "instrument" in self.__conf:
             self.__connect_sa(instr=self.__conf["instrument"])
