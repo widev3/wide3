@@ -2,6 +2,6 @@
     "recommendations": [
         "ms-python.black-formatter",
         "ms-python.python",
-        "yzhang.markdown-all-in-one"
+        "davidanson.vscode-markdownlint"
     ]
 }

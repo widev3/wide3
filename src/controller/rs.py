@@ -33,14 +33,14 @@ def time_slice(spectrum_values, cent=None, span=None, start=None, stop=None):
 
 
 def start():
-        central_frequency = 2.45e9  # Hz
-        instr.write(f"SENS:FREQ:CENT {central_frequency}")
+        central = 2.45e9  # Hz
+        instr.write(f"SENS:FREQ:CENT {central}")
 
         span_value = 20e6  # 20 MHz in Hz
         instr.write(f"SENS:FREQ:SPAN {span_value}")
 
-        sweep_time = 50e-3  # 50 milliseconds in seconds
-        instr.write(f"SENS:SWE:TIME {sweep_time}")
+        sweep = 50e-3  # 50 milliseconds in seconds
+        instr.write(f"SENS:SWE:TIME {sweep}")
 
         # instr.write('SENS:BAND:RES 1000KHZ')  # Resolution bandwidth
         # instr.write('SENS:BAND:RES 1000KHZ')  # Video bandwidth
@@ -55,7 +55,7 @@ def start():
 
             spectrum_data = instr.query_str("TRACE:DATA?")
             spectrum_values = [float(value) for value in spectrum_data.split(",")]
-            slice = time_slice(spectrum_values, cent=central_frequency, span=span_value)
+            slice = time_slice(spectrum_values, cent=central, span=span_value)
             spectrogram[datetime.now()] = slice
 
             print(

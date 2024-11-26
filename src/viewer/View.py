@@ -29,7 +29,7 @@ class View(object):
         basic_view.cla_leaving_attributes(self.__ax["f_proj"])
         basic_view.cla_leaving_attributes(self.__ax["f_power"])
         basic_view.cla_leaving_attributes(self.__ax["t_power"])
-        basic_view.set_title(fig=self.__fig, subtitle=None)
+        basic_view.set_title(fig=self.__fig, subtitles=[])
 
     def __populate(self):
         self.__clear_axes()
@@ -114,7 +114,9 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         basic_view.connect("button_press_event", self.__cursor.button_press_event)
 
-        basic_view.set_title(fig=self.__fig, subtitle=os.path.basename(self.__filename))
+        basic_view.set_title(
+            fig=self.__fig, subtitles=[os.path.basename(self.__filename)]
+        )
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)

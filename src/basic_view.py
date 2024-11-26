@@ -108,14 +108,14 @@ def create(title, mosaic, unwanted_buttons=[]):
     return fig, ax
 
 
-def set_title(fig, title=None, subtitle=None):
+def set_title(fig, title=None, subtitles=[]):
     if not title:
         title = fig.canvas.manager.get_window_title().split(" - ", 1)[0]
 
-    if not title and not subtitle:
+    if not title and not subtitles:
         return
 
-    title = title + (" - " + subtitle if subtitle else "")
+    title = title + (" - " + " - ".join(subtitles) if subtitles else "")
     fig.canvas.manager.set_window_title(title=title)
     mng = plt.get_current_fig_manager()
     mng.window.setWindowTitle(title)

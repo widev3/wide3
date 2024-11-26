@@ -12,6 +12,7 @@ class View(object):
         self.__conf = conf
         self.__ax = {}
         self.__im = {}
+        self.__instr = None
 
     def __gamma_slider_changed(self, val, im, vmin, vmax):
         im.set_norm(basic_view.cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
@@ -27,7 +28,7 @@ class View(object):
         basic_view.cla_leaving_attributes(self.__ax["gamma_slider"])
         basic_view.cla_leaving_attributes(self.__ax["f_power"])
         basic_view.cla_leaving_attributes(self.__ax["t_power"])
-        basic_view.set_title(fig=self.__fig, subtitle=None)
+        basic_view.set_title(fig=self.__fig, subtitles=[])
 
     def __populate(self):
         self.__clear_axes()
@@ -145,16 +146,30 @@ class View(object):
         self.__cursor = Cursor(self.__ax, self.__im)
         basic_view.connect("button_press_event", self.__cursor.button_press_event)
 
-    def __disconnect_sa(self, instr):
-        if self.__instr.is_connection_active:
-            self.__instr.close()
+    def __disconnect_sa(self, x):
+        try:
+            if self.__instr.is_connection_active:
+                self.__instr.close()
 
-    def __connect_sa(self, instr=None):
+            self.__connect_sa_button = basic_view.Button(
+                ax=self.__ax["connect_sa"], label="Connect SA"
+            )
+            self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(instr=None))
+        except:
+            basic_view.show_message(
+                self.__conf["name"],
+                f"Error during disconnection to device {x}:\n{traceback.format_exc()}",
+                icon=3,
+            )
+
+    def __connect_sa(self, instr):
         try:
             key = instr
-            if not instr:
-                instr_list = RsInstrument.list_resources("?*")
-                if instr_list:
+            instr_list = RsInstrument.list_resources("?*")
+            if instr_list:
+                if not key and len(instr_list) == 1:
+                    key = instr_list[0]
+                elif (not key) or (key not in instr_list):
                     value, index, key = basic_view.checkbox_list(
                         self.__conf["name"],
                         "Select a backend device",
@@ -162,10 +177,14 @@ class View(object):
                         items_value=instr_list,
                         single=True,
                     )
+            else:
+                return basic_view.show_message(
+                    self.__conf["name"],
+                    f"No instrument available",
+                    icon=2,
+                )
 
-                if not key:
-                    return
-
+            # self.__disconnect_sa(self.__instr) # TODO manage disconnection first
             self.__instr = RsInstrument(key, id_query=True, reset=True)
             idn = self.__instr.query_str("*IDN?")
 
@@ -187,7 +206,13 @@ class View(object):
             )
             self.__connect_sa_button.on_clicked(self.__disconnect_sa)
 
-            basic_view.set_title(fig=self.__fig, subtitle=key)
+            self.__ax["record"].cla()
+            self.__record_button = basic_view.Button(
+                ax=self.__ax["record"], label="Start record"
+            )
+            self.__record_button.on_clicked(self.__start_record)
+
+            basic_view.set_title(fig=self.__fig, subtitles=[key])
             basic_view.show_message(
                 self.__conf["name"],
                 f"""Device {key} is connected!
@@ -207,6 +232,27 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
 
         basic_view.refresh()
 
+    def __stop_record(self, x):
+        self.__ax["record"].cla()
+        self.__record_button = basic_view.Button(
+            ax=self.__ax["record"], label="Start record"
+        )
+        self.__record_button.on_clicked(self.__start_record)
+
+    def __start_record(self, x):
+        self.__ax["record"].cla()
+        self.__record_button = basic_view.Button(
+            ax=self.__ax["record"], label="Stop record"
+        )
+        self.__record_button.on_clicked(self.__stop_record)
+
+    def __instr_write(self, x):
+        self.__instr.write(
+            f"SENS:FREQ:CENT {float(self.__central_text_box.text)*10**6}"
+        )
+        self.__instr.write(f"SENS:FREQ:SPAN {float(self.__span_text_box.text)*10**6}")
+        self.__instr.write(f"SENS:SWE:TIME {float(self.__sweep_text_box.text)*10**-3}")
+
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
         buttons = [
@@ -218,70 +264,105 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             None,
             None,
             None,
-            None,
             "connect_sa",
+            "record",
         ]
         basic_view.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
 
         # first column
-        basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central_freq", (0, 3))
+        basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central", (0, 3))
+        basic_view.fill_with_string(mosaic, (1, 7), (5, 10), "span", (0, 2))
+        basic_view.fill_with_string(mosaic, (1, 11), (5, 14), "sweep", (0, 2))
+        basic_view.fill_with_string(mosaic, (1, 15), (5, 18), "confirm", (0, 2))
 
         # second column
-        basic_view.fill_with_string(mosaic, (6, 2), (10, 6), "span_freq", (0, 3))
-
-        # third column
-        basic_view.fill_with_string(mosaic, (11, 2), (15, 6), "sweep_time", (0, 3))
+        basic_view.fill_with_string(mosaic, (6, 2), (25, 6), "central_slider", (0, 3))
+        basic_view.fill_with_string(mosaic, (6, 7), (25, 10), "span_slider", (0, 2))
+        basic_view.fill_with_string(mosaic, (6, 11), (25, 14), "sweep_slider", (0, 2))
 
         self.__fig, self.__ax = basic_view.create(self.__conf["name"], mosaic)
 
         basic_view.buttons_frame(self, self.__ax, self.__conf["package"])
-
-        self.__ax["central_freq"].set_title("Central frequency [MHz]")
-        self.__ax["span_freq"].set_title("Span frequency [MHz]")
-        self.__ax["sweep_time"].set_title("Sweep time [ms]")
 
         self.__connect_sa_button = basic_view.Button(
             ax=self.__ax["connect_sa"], label="Connect SA"
         )
         self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(instr=None))
 
-        self.__central_freq_text_box = basic_view.TextBox(
-            ax=self.__ax["central_freq"],
-            label=None,
+        self.__record_button = basic_view.Button(
+            ax=self.__ax["record"], label="Start record"
+        )
+        self.__record_button.on_clicked(lambda x: None)
+        self.__record_button.color = "gray"
+        self.__record_button.hovercolor = "gray"
+
+        self.__central_text_box = basic_view.TextBox(
+            ax=self.__ax["central"],
+            label="Central\n[MHz]",
             textalignment="left",
         )
-        self.__central_freq_text_box.on_submit(
-            lambda x: self.__instr.write(f"SENS:FREQ:CENT {float(x)*10**6}")
-        )
-        self.__central_freq_text_box.set_val(
-            self.__conf["central_frequency"]
-            if "central_frequency" in self.__conf
-            else None
+        self.__central_text_box.set_val(
+            self.__conf["central"] if "central" in self.__conf else 0
         )
 
-        self.__span_freq_text_box = basic_view.TextBox(
-            ax=self.__ax["span_freq"],
-            label=None,
+        self.__span_text_box = basic_view.TextBox(
+            ax=self.__ax["span"],
+            label="Span\n[MHz]",
             textalignment="left",
         )
-        self.__span_freq_text_box.on_submit(
-            lambda x: self.__instr.write(f"SENS:FREQ:SPAN {float(x)*10**6}")
-        )
-        self.__span_freq_text_box.set_val(
-            self.__conf["span_frequency"] if "span_frequency" in self.__conf else None
+        self.__span_text_box.set_val(
+            self.__conf["span"] if "span" in self.__conf else 0
         )
 
-        self.__sweep_time_text_box = basic_view.TextBox(
-            ax=self.__ax["sweep_time"],
-            label=None,
+        self.__sweep_text_box = basic_view.TextBox(
+            ax=self.__ax["sweep"],
+            label="Sweep\n[ms]",
             textalignment="left",
         )
-        self.__sweep_time_text_box.on_submit(
-            lambda x: self.__instr.write(f"SENS:SWE:TIME {float(x)*10**-3}")
+        self.__sweep_text_box.set_val(
+            self.__conf["sweep"] if "sweep" in self.__conf else 0
         )
-        self.__sweep_time_text_box.set_val(
-            self.__conf["sweep_time"] if "sweep_time" in self.__conf else None
+
+        self.__confirm_button = basic_view.Button(
+            ax=self.__ax["confirm"], label="Confirm"
         )
+        self.__confirm_button.on_clicked(self.__instr_write)
+
+        self.__central_slider = basic_view.Slider(
+            ax=self.__ax["central_slider"],
+            label=None,
+            valmin=0,
+            valmax=3000,
+            valinit=float(self.__central_text_box.text),
+        )
+        self.__central_slider.on_changed(
+            lambda x: self.__central_text_box.set_val(int(x))
+        )
+
+        self.__span_slider = basic_view.Slider(
+            ax=self.__ax["span_slider"],
+            label=None,
+            valmin=0,
+            valmax=1500,
+            valinit=float(self.__span_text_box.text),
+        )
+        self.__span_slider.on_changed(lambda x: self.__span_text_box.set_val(int(x)))
+
+        self.__sweep_slider = basic_view.Slider(
+            ax=self.__ax["sweep_slider"],
+            label=None,
+            valmin=0,
+            valmax=60000,
+            valinit=float(self.__sweep_text_box.text),
+        )
+        self.__sweep_slider.on_changed(lambda x: self.__sweep_text_box.set_val(int(x)))
+
+        def set_sliders(x):
+            self.__central_slider.set_val(float(self.__central_text_box.text))
+            self.__span_slider.set_val(float(self.__span_text_box.text))
+            self.__sweep_slider.set_val(float(self.__sweep_text_box.text))
+
+        basic_view.connect("key_press_event", set_sliders)
 
         if "instrument" in self.__conf:
             self.__connect_sa(instr=self.__conf["instrument"])

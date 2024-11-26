@@ -28,9 +28,9 @@
         "package": "controller",
         "name": "Controller",
         "instrument": "TCPIP::172.16.10.10::INSTR",
-        "central_frequency": 2158,
-        "span_frequency": 40,
-        "sweep_time": 12
+        "central": 2158,
+        "span": 40,
+        "sweep": 12
     },
     {
         "package": "mount_control",
