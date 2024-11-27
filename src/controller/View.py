@@ -1,10 +1,16 @@
 import sys
+import jsonpickle
+import time
+import queue
+import random
+import requests
+import threading
 import numpy as np
+import pandas as pd
 import basic_view
 import traceback
+from utils import check_server
 from datetime import datetime
-from viewer.Lims import Lims
-from viewer.Cursor import Cursor
 from RsInstrument import RsInstrument
 
 
@@ -12,142 +18,10 @@ class View(object):
     def __init__(self, conf):
         self.__conf = conf
         self.__ax = {}
-        self.__im = {}
+        self.__record = False
         self.__instr = None
 
-    def __gamma_slider_changed(self, val, im, vmin, vmax):
-        im.set_norm(basic_view.cm.colors.PowerNorm(gamma=val, vmin=vmin, vmax=vmax))
-        self.__fig.canvas.draw_idle()
-
-    def __clear_axes(self):
-        self.__lo = 0
-        basic_view.cla_leaving_attributes(self.__ax["spectrogram"])
-        basic_view.cla_leaving_attributes(self.__ax["t_proj"])
-        basic_view.cla_leaving_attributes(self.__ax["colorbar"])
-        basic_view.cla_leaving_attributes(self.__ax["f_proj"])
-        basic_view.cla_leaving_attributes(self.__ax["lo"])
-        basic_view.cla_leaving_attributes(self.__ax["gamma_slider"])
-        basic_view.cla_leaving_attributes(self.__ax["f_power"])
-        basic_view.cla_leaving_attributes(self.__ax["t_power"])
-        basic_view.set_title(fig=self.__fig, subtitles=[])
-
-    def __populate(self):
-        self.__clear_axes()
-
-        vmax = np.max(self.__spectrogram["magnitude"])
-        vmin = np.min(self.__spectrogram["magnitude"])
-        power_spectrogram = np.power(10, (self.__spectrogram["magnitude"] - 30) / 10)
-        t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
-        f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
-
-        def switch_lo(freq):
-            self.__lo = freq
-            self.__populate()
-
-        self.__lo_radiobuttons = basic_view.RadioButtons(
-            ax=self.__ax["lo"],
-            radio_props={"s": [64] * len(self.__conf["lo"])},
-            labels=list(
-                map(
-                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
-                    self.__conf["lo"],
-                )
-            ),
-        )
-        self.__lo_radiobuttons.on_clicked(lambda x: switch_lo(float(x.split(" ")[0])))
-        self.__lo = float(
-            self.__conf["lo"][self.__lo_radiobuttons.index_selected]["value"]
-        )
-
-        self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
-            X=self.__spectrogram["magnitude"],
-            norm=basic_view.cm.colors.PowerNorm(
-                gamma=self.__conf["gamma"], vmin=vmin, vmax=vmax
-            ),
-            cmap=self.__conf["cmap"],
-            aspect="auto",
-            origin="lower",
-            extent=[
-                self.__lo + min(self.__spectrogram["relative_time"]),
-                self.__lo + max(self.__spectrogram["relative_time"]),
-                self.__lo + min(self.__spectrogram["frequency"]) / 1000000,
-                self.__lo + max(self.__spectrogram["frequency"]) / 1000000,
-            ],
-        )
-        self.__ax["spectrogram"].set_xlim(self.__im["spectrogram"].get_extent()[0:2])
-        self.__ax["spectrogram"].set_ylim(self.__im["spectrogram"].get_extent()[2:4])
-
-        lims = Lims(self.__im)
-        self.__ax["spectrogram"].callbacks.connect("xlim_changed", lims.on_xlim_changed)
-        self.__ax["spectrogram"].callbacks.connect("ylim_changed", lims.on_ylim_changed)
-        self.__ax["spectrogram"].set_xlabel("Relative time from start [ms]")
-        self.__ax["spectrogram"].set_ylabel("Frequency [MHz]")
-        basic_view.set_grid(self.__ax["spectrogram"])
-
-        self.__fig.colorbar(self.__im["spectrogram"], cax=self.__ax["colorbar"])
-
-        (self.__im["t_proj"],) = self.__ax["t_proj"].plot([], [])
-        self.__ax["t_proj"].set_xlabel("Relative time from start [ms]")
-        self.__ax["t_proj"].set_ylabel(
-            f"Magnitude [{self.__spectrogram["um"]["magnitude"][1]}]"
-        )
-        self.__ax["t_proj"].set_xlim(self.__ax["spectrogram"].get_xlim()[0:2])
-        self.__ax["t_proj"].margins(x=0)
-        basic_view.set_grid(self.__ax["t_proj"])
-
-        (self.__im["f_proj"],) = self.__ax["f_proj"].plot([], [])
-        self.__ax["f_proj"].set_xlabel("Frequency [MHz]")
-        self.__ax["f_proj"].set_ylabel(
-            f"Magnitude [{self.__spectrogram["um"]["magnitude"][1]}]"
-        )
-        self.__ax["f_proj"].set_ylim(self.__ax["spectrogram"].get_ylim()[0:2])
-        self.__ax["f_proj"].margins(y=0)
-        self.__ax["f_proj"].is_rotated = True
-        basic_view.set_grid(self.__ax["f_proj"])
-
-        self.__gamma_slider = basic_view.Slider(
-            ax=self.__ax["gamma_slider"],
-            label="Gamma",
-            valmin=0,
-            valmax=1,
-            valinit=self.__im["spectrogram"].norm.gamma,
-        )
-        self.__gamma_slider.on_changed(
-            (
-                lambda event: self.__gamma_slider_changed(
-                    event, self.__im["spectrogram"], vmin, vmax
-                )
-            )
-        )
-
-        (self.__im["t_power"],) = self.__ax["t_power"].plot(
-            np.linspace(
-                self.__im["spectrogram"].get_extent()[0],
-                self.__im["spectrogram"].get_extent()[1],
-                num=len(t_power_spectrogram),
-            ),
-            t_power_spectrogram,
-        )
-        self.__ax["t_power"].set_xlabel("Relative time from start [ms]")
-        self.__ax["t_power"].set_ylabel("Magnitude [µW]")
-        basic_view.set_grid(self.__ax["t_power"])
-
-        (self.__im["f_power"],) = self.__ax["f_power"].plot(
-            np.linspace(
-                self.__im["spectrogram"].get_extent()[2],
-                self.__im["spectrogram"].get_extent()[3],
-                num=len(f_power_spectrogram),
-            ),
-            f_power_spectrogram,
-        )
-        self.__ax["f_power"].set_xlabel("Frequency [MHz]")
-        self.__ax["f_power"].set_ylabel("Magnitude [log10(µW)]")
-        basic_view.set_grid(self.__ax["f_power"])
-
-        self.__cursor = Cursor(self.__ax, self.__im)
-        basic_view.connect("button_press_event", self.__cursor.button_press_event)
-
-    def __disconnect_sa(self, x=None):
+    def __disconnect_instr(self, x=None):
         try:
             if self.__instr and self.__instr.is_connection_active:
                 self.__instr.close()
@@ -156,7 +30,9 @@ class View(object):
             self.__connect_sa_button = basic_view.Button(
                 ax=self.__ax["connect_sa"], label="Connect SA"
             )
-            self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(instr=None))
+            self.__connect_sa_button.on_clicked(
+                lambda x: self.__connect_instr(instr=None)
+            )
         except:
             basic_view.show_message(
                 self.__conf["name"],
@@ -164,7 +40,7 @@ class View(object):
                 icon=3,
             )
 
-    def __connect_sa(self, instr):
+    def __connect_instr(self, instr):
         try:
             key = instr
             instr_list = RsInstrument.list_resources("?*")
@@ -186,7 +62,7 @@ class View(object):
                     icon=2,
                 )
 
-            self.__disconnect_sa()
+            self.__disconnect_instr()
             self.__instr = RsInstrument(key, id_query=True, reset=True)
             idn = self.__instr.query_str("*IDN?")
 
@@ -201,18 +77,21 @@ class View(object):
             self.__instr.write("UNIT:LENG MET")
             self.__instr.write("INST:SEL SAN")
             self.__instr.write("UNIT:POW W")
+            self.__instr.write("INIT:CONT ON")
 
             self.__ax["connect_sa"].cla()
             self.__connect_sa_button = basic_view.Button(
                 ax=self.__ax["connect_sa"], label="Disconnect SA"
             )
-            self.__connect_sa_button.on_clicked(self.__disconnect_sa)
+            self.__connect_sa_button.on_clicked(self.__disconnect_instr)
 
             self.__ax["record"].cla()
             self.__record_button = basic_view.Button(
                 ax=self.__ax["record"], label="Start record"
             )
             self.__record_button.on_clicked(self.__start_record)
+
+            self.__instr_write()
 
             basic_view.set_title(fig=self.__fig, subtitles=[key])
             basic_view.show_message(
@@ -235,6 +114,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         basic_view.refresh()
 
     def __stop_record(self, x):
+        self.__record = False
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Start record"
@@ -242,19 +122,22 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__record_button.on_clicked(self.__start_record)
 
     def __start_record(self, x):
+        self.__record = True
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Stop record"
         )
         self.__record_button.on_clicked(self.__stop_record)
 
+        self.__instr.write("INIT:CONT OFF") if self.__instr else None
+
     def __instr_write(self, x=None):
-        freq = float(self.__central_text_box.text) * 10**6
-        span = float(self.__span_text_box.text) * 10**6
-        sweep = float(self.__sweep_text_box.text) * 10**-3
-        self.__instr.write(f"SENS:FREQ:CENT {freq}") if self.__instr else None
-        self.__instr.write(f"SENS:FREQ:SPAN {span}") if self.__instr else None
-        self.__instr.write(f"SENS:SWE:TIME {sweep}") if self.__instr else None
+        self.__freq = float(self.__central_text_box.text) * 10**6
+        self.__span = float(self.__span_text_box.text) * 10**6
+        self.__sweep = float(self.__sweep_text_box.text) * 10**-3
+        self.__instr.write(f"SENS:FREQ:CENT {self.__freq}") if self.__instr else None
+        self.__instr.write(f"SENS:FREQ:SPAN {self.__span}") if self.__instr else None
+        self.__instr.write(f"SENS:SWE:TIME {self.__sweep}") if self.__instr else None
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
@@ -290,12 +173,13 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__connect_sa_button = basic_view.Button(
             ax=self.__ax["connect_sa"], label="Connect SA"
         )
-        self.__connect_sa_button.on_clicked(lambda x: self.__connect_sa(instr=None))
+        self.__connect_sa_button.on_clicked(lambda x: self.__connect_instr(instr=None))
 
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Start record"
         )
-        self.__record_button.on_clicked(lambda x: None)
+        # self.__record_button.on_clicked(lambda x: None)
+        self.__record_button.on_clicked(self.__start_record)
         self.__record_button.color = "gray"
         self.__record_button.hovercolor = "gray"
 
@@ -370,7 +254,123 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
 
         basic_view.connect("key_press_event", set_sliders_and_write)
 
-        if "instrument" in self.__conf:
-            self.__connect_sa(instr=self.__conf["instrument"])
+        spectrogram_queue = queue.Queue()
+
+        def background_instr():
+
+            class Slice:
+                def __init__(self, datetime, timestamp, slice):
+                    self.datetime = datetime
+                    self.timestamp = timestamp
+                    self.slice = slice
+
+            def time_slice(values, cent=None, span=None, start=None, stop=None):
+                f_start = None
+                f_stop = None
+                if cent and span:
+                    f_start = cent - span
+                    f_stop = cent + span
+                elif cent and start:
+                    f_start = start
+                    f_stop = 2 * start - cent
+                elif cent and stop:
+                    f_start = 2 * cent - stop
+                    f_stop = stop
+                elif span and start:
+                    f_start = start
+                    f_stop = start + 2 * span
+                elif span and stop:
+                    f_start = stop - 2 * span
+                    f_stop = stop
+                elif start and stop:
+                    f_start = start
+                    f_stop = stop
+
+                frequencies = np.linspace(f_start, f_stop, len(values))
+                frequencies = list(map(lambda x: float(x), frequencies))
+                return dict(zip(frequencies, values))
+
+            while True:
+                if not self.__record:
+                    time.sleep(0.1)
+                else:
+                    time.sleep(self.__sweep)
+                    self.__instr.write("INIT:IMM") if self.__instr else None
+                    self.__instr.query_opc() if self.__instr else None
+
+                    data = (
+                        self.__instr.query_str("TRACE:DATA?") if self.__instr else None
+                    )
+                    values = [random.uniform(0, 1) for _ in range(1000)]
+                    # values = [float(value) for value in data.split(",")]
+                    slice = time_slice(values, cent=self.__freq, span=self.__span)
+                    spectrogram_queue.put(
+                        Slice(
+                            datetime=datetime.now().strftime("%H:%M:%S %d/%m/%Y"),
+                            timestamp=time.time(),
+                            slice=slice,
+                        )
+                    )
+
+        self.__thread_instr = threading.Thread(target=background_instr)
+        self.__thread_instr.daemon = True
+        self.__thread_instr.start()
+
+        def background_api_client():
+            url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
+            send_by_api = check_server(url=url)
+            output_file = f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+            if send_by_api:
+                response = requests.get(url)
+
+            df = {}
+            while True:
+                time.sleep(0.1)
+                if not self.__record and len(df) > 0:
+                    df.loc[1] = ["Timestamp (Relative)"] + list(
+                        map(
+                            lambda x: str(
+                                pd.to_datetime(df.columns[1:].max() - x).time()
+                            ).replace(".", ":"),
+                            df.columns[1:],
+                        )
+                    )
+                    df.to_csv(output_file, index=False, sep=",")
+                    df = {}
+                elif not spectrogram_queue.empty():
+                    print(f"{datetime.now()}: sent {spectrogram_queue.qsize()} slices")
+
+                    if send_by_api:
+                        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
+                        response = requests.post(url, json=jsonpickle.encode(arr))
+                        if response.status_code == 200:
+                            print("Response JSON:", response.json())
+                        else:
+                            print("Error:", response.status_code, response.text)
+                    else:
+                        if len(df) == 0:
+                            data = {}
+                            data["Timestamp"] = [
+                                "Timestamp (Absolute)",
+                                "Timestamp (Relative)",
+                                "Frequency [Hz]",
+                            ] + list(spectrogram_queue.get().slice.keys())
+                            df = pd.DataFrame(data)
+
+                        while not spectrogram_queue.empty():
+                            s = spectrogram_queue.get()
+                            df[s.timestamp] = [
+                                s.datetime,
+                                0,
+                                "Magnitude [dBm]",
+                            ] + list(s.slice.values())
+
+        self.__thread_api_get = threading.Thread(target=background_api_client)
+        self.__thread_api_get.daemon = True
+        self.__thread_api_get.start()
+
+        self.__connect_instr(
+            instr=self.__conf["instrument"] if "instrument" in self.__conf else None
+        )
 
         basic_view.show()

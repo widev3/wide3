@@ -2,6 +2,7 @@ import os
 import numpy as np
 import spectrogram
 import basic_view
+from viewer.Api import Api
 from viewer.Lims import Lims
 from viewer.Cursor import Cursor
 
@@ -11,6 +12,7 @@ class View(object):
         self.__conf = conf
         self.__ax = {}
         self.__im = {}
+        self.__api = Api()
 
     def __gamma_slider_changed(self, val):
         self.__im["spectrogram"].set_norm(
@@ -22,6 +24,13 @@ class View(object):
         )
         self.__fig.canvas.draw_idle()
 
+    def __clear_all(self):
+        self.__properties = None
+        self.__frequencies = None
+        self.__spectrogram = None
+        self.__filename = None
+        self.__clear_axes()
+
     def __clear_axes(self):
         basic_view.cla_leaving_attributes(self.__ax["spectrogram"])
         basic_view.cla_leaving_attributes(self.__ax["t_proj"])
@@ -31,14 +40,16 @@ class View(object):
         basic_view.cla_leaving_attributes(self.__ax["t_power"])
         basic_view.set_title(fig=self.__fig, subtitles=[])
 
-    def __populate(self):
-        self.__clear_axes()
+    def __add(self):
+        print("ciao")
 
+    def __populate(self, x):
         lo = float(self.__conf["lo"][self.__lo_radiobuttons.index_selected]["value"])
         power_spectrogram = np.power(10, (self.__spectrogram["magnitude"] - 30) / 10)
         t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
         f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
 
+        self.__clear_axes()
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
             X=self.__spectrogram["magnitude"],
             norm=basic_view.cm.colors.PowerNorm(
@@ -118,6 +129,59 @@ class View(object):
             fig=self.__fig, subtitles=[os.path.basename(self.__filename)]
         )
 
+    def __load(self, filename):
+        if filename:
+            if not os.path.isfile(filename):
+                basic_view.show_message(
+                    self.__conf["name"],
+                    f"File {filename} is not readable or incorrectly formatted",
+                    icon=2,
+                )
+            else:
+                props, freqs, specgram = spectrogram.reader(filename, self.__conf)
+                if props is None or freqs is None or specgram is None:
+                    basic_view.show_message(
+                        self.__conf["name"],
+                        f"File {filename} is not readable or incorrectly formatted",
+                        icon=2,
+                    )
+                else:
+                    self.__properties = props
+                    self.__frequencies = freqs
+                    self.__spectrogram = specgram
+                    self.__filename = filename
+
+                    self.__lo_radiobuttons = basic_view.RadioButtons(
+                        ax=self.__ax["lo"],
+                        radio_props={"s": [64] * len(self.__conf["lo"])},
+                        labels=list(
+                            map(
+                                lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
+                                self.__conf["lo"],
+                            )
+                        ),
+                    )
+                    self.__lo_radiobuttons.on_clicked(self.__populate)
+
+                    self.__gamma_slider = basic_view.Slider(
+                        ax=self.__ax["gamma_slider"],
+                        label="Gamma",
+                        valmin=0,
+                        valmax=1,
+                        valinit=self.__conf["gamma"],
+                    )
+                    self.__gamma_slider.on_changed(
+                        lambda x: self.__gamma_slider_changed(x)
+                    )
+
+                    self.__populate(None)
+
+        basic_view.refresh()
+
+    def __viewer_setup(self):
+        self.__clear_all()
+        basic_view.set_title(fig=self.__fig, subtitles=["Waiting for slices..."])
+
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
         buttons = [
@@ -159,64 +223,8 @@ class View(object):
         self.__ax["t_power"].set_title("Time power")
         self.__ax["lo"].set_title("LO freq [MHz]")
 
-        def load(self, filename):
-            self.__properties = None
-            self.__frequencies = None
-            self.__spectrogram = None
-            if filename:
-                if not os.path.isfile(filename):
-                    basic_view.show_message(
-                        self.__conf["name"],
-                        f"File {filename} is not readable or incorrectly formatted",
-                        icon=2,
-                    )
-                else:
-                    self.__properties, self.__frequencies, self.__spectrogram = (
-                        spectrogram.reader(filename, self.__conf)
-                    )
-                    if (
-                        self.__properties is None
-                        or self.__frequencies is None
-                        or self.__spectrogram is None
-                    ):
-                        basic_view.show_message(
-                            self.__conf["name"],
-                            f"File {filename} is not readable or incorrectly formatted",
-                            icon=2,
-                        )
-                    else:
-                        self.__lo_radiobuttons = basic_view.RadioButtons(
-                            ax=self.__ax["lo"],
-                            radio_props={"s": [64] * len(self.__conf["lo"])},
-                            labels=list(
-                                map(
-                                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
-                                    self.__conf["lo"],
-                                )
-                            ),
-                        )
-                        self.__lo_radiobuttons.on_clicked(lambda x: self.__populate())
-
-                        self.__gamma_slider = basic_view.Slider(
-                            ax=self.__ax["gamma_slider"],
-                            label="Gamma",
-                            valmin=0,
-                            valmax=1,
-                            valinit=self.__conf["gamma"],
-                        )
-                        self.__gamma_slider.on_changed(
-                            lambda x: self.__gamma_slider_changed(x)
-                        )
-
-                        self.__filename = filename
-                        self.__populate()
-            else:
-                self.__clear_axes()
-
-            basic_view.refresh()
-
         self.__clear_button = basic_view.Button(ax=self.__ax["clear"], label="Clear")
-        self.__clear_button.on_clicked(lambda x: load(self=self, filename=None))
+        self.__clear_button.on_clicked(lambda x: self.__clear_all())
 
         def load_csv_button_click():
             file = basic_view.file_dialog(
@@ -224,8 +232,9 @@ class View(object):
                 message="Load CSV",
                 filter="csv Files (*.csv)",
             )
+
             if file:
-                load(self=self, filename=file)
+                self.__load(filename=file)
 
         self.__load_csv_button = basic_view.Button(
             ax=self.__ax["load_csv"], label="Load CSV"
@@ -240,7 +249,12 @@ class View(object):
             )
         )
 
+        self.__api.viewer_setup_callback(self.__viewer_setup)
+        self.__api.viewer_add_callback(self.__add)
+        self.__api.run(port=self.__conf["global"]["port"])
+
+        self.__clear_all()
         file = self.__conf["filename"] if "filename" in self.__conf else None
-        load(self=self, filename=file)
+        self.__load(filename=file)
 
         basic_view.show()

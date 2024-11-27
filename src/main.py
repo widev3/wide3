@@ -39,16 +39,12 @@ if config_file:
 
     try:
         startup_pack = "viewer"
-        startup_pack_conf = next(
-            sub
-            for sub in list(
-                map(
-                    lambda x: x["startup_package"] if "startup_package" in x else None,
-                    conf,
-                )
-            )
+        startup_pack_conf = conf["global"] if "global" in conf else None
+        startup_pack = (
+            startup_pack_conf["startup_package"]
+            if "startup_package" in startup_pack_conf
+            else startup_pack
         )
-        startup_pack = startup_pack_conf if startup_pack_conf else startup_pack
         pv = PackageViewer.PackageViewer(conf)
         startup_package = pv.instance().packages[startup_pack]
         startup_package.view()

@@ -28,16 +28,11 @@ class PackageViewer:
             self.packages = {}
             self.initialized = True
             for el in views_dict:
-                pack = list(
-                    filter(
-                        lambda x: (x["package"] if "package" in x else None) == el, conf
-                    )
-                )
-                if len(pack) == 0:
+                pack = conf[el] if el in conf else None
+                pack["global"] = conf["global"]
+                if not pack:
                     raise Exception(f"No configurations for package {el}")
-                if len(pack) > 1:
-                    raise Exception(f"More than one configuration for {el}")
-                self.packages[el] = views_dict[el](pack[0])
+                self.packages[el] = views_dict[el](pack)
 
     def instance(self):
         return self._instance

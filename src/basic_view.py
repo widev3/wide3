@@ -126,7 +126,7 @@ def show():
 
 
 def refresh():
-    plt.show()
+    plt.show(block=False)
 
 
 def connect(string, event):

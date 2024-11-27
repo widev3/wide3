@@ -23,6 +23,9 @@ pip3 install visa
 pip3 install psutil
 pip3 install zeroconf
 pip3 install pyinstaller
+pip3 install flask
+pip3 install requests
+pip3 install jsonpickle
 ```
 
 ```bash
