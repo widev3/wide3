@@ -1,16 +1,16 @@
 import sys
-import jsonpickle
 import time
 import queue
 import random
 import requests
+import datetime
 import threading
+import jsonpickle
 import numpy as np
 import pandas as pd
 import basic_view
 import traceback
 from utils import check_server, stof_locale
-from datetime import datetime
 from RsInstrument import RsInstrument
 
 
@@ -66,7 +66,7 @@ class View(object):
             self.__instr = RsInstrument(key, id_query=True, reset=True)
             idn = self.__instr_comm(cmd="*IDN?", case="query_str")
 
-            now = datetime.now()
+            now = datetime.datetime.now()
             self.__instr_comm("SYST:BEEP:KEY:VOL", 0)
             self.__instr_comm("SYST:BEEP:POV", "ON")
             self.__instr_comm("SYST:BEEP:VOL", 1)
@@ -124,7 +124,9 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
     def __start_record(self, x):
         url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
         self.__send_by_api = check_server(url=url)
-        self.__output_file = f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+        self.__output_file = (
+            f"{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+        )
         requests.get(url) if self.__send_by_api else None
         self.__record = True
 
@@ -277,7 +279,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             class Slice:
                 def __init__(self, dt, slice):
                     self.datetime = dt.strftime("%H:%M:%S %d/%m/%Y")
-                    self.timestamp = datetime.timestamp(dt)
+                    self.timestamp = datetime.datetime.timestamp(dt)
                     self.slice = slice
 
             def time_slice(values, cent=None, span=None, start=None, stop=None):
@@ -312,15 +314,11 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                     self.__instr_comm("INIT:IMM")
                     self.__instr_comm(case="query_opc")
 
-                    # just a random sample is case of no connection
                     data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
-                    values = (
-                        [float(value) for value in data.split(",")]
-                        if data
-                        else [random.uniform(0, 1) for _ in range(1000)]
-                    )
-                    slice = time_slice(values, cent=self.__freq, span=self.__span)
-                    slices_queue.put(Slice(dt=datetime.now(), slice=slice))
+                    if data:
+                        values = [float(value) for value in data.split(",")]
+                        slice = time_slice(values, cent=self.__freq, span=self.__span)
+                        slices_queue.put(Slice(dt=datetime.datetime.now(), slice=slice))
 
         self.__thread_instr = threading.Thread(target=background_instr)
         self.__thread_instr.daemon = True
@@ -335,18 +333,57 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                 if not self.__record and len(df) > 0:
                     df.loc[1] = ["Timestamp (Relative)"] + list(
                         map(
-                            lambda x: str(
-                                pd.to_datetime(df.columns[1:].max() - x).time()
-                            ).replace(".", ":"),
+                            lambda x: datetime.datetime.fromtimestamp(
+                                timestamp=df.columns[1:].max() - x,
+                                tz=datetime.timezone.utc,
+                            ).strftime("%H:%M:%S:%f"),
                             df.columns[1:],
                         )
                     )
+
+                    # df.columns = pd.MultiIndex.from_tuples(
+                    #     zip(
+                    #         ["properties"]
+                    #         + list(map(lambda x: str(x), range(len(df.columns) - 1))),
+                    #         df.columns,
+                    #     )
+                    # )
+
+                    # df.columns = pd.MultiIndex.from_tuples(
+                    #     zip(
+                    #         ["frequencies"]
+                    #         + list(map(lambda x: str(x), range(len(df.columns) - 1))),
+                    #         df.columns,
+                    #     )
+                    # )
+
                     df.to_csv(self.__output_file, index=False, sep=",")
                     df = {}
+                    total_queue_size = 0
                     while not slices_queue.empty():
                         slices_queue.get()
                 elif queue_size > 10:
                     total_queue_size += queue_size
+
+                    arr = []
+                    while not slices_queue.empty():
+                        arr.append(slices_queue.get())
+
+                    if len(df) == 0:
+                        data = {}
+                        data["Timestamp"] = [
+                            "Timestamp (Absolute)",
+                            "Timestamp (Relative)",
+                            "Frequency [Hz]",
+                        ] + list(list(map(lambda x: x.slice.keys(), arr))[0])
+                        df = pd.DataFrame(data)
+
+                    for el in arr:
+                        df[el.timestamp] = [
+                            el.datetime,
+                            el.timestamp,
+                            "Magnitude [dBm]",
+                        ] + list(el.slice.values())
 
                     if self.__send_by_api:
                         url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
@@ -355,25 +392,8 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                             print("Response JSON:", response.json())
                         else:
                             print("Error:", response.status_code, response.text)
-                    else:
-                        while not slices_queue.empty():
-                            s = slices_queue.get()
-                            if len(df) == 0:
-                                data = {}
-                                data["Timestamp"] = [
-                                    "Timestamp (Absolute)",
-                                    "Timestamp (Relative)",
-                                    "Frequency [Hz]",
-                                ] + list(s.slice.keys())
-                                df = pd.DataFrame(data)
 
-                            df[s.timestamp] = [
-                                s.datetime,
-                                s.timestamp,
-                                "Magnitude [dBm]",
-                            ] + list(s.slice.values())
-
-                    print(f"{datetime.now()}: {queue_size}/{total_queue_size}")
+                    print(f"{datetime.datetime.now()}: {queue_size}/{total_queue_size}")
 
         self.__thread_api_get = threading.Thread(target=background_api_client)
         self.__thread_api_get.daemon = True

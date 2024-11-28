@@ -16,7 +16,7 @@ def milliseconds(strptime):
     )
 
 
-def extract_quantity_and_unit(string):
+def qty_and_unit(string):
     match = re.match(r"(.+)\s\[(.+)\]", string)
     if match:
         quantity = match.group(1).strip()  # Group 1 is the quantity
@@ -91,10 +91,8 @@ def spectrogram(file, conf):
     magnitude = np.array(list(map(lambda x: x[1:], spec.values)))  # magnitudes
     um = {}
     um["time"] = "ms"
-    um["frequency"] = extract_quantity_and_unit(frequency.name)[1]
-    um["magnitude"] = tuple(
-        list(set(map(lambda x: extract_quantity_and_unit(x), columns[1:-1])))[0]
-    )
+    um["frequency"] = qty_and_unit(frequency.name)[1]
+    um["magnitude"] = tuple(list(set(map(lambda x: qty_and_unit(x), columns[1:-1])))[0])
 
     return {
         "relative_time": relative_tss_zero_start,

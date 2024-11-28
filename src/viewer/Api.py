@@ -31,11 +31,14 @@ class Api:
     @api_server.route("/viewer/add", methods=["POST"])
     def slice_post():
         if request.is_json:
-            data = request.get_json()
-            python_dict = json.loads(data)
-            timestamp = data["timestamp"]
-            slice = data["slice"]
+            arr = request.get_json()
+            arr = json.loads(arr)
+            for el in arr:
+                print(el["timestamp"])
+                return jsonify({"code": "OK"}), 200
+
+                timestamp = el["timestamp"]
+                slice = el["slice"]
             Api._viewer_add_callback() if Api._viewer_add_callback else None
-            return jsonify({"code": "OK"}), 200
         else:
             return jsonify({"error": "Request must be in JSON format"}), 400

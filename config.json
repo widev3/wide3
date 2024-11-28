@@ -6,7 +6,7 @@
     "viewer": {
         "package": "viewer",
         "name": "Viewer",
-        "filename": "input/Spectrogram_crop.csv",
+        "filename": "input/2024-11-28_19-02-12.csv",
         "separator": ",",
         "gamma": 0.3,
         "cmap": "magma",
