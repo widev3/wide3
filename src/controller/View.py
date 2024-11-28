@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import basic_view
 import traceback
-from utils import check_server
+from utils import check_server, stof_locale
 from datetime import datetime
 from RsInstrument import RsInstrument
 
@@ -64,20 +64,20 @@ class View(object):
 
             self.__disconnect_instr()
             self.__instr = RsInstrument(key, id_query=True, reset=True)
-            idn = self.__instr.query_str("*IDN?")
+            idn = self.__instr_comm(cmd="*IDN?", case="query_str")
 
             now = datetime.now()
-            self.__instr.write("SYST:BEEP:KEY:VOL 0")
-            self.__instr.write("SYST:BEEP:POV ON")
-            self.__instr.write("SYST:BEEP:VOL 1")
-            self.__instr.write("SYST:DISP:UPD ON")
-            self.__instr.write(f"SYST:DATE {now.year},{now.month},{now.day}")
-            self.__instr.write(f"SYST:TIME {now.hour},{now.minute},{now.second}")
-            self.__instr.write("SYST:TZON 01,00")
-            self.__instr.write("UNIT:LENG MET")
-            self.__instr.write("INST:SEL SAN")
-            self.__instr.write("UNIT:POW W")
-            self.__instr.write("INIT:CONT ON")
+            self.__instr_comm("SYST:BEEP:KEY:VOL", 0)
+            self.__instr_comm("SYST:BEEP:POV", "ON")
+            self.__instr_comm("SYST:BEEP:VOL", 1)
+            self.__instr_comm("SYST:DISP:UPD", "ON")
+            self.__instr_comm("SYST:DATE", f"{now.year},{now.month},{now.day}")
+            self.__instr_comm("SYST:TIME", f"{now.hour},{now.minute},{now.second}")
+            self.__instr_comm("SYST:TZON", "01,00")
+            self.__instr_comm("UNIT:LENG", "MET")
+            self.__instr_comm("INST:SEL", "SAN")
+            self.__instr_comm("UNIT:POW", "W")
+            self.__instr_comm("INIT:CONT", "ON")
 
             self.__ax["connect_sa"].cla()
             self.__connect_sa_button = basic_view.Button(
@@ -91,7 +91,7 @@ class View(object):
             )
             self.__record_button.on_clicked(self.__start_record)
 
-            self.__instr_write()
+            self.__instr_update()
 
             basic_view.set_title(fig=self.__fig, subtitles=[key])
             basic_view.show_message(
@@ -122,22 +122,41 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__record_button.on_clicked(self.__start_record)
 
     def __start_record(self, x):
+        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
+        self.__send_by_api = check_server(url=url)
+        self.__output_file = f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+        requests.get(url) if self.__send_by_api else None
         self.__record = True
+
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Stop record"
         )
         self.__record_button.on_clicked(self.__stop_record)
 
-        self.__instr.write("INIT:CONT OFF") if self.__instr else None
+        self.__instr_comm("INIT:CONT", "OFF")
 
-    def __instr_write(self, x=None):
-        self.__freq = float(self.__central_text_box.text) * 10**6
-        self.__span = float(self.__span_text_box.text) * 10**6
-        self.__sweep = float(self.__sweep_text_box.text) * 10**-3
-        self.__instr.write(f"SENS:FREQ:CENT {self.__freq}") if self.__instr else None
-        self.__instr.write(f"SENS:FREQ:SPAN {self.__span}") if self.__instr else None
-        self.__instr.write(f"SENS:SWE:TIME {self.__sweep}") if self.__instr else None
+    def __instr_comm(self, cmd=None, val=None, case=None):
+        try:
+            if not self.__instr:
+                return False
+
+            if not case:
+                return self.__instr.write(f"{cmd}{f" {val}" if val else ""}")
+            elif not cmd and not val:
+                return getattr(self.__instr, case)()
+            elif cmd or val:
+                return getattr(self.__instr, case)(f"{cmd}{f" {val}" if val else ""}")
+        except:
+            return False
+
+    def __instr_update(self, x=None):
+        self.__freq = stof_locale(self.__central_text_box.text) * 10**6
+        self.__span = stof_locale(self.__span_text_box.text) * 10**6
+        self.__sweep = stof_locale(self.__sweep_text_box.text) * 10**-3
+        self.__instr_comm(cmd="SENS:FREQ:CENT", val=self.__freq)
+        self.__instr_comm(cmd="SENS:FREQ:SPAN", val=self.__span)
+        self.__instr_comm(cmd="SENS:SWE:TIME", val=self.__sweep)
 
     def view(self):
         mosaic = basic_view.generate_array(50, 50)
@@ -178,8 +197,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Start record"
         )
-        # self.__record_button.on_clicked(lambda x: None)
-        self.__record_button.on_clicked(self.__start_record)
+        self.__record_button.on_clicked(lambda x: None)
         self.__record_button.color = "gray"
         self.__record_button.hovercolor = "gray"
 
@@ -213,18 +231,16 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__confirm_button = basic_view.Button(
             ax=self.__ax["confirm"], label="Confirm"
         )
-        self.__confirm_button.on_clicked(self.__instr_write)
+        self.__confirm_button.on_clicked(self.__instr_update)
 
         self.__central_slider = basic_view.Slider(
             ax=self.__ax["central_slider"],
             label=None,
             valmin=0,
             valmax=3000,
-            valinit=float(self.__central_text_box.text),
+            valinit=stof_locale(self.__central_text_box.text),
         )
-        self.__central_slider.on_changed(
-            lambda x: self.__central_text_box.set_val(int(x))
-        )
+        self.__central_slider.on_changed(lambda x: self.__central_text_box.set_val(x))
 
         self.__span_slider = basic_view.Slider(
             ax=self.__ax["span_slider"],
@@ -233,7 +249,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             valmax=1500,
             valinit=float(self.__span_text_box.text),
         )
-        self.__span_slider.on_changed(lambda x: self.__span_text_box.set_val(int(x)))
+        self.__span_slider.on_changed(lambda x: self.__span_text_box.set_val(x))
 
         self.__sweep_slider = basic_view.Slider(
             ax=self.__ax["sweep_slider"],
@@ -242,26 +258,26 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             valmax=60000,
             valinit=float(self.__sweep_text_box.text),
         )
-        self.__sweep_slider.on_changed(lambda x: self.__sweep_text_box.set_val(int(x)))
+        self.__sweep_slider.on_changed(lambda x: self.__sweep_text_box.set_val(x))
 
         def set_sliders_and_write(x):
-            self.__central_slider.set_val(float(self.__central_text_box.text))
-            self.__span_slider.set_val(float(self.__span_text_box.text))
-            self.__sweep_slider.set_val(float(self.__sweep_text_box.text))
-            sys.stdout.flush()
             if x.key == "enter":
-                self.__instr_write()
+                sys.stdout.flush()
+                self.__central_slider.set_val(stof_locale(self.__central_text_box.text))
+                self.__span_slider.set_val(stof_locale(self.__span_text_box.text))
+                self.__sweep_slider.set_val(stof_locale(self.__sweep_text_box.text))
+                self.__instr_update()
 
         basic_view.connect("key_press_event", set_sliders_and_write)
 
-        spectrogram_queue = queue.Queue()
+        slices_queue = queue.Queue()
 
         def background_instr():
 
             class Slice:
-                def __init__(self, datetime, timestamp, slice):
-                    self.datetime = datetime
-                    self.timestamp = timestamp
+                def __init__(self, dt, slice):
+                    self.datetime = dt.strftime("%H:%M:%S %d/%m/%Y")
+                    self.timestamp = datetime.timestamp(dt)
                     self.slice = slice
 
             def time_slice(values, cent=None, span=None, start=None, stop=None):
@@ -291,41 +307,31 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                 return dict(zip(frequencies, values))
 
             while True:
-                if not self.__record:
-                    time.sleep(0.1)
-                else:
-                    time.sleep(self.__sweep)
-                    self.__instr.write("INIT:IMM") if self.__instr else None
-                    self.__instr.query_opc() if self.__instr else None
+                time.sleep(0.001)
+                if self.__record:
+                    self.__instr_comm("INIT:IMM")
+                    self.__instr_comm(case="query_opc")
 
-                    data = (
-                        self.__instr.query_str("TRACE:DATA?") if self.__instr else None
+                    # just a random sample is case of no connection
+                    data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
+                    values = (
+                        [float(value) for value in data.split(",")]
+                        if data
+                        else [random.uniform(0, 1) for _ in range(1000)]
                     )
-                    values = [random.uniform(0, 1) for _ in range(1000)]
-                    # values = [float(value) for value in data.split(",")]
                     slice = time_slice(values, cent=self.__freq, span=self.__span)
-                    spectrogram_queue.put(
-                        Slice(
-                            datetime=datetime.now().strftime("%H:%M:%S %d/%m/%Y"),
-                            timestamp=time.time(),
-                            slice=slice,
-                        )
-                    )
+                    slices_queue.put(Slice(dt=datetime.now(), slice=slice))
 
         self.__thread_instr = threading.Thread(target=background_instr)
         self.__thread_instr.daemon = True
         self.__thread_instr.start()
 
         def background_api_client():
-            url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
-            send_by_api = check_server(url=url)
-            output_file = f"{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
-            if send_by_api:
-                response = requests.get(url)
-
             df = {}
+            total_queue_size = 0
             while True:
-                time.sleep(0.1)
+                time.sleep(1)
+                queue_size = slices_queue.qsize()
                 if not self.__record and len(df) > 0:
                     df.loc[1] = ["Timestamp (Relative)"] + list(
                         map(
@@ -335,12 +341,14 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                             df.columns[1:],
                         )
                     )
-                    df.to_csv(output_file, index=False, sep=",")
+                    df.to_csv(self.__output_file, index=False, sep=",")
                     df = {}
-                elif not spectrogram_queue.empty():
-                    print(f"{datetime.now()}: sent {spectrogram_queue.qsize()} slices")
+                    while not slices_queue.empty():
+                        slices_queue.get()
+                elif queue_size > 10:
+                    total_queue_size += queue_size
 
-                    if send_by_api:
+                    if self.__send_by_api:
                         url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
                         response = requests.post(url, json=jsonpickle.encode(arr))
                         if response.status_code == 200:
@@ -348,22 +356,24 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                         else:
                             print("Error:", response.status_code, response.text)
                     else:
-                        if len(df) == 0:
-                            data = {}
-                            data["Timestamp"] = [
-                                "Timestamp (Absolute)",
-                                "Timestamp (Relative)",
-                                "Frequency [Hz]",
-                            ] + list(spectrogram_queue.get().slice.keys())
-                            df = pd.DataFrame(data)
+                        while not slices_queue.empty():
+                            s = slices_queue.get()
+                            if len(df) == 0:
+                                data = {}
+                                data["Timestamp"] = [
+                                    "Timestamp (Absolute)",
+                                    "Timestamp (Relative)",
+                                    "Frequency [Hz]",
+                                ] + list(s.slice.keys())
+                                df = pd.DataFrame(data)
 
-                        while not spectrogram_queue.empty():
-                            s = spectrogram_queue.get()
                             df[s.timestamp] = [
                                 s.datetime,
-                                0,
+                                s.timestamp,
                                 "Magnitude [dBm]",
                             ] + list(s.slice.values())
+
+                    print(f"{datetime.now()}: {queue_size}/{total_queue_size}")
 
         self.__thread_api_get = threading.Thread(target=background_api_client)
         self.__thread_api_get.daemon = True

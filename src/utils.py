@@ -1,3 +1,4 @@
+import locale
 import requests
 
 
@@ -10,3 +11,13 @@ def check_server(url):
             return False
     except:
         return False
+
+
+def stof_locale(str):
+    try:
+        return float(str)
+    except:
+        try:
+            return locale.atof(str)
+        except:
+            return 0

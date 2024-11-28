@@ -29,9 +29,9 @@
         "package": "controller",
         "name": "Controller",
         "instrumentt": "TCPIP::172.16.10.10::INSTR",
-        "central": 2158,
-        "span": 40,
-        "sweep": 12
+        "central": 394.3,
+        "span": 0.6,
+        "sweep": 100
     },
     "mount_control": {
         "package": "mount_control",
