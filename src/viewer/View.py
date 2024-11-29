@@ -4,7 +4,9 @@ import spectrogram
 import basic_view
 from viewer.Api import Api
 from viewer.Lims import Lims
+from utils import freq_to_nm
 from viewer.Cursor import Cursor
+from wavelen2rgb import wavelen2rgb
 
 
 class View(object):
@@ -50,7 +52,35 @@ class View(object):
         f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
 
         self.__clear_axes()
+
+        # # 1. normalization magnitudes in the range [0; 255]
+        # norm_magn = (
+        #     255
+        #     * (self.__spectrogram["magnitude"] - self.__spectrogram["magnitude"].min())
+        #     / (
+        #         self.__spectrogram["magnitude"].max()
+        #         - self.__spectrogram["magnitude"].min()
+        #     )
+        # )
+
+        # # 2. map radio frequencies to light frequencies
+        # min_light_freq = 380 * 10**12
+        # max_light_freq = 750 * 10**12
+        # false_freqs = min_light_freq + (max_light_freq - min_light_freq) * (
+        #     self.__spectrogram["frequency"] - self.__spectrogram["frequency"].min()
+        # ) / (
+        #     self.__spectrogram["frequency"].max()
+        #     - self.__spectrogram["frequency"].min()
+        # )
+
+        # # 3. map frequencies to RGB with normalized magnitudes
+        # false_mag = [
+        #     [wavelen2rgb(freq_to_nm(false_freqs[ids]), int(el)) for el in els]
+        #     for ids, els in enumerate(norm_magn)
+        # ]
+
         self.__im["spectrogram"] = self.__ax["spectrogram"].imshow(
+            # false_mag,
             X=self.__spectrogram["magnitude"],
             norm=basic_view.cm.colors.PowerNorm(
                 gamma=self.__conf["gamma"],

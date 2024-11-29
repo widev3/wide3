@@ -1,12 +1,12 @@
 {
     "global": {
-        "startup_package": "controller",
+        "startup_package": "viewer",
         "port": 32482
     },
     "viewer": {
         "package": "viewer",
         "name": "Viewer",
-        "filename": "input/2024-11-28_19-02-12.csv",
+        "filename": "input/Spectrogram_wave_long.csv",
         "separator": ",",
         "gamma": 0.3,
         "cmap": "magma",

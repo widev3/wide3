@@ -359,13 +359,6 @@ def table(title, dataframe):
     popup.exec_()
 
 
-def file_dialog():
-    file_dialog = QFileDialog()
-    csv_file, _ = file_dialog.getOpenFileName(
-        None, "Open CSV File", "", "CSV Files (*.csv)"
-    )
-
-
 def generate_array(x, y, element=None):
     return [[element for _ in range(x)] for _ in range(y)]
 
