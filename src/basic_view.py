@@ -1,3 +1,4 @@
+import os
 import matplotlib
 
 matplotlib.use("qtagg")
@@ -73,7 +74,7 @@ def buttons_frame(s, ax, current_package):
                 )
 
 
-def create(title, mosaic, unwanted_buttons=[]):
+def create(title, mosaic, icon, unwanted_buttons=[], size=None):
     plt.ion()
     fig, ax = plt.subplot_mosaic(
         mosaic=mosaic,
@@ -93,13 +94,13 @@ def create(title, mosaic, unwanted_buttons=[]):
 
     set_title(fig=fig, title=title)
     mng = plt.get_current_fig_manager()
-    mng.window.showMaximized()
 
-    mng.window.setWindowIcon(
-        QtGui.QIcon(
-            "icons/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.ico"
-        )
-    )
+    if size:
+        mng.window.resize(*size)
+    else:
+        mng.window.showMaximized()
+
+    mng.window.setWindowIcon(QtGui.QIcon(icon))
 
     for x in mng.toolbar.actions():
         if x.text() in unwanted_buttons:
@@ -116,7 +117,6 @@ def set_title(fig, title=None, subtitles=[]):
         return
 
     title = title + (" - " + " - ".join(subtitles) if subtitles else "")
-    fig.canvas.manager.set_window_title(title=title)
     mng = plt.get_current_fig_manager()
     mng.window.setWindowTitle(title)
 
@@ -164,43 +164,32 @@ def show_message(title, message, icon):
 
 def file_dialog(title, message, filter):
     class TextInputDialogView(QDialog):
-        def __init__(self, title, message):
+        def __init__(self, title, message, filter):
             super().__init__()
             self.setWindowTitle(title)
             self.resize(800, 600)
 
             layout = QVBoxLayout()
-            h_layout = QHBoxLayout()
-
-            self.label = QLabel(message, self)
-            h_layout.addWidget(self.label)
-
-            self.text_input = QLineEdit(self)
-            h_layout.addWidget(self.text_input)
-
-            layout.addLayout(h_layout)
-
-            self.ok_button = QPushButton("OK", self)
-            self.ok_button.clicked.connect(self.on_ok_clicked)
-            layout.addWidget(self.ok_button)
+            self.btn = QPushButton(message)
+            self.btn.clicked.connect(self.get_file)
+            layout.addWidget(self.btn)
 
             self.setLayout(layout)
 
-            layout.setSpacing(10)
-            layout.addStretch()
+        def get_file(self):
+            file = QFileDialog.getOpenFileName(
+                self,
+                caption=message,
+                directory=os.path.abspath(os.getcwd()),
+                filter=filter,
+            )
 
-        def on_ok_clicked(self):
-            self.entered_text = self.text_input.text()
             self.accept()
+            return file[0]
 
-        def get_text(self):
-            if self.exec_() == QDialog.Accepted:
-                return self.entered_text
-            return None
-
-    dialog = TextInputDialogView(title, message)
+    dialog = TextInputDialogView(title, message, filter)
     dialog.show()
-    input_text = dialog.get_text()
+    input_text = dialog.get_file()
     return input_text
 
 

@@ -33,13 +33,15 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="icons\" />
+    <Folder Include="input\" />
     <Folder Include="src\" />
     <Folder Include="src\controller\" />
     <Folder Include="src\viewer\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="compile.py" />
     <Compile Include="src\basic_view.py" />
-    <Compile Include="src\controller\rs.py" />
     <Compile Include="src\controller\View.py" />
     <Compile Include="src\main.py" />
     <Compile Include="src\PackageViewer.py" />
@@ -50,6 +52,20 @@
     <Compile Include="src\viewer\Lims.py" />
     <Compile Include="src\viewer\View.py" />
     <Compile Include="src\wavelen2rgb.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="config.json" />
+    <Content Include="icons\control_camera_144dp_992B15_FILL0_wght400_GRAD0_opsz48.png" />
+    <Content Include="icons\whistle_of_wind.png" />
+    <Content Include="input\2024-11-28_19-02-12.csv" />
+    <Content Include="input\Spectrogram.csv" />
+    <Content Include="input\Spectrogram001.spm" />
+    <Content Include="input\Spectrogram003.spm" />
+    <Content Include="input\Spectrogram2.spm" />
+    <Content Include="input\Spectrogram_crop.csv" />
+    <Content Include="input\Spectrogram_wave.csv" />
+    <Content Include="input\Spectrogram_wave_long.csv" />
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

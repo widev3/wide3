@@ -1,7 +1,6 @@
 import sys
 import time
 import queue
-import random
 import requests
 import datetime
 import threading
@@ -10,7 +9,7 @@ import numpy as np
 import pandas as pd
 import basic_view
 import traceback
-from utils import check_server, stof_locale
+from utils import req, stof_locale
 from RsInstrument import RsInstrument
 
 
@@ -20,6 +19,9 @@ class View(object):
         self.__ax = {}
         self.__record = False
         self.__instr = None
+        self.__freq = None
+        self.__span = None
+        self.__sweep = None
 
     def __disconnect_instr(self, x=None):
         try:
@@ -114,21 +116,21 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         basic_view.refresh()
 
     def __stop_record(self, x):
-        self.__record = False
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
             ax=self.__ax["record"], label="Start record"
         )
         self.__record_button.on_clicked(self.__start_record)
 
+        self.__record = False
+        self.__instr_comm("INIT:CONT", "ON")
+
     def __start_record(self, x):
+        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/ping"
+        self.__api = True if req(url=url, method="get") else False
+
         url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
-        self.__send_by_api = check_server(url=url)
-        self.__output_file = (
-            f"{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
-        )
-        requests.get(url) if self.__send_by_api else None
-        self.__record = True
+        self.__api = True if req(url=url, method="get") and self.__api else False
 
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
@@ -136,7 +138,11 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         )
         self.__record_button.on_clicked(self.__stop_record)
 
+        self.__output_file = (
+            f"{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+        )
         self.__instr_comm("INIT:CONT", "OFF")
+        self.__record = True
 
     def __instr_comm(self, cmd=None, val=None, case=None):
         try:
@@ -187,7 +193,12 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         basic_view.fill_with_string(mosaic, (6, 7), (25, 8), "span_slider", (0, 0))
         basic_view.fill_with_string(mosaic, (6, 9), (25, 10), "sweep_slider", (0, 0))
 
-        self.__fig, self.__ax = basic_view.create(self.__conf["name"], mosaic)
+        self.__fig, self.__ax = basic_view.create(
+            self.__conf["name"],
+            mosaic,
+            icon="icons/control_camera_144dp_992B15_FILL0_wght400_GRAD0_opsz48.png",
+            size=(800, 500),
+        )
 
         basic_view.buttons_frame(self, self.__ax, self.__conf["package"])
 
@@ -309,16 +320,21 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                 return dict(zip(frequencies, values))
 
             while True:
-                time.sleep(0.001)
-                if self.__record:
-                    self.__instr_comm("INIT:IMM")
-                    self.__instr_comm(case="query_opc")
+                if self.__sweep:
+                    time.sleep(self.__sweep / 3)
+                    if self.__record:
+                        self.__instr_comm("INIT:IMM")
+                        self.__instr_comm(case="query_opc")
 
-                    data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
-                    if data:
-                        values = [float(value) for value in data.split(",")]
-                        slice = time_slice(values, cent=self.__freq, span=self.__span)
-                        slices_queue.put(Slice(dt=datetime.datetime.now(), slice=slice))
+                        data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
+                        if data:
+                            values = [float(value) for value in data.split(",")]
+                            slice = time_slice(
+                                values, cent=self.__freq, span=self.__span
+                            )
+                            slices_queue.put(
+                                Slice(dt=datetime.datetime.now(), slice=slice)
+                            )
 
         self.__thread_instr = threading.Thread(target=background_instr)
         self.__thread_instr.daemon = True
@@ -341,23 +357,11 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                         )
                     )
 
-                    # df.columns = pd.MultiIndex.from_tuples(
-                    #     zip(
-                    #         ["properties"]
-                    #         + list(map(lambda x: str(x), range(len(df.columns) - 1))),
-                    #         df.columns,
-                    #     )
-                    # )
+                    f = open(self.__output_file, "w")
+                    f.writelines(["properties scope\n\n", "frequencies scope\n\n"])
+                    f.close()
 
-                    # df.columns = pd.MultiIndex.from_tuples(
-                    #     zip(
-                    #         ["frequencies"]
-                    #         + list(map(lambda x: str(x), range(len(df.columns) - 1))),
-                    #         df.columns,
-                    #     )
-                    # )
-
-                    df.to_csv(self.__output_file, index=False, sep=",")
+                    df.to_csv(self.__output_file, mode="a", index=False, sep=",")
                     df = {}
                     total_queue_size = 0
                     while not slices_queue.empty():
@@ -385,9 +389,11 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                             "Magnitude [dBm]",
                         ] + list(el.slice.values())
 
-                    if self.__send_by_api:
+                    if self.__api:
                         url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
-                        response = requests.post(url, json=jsonpickle.encode(arr))
+                        response = req(
+                            url=url, method="post", json=jsonpickle.encode(arr)
+                        )
                         if response.status_code == 200:
                             print("Response JSON:", response.json())
                         else:

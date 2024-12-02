@@ -4,9 +4,7 @@ import spectrogram
 import basic_view
 from viewer.Api import Api
 from viewer.Lims import Lims
-from utils import freq_to_nm
 from viewer.Cursor import Cursor
-from wavelen2rgb import wavelen2rgb
 
 
 class View(object):
@@ -40,7 +38,7 @@ class View(object):
         basic_view.cla_leaving_attributes(self.__ax["f_proj"])
         basic_view.cla_leaving_attributes(self.__ax["f_power"])
         basic_view.cla_leaving_attributes(self.__ax["t_power"])
-        basic_view.set_title(fig=self.__fig, subtitles=[])
+        basic_view.set_title(fig=self.__fig)
 
     def __add(self):
         print("ciao")
@@ -242,7 +240,9 @@ class View(object):
         basic_view.fill_with_string(mosaic, (38, 2), (50, 27), "f_power", (3, 2))
         basic_view.fill_with_string(mosaic, (38, 27), (50, 49), "t_power", (3, 5))
 
-        self.__fig, self.__ax = basic_view.create(self.__conf["name"], mosaic)
+        self.__fig, self.__ax = basic_view.create(
+            self.__conf["name"], mosaic, "icons/whistle_of_wind.png"
+        )
 
         basic_view.buttons_frame(self, self.__ax, self.__conf["package"])
 
@@ -260,7 +260,7 @@ class View(object):
             file = basic_view.file_dialog(
                 title=self.__conf["name"],
                 message="Load CSV",
-                filter="csv Files (*.csv)",
+                filter="CSV files (*.csv)",
             )
 
             if file:

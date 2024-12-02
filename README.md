@@ -11,31 +11,7 @@ sudo apt install python3-virtualenv -y
 sudo apt install python3-venv -y
 python3 -m venv env
 source env/bin/activate
-pip3 install matplotlib
-pip3 install pyqt5
-pip3 install pandas
-pip3 install scipy
-pip3 install astropy
-pip3 install RsInstrument
-pip3 install pyvisa
-pip3 install pyvisa-py
-pip3 install visa
-pip3 install psutil
-pip3 install zeroconf
-pip3 install pyinstaller
-pip3 install flask
-pip3 install requests
-pip3 install jsonpickle
-```
-
-```bash
-rm -rf env include bin lib
-```
-
-## Build a standalone executable of tools
-
-```bash
-./compile
+pip3 install -r requirements.txt
 ```
 
 ## Usefull links

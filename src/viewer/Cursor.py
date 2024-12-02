@@ -85,7 +85,7 @@ class Cursor:
             basic_view.fill_with_string(mosaic, (40, 10), (50, 50), "peaks", (1, 5))
 
             self.__fig, self.inner_ax = basic_view.create(
-                self.ax[target].get_title(), mosaic
+                self.ax[target].get_title(), mosaic, "icons/whistle_of_wind.png"
             )
 
             def on_options_radiobuttons_clicked(label):

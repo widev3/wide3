@@ -23,13 +23,17 @@ class Api:
         server_thread.daemon = True
         server_thread.start()
 
+    @api_server.route("/viewer/ping", methods=["GET"])
+    def viewer_ping():
+        return jsonify({"code": "OK"}), 200
+
     @api_server.route("/viewer/setup", methods=["GET"])
-    def slice_get():
+    def viewer_setup():
         Api._viewer_setup_callback() if Api._viewer_setup_callback else None
         return jsonify({"code": "OK"}), 200
 
     @api_server.route("/viewer/add", methods=["POST"])
-    def slice_post():
+    def viewer_add():
         if request.is_json:
             arr = request.get_json()
             arr = json.loads(arr)

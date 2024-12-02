@@ -2,11 +2,11 @@ import locale
 import requests
 
 
-def check_server(url):
+def req(url, method, json=None):
     try:
-        response = requests.head(url, timeout=5)
+        response = getattr(requests, method)(url, timeout=5, json=json)
         if response.status_code == 200:
-            return True
+            return response
         else:
             return False
     except:
