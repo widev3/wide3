@@ -9,7 +9,7 @@ PyInstaller.__main__.run(
         "--noconsole",
         "--noconfirm",
         "--icon",
-        "icons/settings_input_antenna_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.png",
+        "icons/whistle_of_wind.png",
         "--name",
         "Whistle of Wind",
     ]
