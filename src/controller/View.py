@@ -1,10 +1,10 @@
 import sys
 import time
 import queue
-import requests
 import datetime
 import threading
 import jsonpickle
+import spectrogram
 import numpy as np
 import pandas as pd
 import basic_view
@@ -126,11 +126,10 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__instr_comm("INIT:CONT", "ON")
 
     def __start_record(self, x):
-        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/ping"
-        self.__api = True if req(url=url, method="get") else False
-
-        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup"
-        self.__api = True if req(url=url, method="get") and self.__api else False
+        req(
+            url=f"http://localhost:{self.__conf["global"]["port"]}/viewer/setup",
+            method="get",
+        )
 
         self.__ax["record"].cla()
         self.__record_button = basic_view.Button(
@@ -148,8 +147,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         try:
             if not self.__instr:
                 return False
-
-            if not case:
+            elif not case:
                 return self.__instr.write(f"{cmd}{f" {val}" if val else ""}")
             elif not cmd and not val:
                 return getattr(self.__instr, case)()
@@ -167,40 +165,59 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.__instr_comm(cmd="SENS:SWE:TIME", val=self.__sweep)
 
     def view(self):
-        mosaic = basic_view.generate_array(50, 50)
+        mosaic = basic_view.generate_array(25, 25)
         buttons = [
             "viewer",
             "controller",
             None,
             None,
-            None,
-            None,
-            None,
-            None,
             "connect_sa",
             "record",
         ]
-        basic_view.fill_row_with_array(mosaic, (1, 1), (50, 2), buttons)
+        basic_view.fill_row_with_array(mosaic, (1, 1), (25, 2), buttons)
 
         # first column
-        basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central", (0, 3))
-        basic_view.fill_with_string(mosaic, (1, 7), (5, 8), "span", (0, 0))
-        basic_view.fill_with_string(mosaic, (1, 9), (5, 10), "sweep", (0, 0))
-        basic_view.fill_with_string(mosaic, (1, 11), (5, 12), "confirm", (0, 0))
+        basic_view.fill_with_string(mosaic, (1, 2), (5, 6), "central", (1, 3))
+        basic_view.fill_with_string(mosaic, (1, 7), (5, 8), "span", (1, 0))
+        basic_view.fill_with_string(mosaic, (1, 9), (5, 10), "sweep", (1, 0))
+        basic_view.fill_with_string(mosaic, (1, 11), (5, 12), "confirm", (1, 0))
+        basic_view.fill_with_string(mosaic, (15, 13), (25, 25), "lo", (1, 1))
 
         # second column
-        basic_view.fill_with_string(mosaic, (6, 2), (25, 6), "central_slider", (0, 3))
-        basic_view.fill_with_string(mosaic, (6, 7), (25, 8), "span_slider", (0, 0))
-        basic_view.fill_with_string(mosaic, (6, 9), (25, 10), "sweep_slider", (0, 0))
+        basic_view.fill_with_string(mosaic, (6, 2), (22, 6), "central_slider", (0, 3))
+        basic_view.fill_with_string(mosaic, (6, 7), (22, 8), "span_slider", (0, 0))
+        basic_view.fill_with_string(mosaic, (6, 9), (22, 10), "sweep_slider", (0, 0))
 
         self.__fig, self.__ax = basic_view.create(
             self.__conf["name"],
             mosaic,
             icon="icons/control_camera_144dp_992B15_FILL0_wght400_GRAD0_opsz48.png",
+            unwanted_buttons=None,
             size=(800, 500),
         )
 
         basic_view.buttons_frame(self, self.__ax, self.__conf["package"])
+
+        def populate():
+            lo = float(
+                self.__conf["global"]["lo"][self.__lo_radiobuttons.index_selected][
+                    "value"
+                ]
+            )
+            print(lo)
+
+        self.__ax["lo"].set_title("LO freq [MHz]")
+        self.__lo_radiobuttons = basic_view.RadioButtons(
+            ax=self.__ax["lo"],
+            radio_props={"s": [64] * len(self.__conf["global"]["lo"])},
+            labels=list(
+                map(
+                    lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
+                    self.__conf["global"]["lo"],
+                )
+            ),
+        )
+        self.__lo_radiobuttons.on_clicked(populate)
 
         self.__connect_sa_button = basic_view.Button(
             ax=self.__ax["connect_sa"], label="Connect SA"
@@ -220,7 +237,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             textalignment="left",
         )
         self.__central_text_box.set_val(
-            self.__conf["central"] if "central" in self.__conf else 0
+            round(self.__conf["central"] if "central" in self.__conf else 0, 4)
         )
 
         self.__span_text_box = basic_view.TextBox(
@@ -229,7 +246,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             textalignment="left",
         )
         self.__span_text_box.set_val(
-            self.__conf["span"] if "span" in self.__conf else 0
+            round(self.__conf["span"] if "span" in self.__conf else 0, 4)
         )
 
         self.__sweep_text_box = basic_view.TextBox(
@@ -238,7 +255,7 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             textalignment="left",
         )
         self.__sweep_text_box.set_val(
-            self.__conf["sweep"] if "sweep" in self.__conf else 0
+            round(self.__conf["sweep"] if "sweep" in self.__conf else 0, 4)
         )
 
         self.__confirm_button = basic_view.Button(
@@ -253,7 +270,9 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             valmax=3000,
             valinit=stof_locale(self.__central_text_box.text),
         )
-        self.__central_slider.on_changed(lambda x: self.__central_text_box.set_val(x))
+        self.__central_slider.on_changed(
+            lambda x: self.__central_text_box.set_val(round(x, 4))
+        )
 
         self.__span_slider = basic_view.Slider(
             ax=self.__ax["span_slider"],
@@ -262,7 +281,9 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             valmax=1500,
             valinit=float(self.__span_text_box.text),
         )
-        self.__span_slider.on_changed(lambda x: self.__span_text_box.set_val(x))
+        self.__span_slider.on_changed(
+            lambda x: self.__span_text_box.set_val(round(x, 4))
+        )
 
         self.__sweep_slider = basic_view.Slider(
             ax=self.__ax["sweep_slider"],
@@ -271,7 +292,9 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
             valmax=60000,
             valinit=float(self.__sweep_text_box.text),
         )
-        self.__sweep_slider.on_changed(lambda x: self.__sweep_text_box.set_val(x))
+        self.__sweep_slider.on_changed(
+            lambda x: self.__sweep_text_box.set_val(round(x, 4))
+        )
 
         def set_sliders_and_write(x):
             if x.key == "enter":
@@ -286,7 +309,6 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         slices_queue = queue.Queue()
 
         def background_instr():
-
             class Slice:
                 def __init__(self, dt, slice):
                     self.datetime = dt.strftime("%H:%M:%S %d/%m/%Y")
@@ -320,21 +342,16 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                 return dict(zip(frequencies, values))
 
             while True:
-                if self.__sweep:
-                    time.sleep(self.__sweep / 3)
-                    if self.__record:
-                        self.__instr_comm("INIT:IMM")
-                        self.__instr_comm(case="query_opc")
+                time.sleep(self.__sweep / 3) if self.__sweep else time.sleep(0.1)
+                if self.__record:
+                    self.__instr_comm("INIT:IMM")
+                    self.__instr_comm(case="query_opc")
 
-                        data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
-                        if data:
-                            values = [float(value) for value in data.split(",")]
-                            slice = time_slice(
-                                values, cent=self.__freq, span=self.__span
-                            )
-                            slices_queue.put(
-                                Slice(dt=datetime.datetime.now(), slice=slice)
-                            )
+                    data = self.__instr_comm(cmd="TRACE:DATA?", case="query_str")
+                    if data:
+                        values = [float(value) for value in data.split(",")]
+                        slice = time_slice(values, cent=self.__freq, span=self.__span)
+                        slices_queue.put(Slice(dt=datetime.datetime.now(), slice=slice))
 
         self.__thread_instr = threading.Thread(target=background_instr)
         self.__thread_instr.daemon = True
@@ -342,37 +359,37 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
 
         def background_api_client():
             df = {}
-            total_queue_size = 0
+            total = 0
             while True:
-                time.sleep(1)
-                queue_size = slices_queue.qsize()
-                if not self.__record and len(df) > 0:
-                    df.loc[1] = ["Timestamp (Relative)"] + list(
-                        map(
-                            lambda x: datetime.datetime.fromtimestamp(
-                                timestamp=df.columns[1:].max() - x,
-                                tz=datetime.timezone.utc,
-                            ).strftime("%H:%M:%S:%f"),
-                            df.columns[1:],
+                time.sleep(self.__sweep * 10) if self.__sweep else time.sleep(1)
+                if not self.__record:
+                    if len(df) > 0:
+                        df.loc[1] = ["Timestamp (Relative)"] + list(
+                            map(
+                                lambda x: datetime.datetime.fromtimestamp(
+                                    timestamp=df.columns[1:].max() - x,
+                                    tz=datetime.timezone.utc,
+                                ).strftime("%H:%M:%S:%f"),
+                                df.columns[1:],
+                            )
                         )
-                    )
 
-                    f = open(self.__output_file, "w")
-                    f.writelines(["properties scope\n\n", "frequencies scope\n\n"])
-                    f.close()
+                        spectrogram.writer(
+                            properties=[],
+                            frequencies=[],
+                            spectrogram=df,
+                            filename=self.__output_file,
+                        )
 
-                    df.to_csv(self.__output_file, mode="a", index=False, sep=",")
                     df = {}
-                    total_queue_size = 0
-                    while not slices_queue.empty():
-                        slices_queue.get()
-                elif queue_size > 10:
-                    total_queue_size += queue_size
+                    total = 0
+                    continue
 
-                    arr = []
-                    while not slices_queue.empty():
-                        arr.append(slices_queue.get())
+                arr = []
+                while not slices_queue.empty():
+                    arr.append(slices_queue.get())
 
+                if len(arr) > 0:
                     if len(df) == 0:
                         data = {}
                         data["Timestamp"] = [
@@ -389,24 +406,28 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
                             "Magnitude [dBm]",
                         ] + list(el.slice.values())
 
-                    if self.__api:
-                        url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
-                        response = req(
-                            url=url, method="post", json=jsonpickle.encode(arr)
-                        )
-                        if response.status_code == 200:
-                            print("Response JSON:", response.json())
+                    total += len(arr)
+                    url = f"http://localhost:{self.__conf["global"]["port"]}/viewer/add"
+                    api = req(url=url, method="post", json_body=jsonpickle.encode(arr))
+                    if api and api[0] == 200:
+                        if api[1]["code"] == "OK":
+                            print(
+                                f"{datetime.datetime.now()}: {len(arr)}/{total}. API: ✅"
+                            )
                         else:
-                            print("Error:", response.status_code, response.text)
-
-                    print(f"{datetime.datetime.now()}: {queue_size}/{total_queue_size}")
+                            print(
+                                f"{datetime.datetime.now()}: {len(arr)}/{total}. API: 🚸"
+                            )
+                    else:
+                        print(f"{datetime.datetime.now()}: {len(arr)}/{total}. API: ❌")
 
         self.__thread_api_get = threading.Thread(target=background_api_client)
         self.__thread_api_get.daemon = True
         self.__thread_api_get.start()
 
-        self.__connect_instr(
-            instr=self.__conf["instrument"] if "instrument" in self.__conf else None
-        )
+        if "instrument" in self.__conf:
+            self.__connect_instr(instr=self.__conf["instrument"])
+        else:
+            self.__connect_instr(instr=None)
 
         basic_view.show()

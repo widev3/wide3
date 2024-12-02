@@ -9,12 +9,6 @@ class Api:
     _viewer_setup_callback = None
     _viewer_add_callback = None
 
-    def viewer_setup_callback(self, func):
-        Api._viewer_setup_callback = func
-
-    def viewer_add_callback(self, func):
-        Api._viewer_add_callback = func
-
     def run(self, port):
         def run_server():
             api_server.run(port=port, debug=False, use_reloader=False)
@@ -37,12 +31,10 @@ class Api:
         if request.is_json:
             arr = request.get_json()
             arr = json.loads(arr)
-            for el in arr:
-                print(el["timestamp"])
+            res = Api._viewer_add_callback(arr) if Api._viewer_add_callback else None
+            if res:
                 return jsonify({"code": "OK"}), 200
-
-                timestamp = el["timestamp"]
-                slice = el["slice"]
-            Api._viewer_add_callback() if Api._viewer_add_callback else None
+            else:
+                return jsonify({"code": "unauthorized"}), 200
         else:
             return jsonify({"error": "Request must be in JSON format"}), 400

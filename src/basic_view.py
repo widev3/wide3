@@ -103,7 +103,7 @@ def create(title, mosaic, icon, unwanted_buttons=[], size=None):
     mng.window.setWindowIcon(QtGui.QIcon(icon))
 
     for x in mng.toolbar.actions():
-        if x.text() in unwanted_buttons:
+        if (unwanted_buttons is None) or (x.text() in unwanted_buttons):
             mng.toolbar.removeAction(x)
 
     return fig, ax

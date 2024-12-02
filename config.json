@@ -1,15 +1,7 @@
 {
     "global": {
-        "startup_package": "viewer",
-        "port": 32482
-    },
-    "viewer": {
-        "package": "viewer",
-        "name": "Viewer",
-        "filename": "input/Spectrogram_wave_long.csv",
-        "separator": ",",
-        "gamma": 0.3,
-        "cmap": "magma",
+        "startup_package": "controller",
+        "port": 32482,
         "lo": [
             {
                 "value": 5150,
@@ -25,19 +17,20 @@
             }
         ]
     },
+    "viewer": {
+        "package": "viewer",
+        "name": "Viewer",
+        "filename": "input/Spectrogram_wave_long.csv",
+        "separator": ",",
+        "gamma": 0.3,
+        "cmap": "magma"
+    },
     "controller": {
         "package": "controller",
         "name": "Controller",
-        "instrumentt": "TCPIP::172.16.10.10::INSTR",
+        "instrument": "TCPIP::172.16.10.10::INSTR",
         "central": 394.3,
         "span": 0.6,
         "sweep": 100
-    },
-    "mount_control": {
-        "package": "mount_control",
-        "name": "Mount control",
-        "site_latitude": 45.383793533354634,
-        "site_longitude": 10.668466638347189,
-        "catalog_name": "I/151"
     }
 }

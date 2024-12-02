@@ -40,11 +40,14 @@ class View(object):
         basic_view.cla_leaving_attributes(self.__ax["t_power"])
         basic_view.set_title(fig=self.__fig)
 
-    def __add(self):
+    def __add(self, arr):
         print("ciao")
+        return False
 
     def __populate(self, x):
-        lo = float(self.__conf["lo"][self.__lo_radiobuttons.index_selected]["value"])
+        lo = float(
+            self.__conf["global"]["lo"][self.__lo_radiobuttons.index_selected]["value"]
+        )
         power_spectrogram = np.power(10, (self.__spectrogram["magnitude"] - 30) / 10)
         t_power_spectrogram = np.sum(power_spectrogram, axis=0) * 1000
         f_power_spectrogram = np.log10(np.sum(power_spectrogram, axis=1) * 1000)
@@ -181,11 +184,11 @@ class View(object):
 
                     self.__lo_radiobuttons = basic_view.RadioButtons(
                         ax=self.__ax["lo"],
-                        radio_props={"s": [64] * len(self.__conf["lo"])},
+                        radio_props={"s": [64] * len(self.__conf["global"]["lo"])},
                         labels=list(
                             map(
                                 lambda x: f"{x["value"]} {x["band"] if "band" in x else ""}",
-                                self.__conf["lo"],
+                                self.__conf["global"]["lo"],
                             )
                         ),
                     )
@@ -279,8 +282,8 @@ class View(object):
             )
         )
 
-        self.__api.viewer_setup_callback(self.__viewer_setup)
-        self.__api.viewer_add_callback(self.__add)
+        Api._viewer_setup_callback = self.__viewer_setup
+        Api._viewer_add_callback = self.__add
         self.__api.run(port=self.__conf["global"]["port"])
 
         self.__clear_all()

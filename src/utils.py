@@ -1,14 +1,12 @@
 import locale
 import requests
+import json as js
 
 
-def req(url, method, json=None):
+def req(url, method, json_body=None):
     try:
-        response = getattr(requests, method)(url, timeout=5, json=json)
-        if response.status_code == 200:
-            return response
-        else:
-            return False
+        response = getattr(requests, method)(url, timeout=5, json=json_body)
+        return response.status_code, js.loads(response.text)
     except:
         return False
 
