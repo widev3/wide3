@@ -3,13 +3,12 @@ import time
 import queue
 import datetime
 import threading
-import jsonpickle
 import spectrogram
 import numpy as np
 import pandas as pd
 import basic_view
 import traceback
-from utils import req, stof_locale
+from utils import stof_locale
 from RsInstrument import RsInstrument
 
 

@@ -2,7 +2,6 @@ import os
 import numpy as np
 import spectrogram
 import basic_view
-from viewer.Api import Api
 from viewer.Lims import Lims
 from viewer.Cursor import Cursor
 
@@ -12,7 +11,6 @@ class View(object):
         self.__conf = conf
         self.__ax = {}
         self.__im = {}
-        self.__api = Api()
 
     def __gamma_slider_changed(self, val):
         self.__im["spectrogram"].set_norm(
@@ -281,10 +279,6 @@ class View(object):
                 dataframe=self.__properties,
             )
         )
-
-        Api._viewer_setup_callback = self.__viewer_setup
-        Api._viewer_add_callback = self.__add
-        self.__api.run(port=self.__conf["global"]["port"])
 
         self.__clear_all()
         file = self.__conf["filename"] if "filename" in self.__conf else None

@@ -9,8 +9,8 @@
 ```bash
 sudo apt install python3-virtualenv -y
 sudo apt install python3-venv -y
-python3 -m venv env
-source env/bin/activate
+python3 -m venv u
+source u/bin/activate
 pip3 install -r requirements.txt
 ```
 
