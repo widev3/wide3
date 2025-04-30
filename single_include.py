@@ -98,3 +98,9 @@ from RsInstrument import *
 
 SingletonSplash().message("traceback")
 import traceback
+
+SingletonSplash().message("Timer")
+from threading import Timer
+
+SingletonSplash().message("QProgressBar")
+from PyQt6.QtWidgets import QProgressBar

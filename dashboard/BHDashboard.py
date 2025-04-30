@@ -1,12 +1,25 @@
-from single_include import RsInstrument, traceback, datetime
+from single_include import (
+    RsInstrument,
+    traceback,
+    datetime,
+    Timer,
+    QMessageBox,
+)
 from kernel.QtMger import MessageBox
+from utils import start_prog, stop_prog
 
 
 class BHDashboard:
-
     def __connect_instr(self):
         try:
+            start_prog(self.ui.label, self.ui.progressBar, "Looking for instrument...")
             instr_list = RsInstrument.list_resources("?*")
+            stop_prog(
+                self.ui.label,
+                self.ui.progressBar,
+                "Nothing is happening in the background",
+            )
+            
             if instr_list:
                 if not key and len(instr_list) == 1:
                     key = instr_list[0]
@@ -19,7 +32,12 @@ class BHDashboard:
                         single=True,
                     )
             else:
-                return MessageBox("str", "title", 3).result()
+                return MessageBox(
+                    text="No instrument connected",
+                    title="WOW",
+                    icon=QMessageBox.Icon.Warning,
+                    buttons=QMessageBox.StandardButton.Ok,
+                ).result()
 
             self.__disconnect_instr()
             self.__instr = RsInstrument(key, id_query=True, reset=True)
@@ -75,4 +93,5 @@ Instrument options:\t{",".join(self.__instr.instrument_options)}""",
         self.ui = ui
         self.dialog = dialog
         self.args = args
-        self.__connect_instr()
+        stop_prog(self.ui.label, self.ui.progressBar)
+        Timer(0.5, self.__connect_instr).start()

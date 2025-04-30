@@ -1,4 +1,5 @@
 import locale
+from single_include import QLabel, QProgressBar
 
 
 def stof_locale(str):
@@ -39,3 +40,13 @@ def freq_to_nm(freq):
     wavelength = 299792458 / freq
     wavelength_nm = wavelength * 1e9
     return wavelength_nm
+
+
+def start_prog(label: QLabel, progressBar: QProgressBar, message: str):
+    progressBar.setVisible(True)
+    label.setText(message)
+
+
+def stop_prog(label: QLabel, progressBar: QProgressBar, message: str = None):
+    progressBar.setVisible(False)
+    label.setText(message)
