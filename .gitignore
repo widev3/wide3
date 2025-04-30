@@ -1,9 +1,7 @@
-*__pycache__*
 .vsidx/
 .vs/
 build/
 dist/
-*.spec
 u/
 W/
 obj/
