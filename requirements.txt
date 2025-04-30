@@ -3,3 +3,7 @@ matplotlib
 pyqt6
 scipy
 RsInstrument
+visa
+pyvisa-py
+zeroconf
+psutil

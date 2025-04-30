@@ -3,7 +3,7 @@ import matplotlib
 
 matplotlib.use("qtagg")
 import matplotlib.pyplot as plt
-import PackageViewer
+import Config
 
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
@@ -55,7 +55,7 @@ def set_grid(ax):
 
 def buttons_frame(s, ax, current_package):
     s.__buttons_frame = {}
-    for package, view in PackageViewer.PackageViewer().instance().packages.items():
+    for package, view in Config.Config().instance().packages.items():
         if view._View__conf["package"] in ax:
             s.__buttons_frame[package] = Button(
                 ax=ax[view._View__conf["package"]], label=view._View__conf["name"]
@@ -66,7 +66,7 @@ def buttons_frame(s, ax, current_package):
                 s.__buttons_frame[package].hovercolor = "gray"
             else:
                 s.__buttons_frame[package].on_clicked(
-                    lambda event: PackageViewer.PackageViewer()
+                    lambda event: Config.Config()
                     .instance()
                     .packages[event.inaxes._label]
                     .view()

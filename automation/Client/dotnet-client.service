@@ -1,0 +1,19 @@
+[Unit]
+Description=dotnet-client
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/Client
+ExecStart=/home/wow/.dotnet/dotnet /opt/Client/Client.dll
+Restart=always
+RestartSec=3
+User=wow
+Group=wow
+SyslogIdentifier=dotnet-client
+Environment=ASPNETCORE_ENVIRONMENT=Production
+TimeoutStopSec=20
+KillSignal=SIGINT
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

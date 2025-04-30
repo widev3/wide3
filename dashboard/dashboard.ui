@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1294</width>
-    <height>819</height>
+    <width>1540</width>
+    <height>951</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,67 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>Connections</string>
+       <string>View</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" alignment="Qt::AlignLeft">
+        <widget class="QFrame" name="frame_2">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_2">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QTableWidget" name="tableWidget"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -32,11 +89,6 @@
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
        <string>Acquisition</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>View</string>
       </attribute>
      </widget>
     </widget>

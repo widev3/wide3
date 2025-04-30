@@ -1,9 +1,9 @@
 *__pycache__*
-*.vsidx
-*.vs
-*build/
-*dist/
+.vsidx/
+.vs/
+build/
+dist/
 *.spec
-*env/
-u
-W
+u/
+W/
+obj/
