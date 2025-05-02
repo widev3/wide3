@@ -37,31 +37,45 @@ class Ui_Dialog(object):
         self.frame_2.setObjectName("frame_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.frame_2)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButtonFileOpen = QtWidgets.QPushButton(parent=self.frame_2)
-        self.pushButtonFileOpen.setText("")
+        self.pushButton = QtWidgets.QPushButton(parent=self.frame_2)
+        self.pushButton.setText("")
         icon = QtGui.QIcon()
         icon.addPixmap(
+            QtGui.QPixmap(
+                "dashboard/../icons/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+            ),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
+        self.pushButton.setIcon(icon)
+        self.pushButton.setIconSize(QtCore.QSize(25, 25))
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout.addWidget(self.pushButton)
+        self.pushButtonFileOpen = QtWidgets.QPushButton(parent=self.frame_2)
+        self.pushButtonFileOpen.setText("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(
             QtGui.QPixmap(
                 "dashboard/../icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
             ),
             QtGui.QIcon.Mode.Normal,
             QtGui.QIcon.State.Off,
         )
-        self.pushButtonFileOpen.setIcon(icon)
+        self.pushButtonFileOpen.setIcon(icon1)
         self.pushButtonFileOpen.setIconSize(QtCore.QSize(25, 25))
         self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
         self.horizontalLayout.addWidget(self.pushButtonFileOpen)
         self.pushButtonSettings = QtWidgets.QPushButton(parent=self.frame_2)
         self.pushButtonSettings.setText("")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(
             QtGui.QPixmap(
                 "dashboard/../icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
             ),
             QtGui.QIcon.Mode.Normal,
             QtGui.QIcon.State.Off,
         )
-        self.pushButtonSettings.setIcon(icon1)
+        self.pushButtonSettings.setIcon(icon2)
         self.pushButtonSettings.setIconSize(QtCore.QSize(25, 25))
         self.pushButtonSettings.setObjectName("pushButtonSettings")
         self.horizontalLayout.addWidget(self.pushButtonSettings)

@@ -177,7 +177,7 @@ class WindowManager(QDialog):
         self.ui.setupUi(self)
 
         if bh:
-            self.ui_behaviour = bh(self.ui, self, args)
+            self.bh = bh(self.ui, self, args)
 
     def closeEvent(self, event):
         if hasattr(self, "on_close"):

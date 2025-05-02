@@ -1,7 +1,7 @@
 from single_include import QLabel, QVBoxLayout, Qt, QTimer
 
 
-class Ui_Behaviour(object):
+class BHPopupDialog(object):
     def __init__(self, ui, dialog, args=None):
         self.ui = ui
         self.dialog = dialog
