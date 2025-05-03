@@ -7,76 +7,76 @@ SingletonSplash().message("path")
 from os import path
 
 SingletonSplash().message("QApplication")
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 SingletonSplash().message("csv")
 import csv
 
 SingletonSplash().message("QtWidgets")
-from PyQt6 import QtWidgets
+from PySide6 import QtWidgets
 
 SingletonSplash().message("Qt")
-from PyQt6.QtCore import Qt
+from PySide6.QtCore import Qt
 
 SingletonSplash().message("QTimer")
-from PyQt6.QtCore import QTimer
+from PySide6.QtCore import QTimer
 
 SingletonSplash().message("QtWidgets")
-from PyQt6 import QtWidgets
+from PySide6 import QtWidgets
 
 SingletonSplash().message("IntEnum, Enum")
 from enum import IntEnum, Enum
 
 SingletonSplash().message("QPixmap, QColor")
-from PyQt6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap
 
 SingletonSplash().message("QColor")
-from PyQt6.QtGui import QColor
+from PySide6.QtGui import QColor
 
 SingletonSplash().message("QApplication")
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 SingletonSplash().message("QMessageBox")
-from PyQt6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox
 
 SingletonSplash().message("QWidget")
-from PyQt6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget
 
 SingletonSplash().message("QDialog")
-from PyQt6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog
 
 SingletonSplash().message("QPushButton")
-from PyQt6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QPushButton
 
 SingletonSplash().message("QHBoxLayout")
-from PyQt6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QHBoxLayout
 
 SingletonSplash().message("QTableWidget")
-from PyQt6.QtWidgets import QTableWidget
+from PySide6.QtWidgets import QTableWidget
 
 SingletonSplash().message("QTableWidgetItem")
-from PyQt6.QtWidgets import QTableWidgetItem
+from PySide6.QtWidgets import QTableWidgetItem
 
 SingletonSplash().message("QCheckBox")
-from PyQt6.QtWidgets import QCheckBox
+from PySide6.QtWidgets import QCheckBox
 
 SingletonSplash().message("QSplashScreen")
-from PyQt6.QtWidgets import QSplashScreen
+from PySide6.QtWidgets import QSplashScreen
 
 SingletonSplash().message("QMainWindow")
-from PyQt6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow
 
 SingletonSplash().message("QLabel")
-from PyQt6.QtWidgets import QLabel
+from PySide6.QtWidgets import QLabel
 
 SingletonSplash().message("QStyle")
-from PyQt6.QtWidgets import QStyle
+from PySide6.QtWidgets import QStyle
 
 SingletonSplash().message("QFileDialog")
-from PyQt6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog
 
 SingletonSplash().message("QVBoxLayout")
-from PyQt6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import QVBoxLayout
 
 SingletonSplash().message("datetime")
 from datetime import datetime
@@ -88,7 +88,7 @@ SingletonSplash().message("urljoin")
 from urllib.parse import urljoin
 
 SingletonSplash().message("QCoreApplication")
-from PyQt6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication
 
 SingletonSplash().message("time")
 import time
@@ -103,4 +103,4 @@ SingletonSplash().message("Timer")
 from threading import Timer
 
 SingletonSplash().message("QProgressBar")
-from PyQt6.QtWidgets import QProgressBar
+from PySide6.QtWidgets import QProgressBar

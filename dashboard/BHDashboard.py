@@ -11,7 +11,7 @@ class BHDashboard:
         self.dialog = dialog
         self.args = args
         stop_prog(self.ui.label, self.ui.progressBar)
-        QTimer().singleShot(200, self.__search_instr)
+        # QTimer().singleShot(200, self.__search_instr)
 
     def __search_instr(self):
         key = None

@@ -1,15 +1,15 @@
 import csv
-from PyQt6.QtWidgets import QTableWidgetItem
-from PyQt6.QtCore import Qt
+from PySide6.QtWidgets import QTableWidgetItem
+from PySide6.QtCore import Qt
 from enum import IntEnum, Enum
-from PyQt6.QtWidgets import QMessageBox
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QPushButton
-from PyQt6.QtWidgets import QHBoxLayout
-from PyQt6.QtWidgets import QTableWidget
-from PyQt6.QtWidgets import QTableWidgetItem
-from PyQt6.QtWidgets import QCheckBox
+from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QPushButton
+from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QTableWidget
+from PySide6.QtWidgets import QTableWidgetItem
+from PySide6.QtWidgets import QCheckBox
 
 
 class MessageBox(QWidget):

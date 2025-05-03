@@ -3,7 +3,7 @@ import sys
 sys.dont_write_bytecode = True
 
 from os import path
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 from kernel.SingletonSplash import SingletonSplash
 
 

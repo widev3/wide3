@@ -5,8 +5,8 @@ matplotlib.use("qtagg")
 import matplotlib.pyplot as plt
 import Config
 
-from PyQt6 import QtGui
-from PyQt6.QtCore import Qt
+from PySide6 import QtGui
+from PySide6.QtCore import Qt
 from matplotlib.widgets import Button, CheckButtons, RadioButtons, Slider, TextBox
 from matplotlib.animation import FuncAnimation
 from matplotlib.lines import Line2D
@@ -15,7 +15,7 @@ from matplotlib import cm
 from matplotlib.backend_bases import MouseButton
 from matplotlib.ticker import AutoMinorLocator
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QMessageBox,

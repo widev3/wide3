@@ -1,6 +1,6 @@
 pandas
 matplotlib
-pyqt6
+pyside6
 scipy
 RsInstrument
 visa

@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QPixmap, QMovie
-from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtWidgets import QSplashScreen, QWidget
+from PySide6.QtGui import QPixmap, QMovie
+from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtWidgets import QSplashScreen, QWidget
 
 
 class SingletonSplash(QSplashScreen):
