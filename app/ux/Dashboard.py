@@ -1,5 +1,4 @@
-from single_include import RsInstrument, traceback, datetime, QMessageBox, QTimer
-from kernel.QtMger import MessageBox, WindowManager
+from single_include import RsInstrument, traceback, datetime, QMessageBox, QFileDialog
 from utils import start_prog, stop_prog
 from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog
 from kernel.comboBoxDialog.UXComboBoxDialog import BHComboBoxDialog
@@ -12,17 +11,14 @@ class Dashboard:
         self.args = args
         stop_prog(self.ui.label, self.ui.progressBar)
         self.ui.pushButtonRefresh.clicked.connect(self.__search_instr)
+        self.ui.pushButtonFileOpen.clicked.connect(self.__open_track)
 
     def __search_instr(self):
         key = None
         try:
             start_prog(self.ui.label, self.ui.progressBar, "Looking for instrument...")
             instr_list = RsInstrument.list_resources("?*")
-            stop_prog(
-                self.ui.label,
-                self.ui.progressBar,
-                "Nothing is happening in the background",
-            )
+            stop_prog(self.ui.label, self.ui.progressBar)
 
             if instr_list:
                 if not key and len(instr_list) == 1:
@@ -107,3 +103,14 @@ class Dashboard:
                 icon=QMessageBox.Icon.Critical,
                 buttons=QMessageBox.StandardButton.Ok,
             ).result()
+
+    def __open_track(self):
+        filename, _ = QFileDialog.getOpenFileUrl(
+            parent=None,
+            caption="Save CSV",
+            filter="CSV Files (*.csv);;All Files (*)",
+        )
+        if filename:
+            start_prog(self.ui.label, self.ui.progressBar, f"Reading {filename}...")
+            instr_list = RsInstrument.list_resources("?*")
+            stop_prog(self.ui.label, self.ui.progressBar)

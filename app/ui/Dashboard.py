@@ -93,7 +93,7 @@ class Ui_Dialog(object):
         self.pushButtonRefresh.setObjectName("pushButtonRefresh")
         icon = QIcon()
         icon.addFile(
-            "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "../cwd/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,
@@ -107,7 +107,7 @@ class Ui_Dialog(object):
         self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
         icon1 = QIcon()
         icon1.addFile(
-            "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "../cwd/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,
@@ -121,7 +121,7 @@ class Ui_Dialog(object):
         self.pushButtonSettings.setObjectName("pushButtonSettings")
         icon2 = QIcon()
         icon2.addFile(
-            "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "../cwd/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,

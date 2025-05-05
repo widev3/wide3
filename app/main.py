@@ -17,7 +17,7 @@ SingletonSplash().message("Loading...")
 
 import Config
 from kernel.QtMger import WindowManager
-from cwd.Dashboard import Ui_Dialog
+from ui.Dashboard import Ui_Dialog
 from ux.Dashboard import Dashboard
 
 if __name__ == "__main__":
