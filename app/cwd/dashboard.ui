@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1422</width>
-    <height>760</height>
+    <width>727</width>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,13 +43,13 @@
         <widget class="QFrame" name="frame_2">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="pushButtonRefresh">
             <property name="text">
              <string/>
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>../icons/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../icons/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
+              <normaloff>refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -66,7 +66,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>../icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
+              <normaloff>file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -83,7 +83,7 @@
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>../icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
+              <normaloff>settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
             </property>
             <property name="iconSize">
              <size>

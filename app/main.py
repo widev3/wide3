@@ -17,14 +17,14 @@ SingletonSplash().message("Loading...")
 
 import Config
 from kernel.QtMger import WindowManager
-from dashboard.UIDashboard import Ui_Dialog
-from dashboard.BHDashboard import BHDashboard
+from cwd.Dashboard import Ui_Dialog
+from ux.Dashboard import Dashboard
 
 if __name__ == "__main__":
     SingletonSplash().message("Starting...")
     Config.Config("config.json")
     c = Config.Config().instance().config
-    win = WindowManager(Ui_Dialog, BHDashboard, c)
+    win = WindowManager(Ui_Dialog, Dashboard, c)
     win.show()
     SingletonSplash().finish(win)
     sys.exit(app.exec())

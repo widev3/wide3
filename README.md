@@ -1,19 +1,5 @@
 # Whistle of Wind radio telescope
 
-<p align="center">
-  <img src="icons/whistle_of_wind.png" width="256">
-</p>
-
-## Installation
-
-```bash
-sudo apt install python3-virtualenv -y
-sudo apt install python3-venv -y
-python3 -m venv u
-source u/bin/activate
-pip3 install -r requirements.txt
-```
-
 ## Usefull links
 
 <https://www.atnf.csiro.au/research/radio-school/2011/talks/parkesrs2011_interferometryi_full.pdf>

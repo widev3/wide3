@@ -63,7 +63,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.resize(1422, 760)
+        Dialog.resize(727, 625)
         self.gridLayout = QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
         self.tabWidget = QTabWidget(Dialog)
@@ -89,25 +89,25 @@ class Ui_Dialog(object):
         self.frame_2.setObjectName("frame_2")
         self.horizontalLayout = QHBoxLayout(self.frame_2)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton = QPushButton(self.frame_2)
-        self.pushButton.setObjectName("pushButton")
+        self.pushButtonRefresh = QPushButton(self.frame_2)
+        self.pushButtonRefresh.setObjectName("pushButtonRefresh")
         icon = QIcon()
         icon.addFile(
-            "icons/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,
         )
-        self.pushButton.setIcon(icon)
-        self.pushButton.setIconSize(QSize(25, 25))
+        self.pushButtonRefresh.setIcon(icon)
+        self.pushButtonRefresh.setIconSize(QSize(25, 25))
 
-        self.horizontalLayout.addWidget(self.pushButton)
+        self.horizontalLayout.addWidget(self.pushButtonRefresh)
 
         self.pushButtonFileOpen = QPushButton(self.frame_2)
         self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
         icon1 = QIcon()
         icon1.addFile(
-            "icons/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,
@@ -121,7 +121,7 @@ class Ui_Dialog(object):
         self.pushButtonSettings.setObjectName("pushButtonSettings")
         icon2 = QIcon()
         icon2.addFile(
-            "icons/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
+            "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png",
             QSize(),
             QIcon.Mode.Normal,
             QIcon.State.Off,
@@ -173,7 +173,7 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(
             QCoreApplication.translate("Dialog", "Whistle Of Wind", None)
         )
-        self.pushButton.setText("")
+        self.pushButtonRefresh.setText("")
         self.pushButtonFileOpen.setText("")
         self.pushButtonSettings.setText("")
         self.tabWidget.setTabText(

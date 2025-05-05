@@ -1,17 +1,17 @@
 from single_include import RsInstrument, traceback, datetime, QMessageBox, QTimer
 from kernel.QtMger import MessageBox, WindowManager
 from utils import start_prog, stop_prog
-from kernel.comboBoxDialog.UIComboBoxDialog import Ui_Dialog
-from kernel.comboBoxDialog.BHComboBoxDialog import BHComboBoxDialog
+from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog
+from kernel.comboBoxDialog.UXComboBoxDialog import BHComboBoxDialog
 
 
-class BHDashboard:
+class Dashboard:
     def __init__(self, ui, dialog, args=None):
         self.ui = ui
         self.dialog = dialog
         self.args = args
         stop_prog(self.ui.label, self.ui.progressBar)
-        # QTimer().singleShot(200, self.__search_instr)
+        self.ui.pushButtonRefresh.clicked.connect(self.__search_instr)
 
     def __search_instr(self):
         key = None
