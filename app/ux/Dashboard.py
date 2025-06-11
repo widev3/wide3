@@ -2,6 +2,7 @@ from single_include import RsInstrument, traceback, datetime, QMessageBox, QFile
 from utils import start_prog, stop_prog
 from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog
 from kernel.comboBoxDialog.UXComboBoxDialog import BHComboBoxDialog
+from kernel.QtMger import set_icon, icon_types
 
 
 class Dashboard:
@@ -10,6 +11,11 @@ class Dashboard:
         self.dialog = dialog
         self.args = args
         stop_prog(self.ui.label, self.ui.progressBar)
+
+        set_icon(self.ui.pushButtonRefresh, icon_types.REFRESH)
+        set_icon(self.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
+        set_icon(self.ui.pushButtonSettings, icon_types.SETTINGS)
+
         self.ui.pushButtonRefresh.clicked.connect(self.__search_instr)
         self.ui.pushButtonFileOpen.clicked.connect(self.__open_track)
 

@@ -1,7 +1,7 @@
 import csv
-from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtCore import Qt
+import kernel
 from enum import IntEnum, Enum
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
 from PySide6.QtWidgets import QCheckBox
+from PySide6.QtGui import QIcon
 
 
 class MessageBox(QWidget):
@@ -171,15 +172,35 @@ class QTW(object):
 
 
 class WindowManager(QDialog):
-    def __init__(self, ui, bh=None, args=None, parent=None):
+    def __init__(self, ui, ux=None, args=None, parent=None):
         super().__init__(parent)
         self.ui = ui()
         self.ui.setupUi(self)
 
-        if bh:
-            self.bh = bh(self.ui, self, args)
+        if ux:
+            self.ux = ux(self.ui, self, args)
 
     def closeEvent(self, event):
         if hasattr(self, "on_close"):
             self.on_close()
         event.accept()
+
+
+class icon_types(Enum):
+    REFRESH = 1
+    SETTINGS = 2
+    FILE_OPEN = 3
+
+
+def set_icon(ui_component, i_type: icon_types):
+    icon_path = kernel.__path__._path[0] + "/icons/"
+    if i_type == icon_types.REFRESH:
+        icon_path += "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+    elif i_type == icon_types.SETTINGS:
+        icon_path += "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+    elif i_type == icon_types.FILE_OPEN:
+        icon_path += "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+
+    icon = QIcon()
+    icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+    ui_component.setIcon(icon)

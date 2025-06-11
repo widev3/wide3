@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>727</width>
+    <width>968</width>
     <height>625</height>
    </rect>
   </property>
@@ -44,13 +44,6 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QPushButton" name="pushButtonRefresh">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../cwd/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../cwd/refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>25</width>
@@ -61,13 +54,6 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButtonFileOpen">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../cwd/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../cwd/file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>25</width>
@@ -78,13 +64,6 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButtonSettings">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>../cwd/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</normaloff>../cwd/settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png</iconset>
-            </property>
             <property name="iconSize">
              <size>
               <width>25</width>

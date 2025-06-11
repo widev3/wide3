@@ -7,12 +7,12 @@ from PySide6.QtWidgets import QApplication
 from kernel.SingletonSplash import SingletonSplash
 
 
-def abs_path(filename):
-    return path.abspath(path.join(path.dirname(__file__), filename))
+def abs_path(filename, ref_position=__file__):
+    return path.abspath(path.join(path.dirname(ref_position), filename))
 
 
 app = QApplication(sys.argv)
-SingletonSplash(abs_path("icons/whistle_of_wind.png"))
+SingletonSplash(abs_path("icons/whistle_of_wind.png", __file__))
 SingletonSplash().message("Loading...")
 
 import Config
