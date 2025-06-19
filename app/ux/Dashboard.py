@@ -1,8 +1,20 @@
-from single_include import RsInstrument, traceback, datetime, QMessageBox, QFileDialog
+from threading import Timer
+from single_include import (
+    RsInstrument,
+    traceback,
+    datetime,
+    QMessageBox,
+    QFileDialog,
+)
 from utils import start_prog, stop_prog
-from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog
-from kernel.comboBoxDialog.UXComboBoxDialog import BHComboBoxDialog
-from kernel.QtMger import set_icon, icon_types
+
+from kernel.popupDialog.PopupDialog import Ui_Dialog as UIPopupDialog
+from kernel.popupDialog.UXPopupDialog import UXPopupDialog
+
+from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog as UIComboBoxDialog
+from kernel.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
+
+from kernel.QtMger import set_icon, icon_types, WindowManager, MessageBox, get_icon_path
 
 
 class Dashboard:
@@ -10,6 +22,7 @@ class Dashboard:
         self.ui = ui
         self.dialog = dialog
         self.args = args
+        self.instr = None
         stop_prog(self.ui.label, self.ui.progressBar)
 
         set_icon(self.ui.pushButtonRefresh, icon_types.REFRESH)
@@ -27,17 +40,26 @@ class Dashboard:
             stop_prog(self.ui.label, self.ui.progressBar)
 
             if instr_list:
-                if not key and len(instr_list) == 1:
+                if len(instr_list) == 1:
                     key = instr_list[0]
+                    res = MessageBox(
+                        text=f"Connect to {key}? It is the only instrument available.",
+                        title="WOW",
+                        icon=QMessageBox.Icon.Question,
+                        buttons=QMessageBox.StandardButton.Yes
+                        | QMessageBox.StandardButton.No,
+                    ).result()
+                    if res == QMessageBox.StandardButton.No:
+                        key = None
                 elif key and key in instr_list:
                     print("autoconnection")
                 else:
-                    win = WindowManager(Ui_Dialog, BHComboBoxDialog, instr_list)
+                    win = WindowManager(UIComboBoxDialog, UXComboBoxDialog, instr_list)
                     win.exec()
                     key = win.bh.text
             else:
                 return MessageBox(
-                    text="No instrument connected",
+                    text="No instrument available",
                     title="WOW",
                     icon=QMessageBox.Icon.Warning,
                     buttons=QMessageBox.StandardButton.Ok,
@@ -53,55 +75,44 @@ class Dashboard:
         self.__connect_instr(key)
 
     def __disconnect_instr(self):
-        if self.__instr and self.__instr.is_connection_active:
-            self.__instr.close()
-            self.__instr = None
+        if self.instr and self.instr.is_connection_active:
+            self.instr.close()
+            self.instr = None
 
-    def __connect_instr(self, key):
-        self.__disconnect_instr()
+    def __connect_instr(self, key: str | None):
+        if not key:
+            return
+
+        if self.instr:
+            self.__disconnect_instr()
 
         try:
-            self.__instr = RsInstrument(key, id_query=True, reset=True)
-            idn = self.__instr_comm(cmd="*IDN?", case="query_str")
+            self.instr = RsInstrument(key, id_query=True, reset=True)
+            idn = self.instr.query_str("*IDN?")
 
-            now = datetime.datetime.now()
-            self.__instr_comm("SYST:BEEP:KEY:VOL", 0)
-            self.__instr_comm("SYST:BEEP:POV", "ON")
-            self.__instr_comm("SYST:BEEP:VOL", 1)
-            self.__instr_comm("SYST:DISP:UPD", "ON")
-            self.__instr_comm("SYST:DATE", f"{now.year},{now.month},{now.day}")
-            self.__instr_comm("SYST:TIME", f"{now.hour},{now.minute},{now.second}")
-            self.__instr_comm("SYST:TZON", "01,00")
-            self.__instr_comm("UNIT:LENG", "MET")
-            self.__instr_comm("INST:SEL", "SAN")
-            self.__instr_comm("UNIT:POW", "W")
-            self.__instr_comm("INIT:CONT", "ON")
+            now = datetime.now()
+            self.instr.write_str("SYST:BEEP:KEY:VOL 0")
+            self.instr.write_str("SYST:BEEP:POV ON")
+            self.instr.write_str("SYST:BEEP:VOL 1")
+            self.instr.write_str("SYST:DISP:UPD ON")
+            self.instr.write_str(f"SYST:DATE {now.year},{now.month},{now.day}")
+            self.instr.write_str(f"SYST:TIME {now.hour},{now.minute},{now.second}")
+            self.instr.write_str("SYST:TZON 01,00")
+            self.instr.write_str("UNIT:LENG MET")
+            self.instr.write_str("INST:SEL SAN")
+            self.instr.write_str("UNIT:POW W")
+            self.instr.write_str("INIT:CONT ON")
 
-            self.__ax["connect_sa"].cla()
-            self.__connect_sa_button = basic_view.Button(
-                ax=self.__ax["connect_sa"], label="Disconnect SA"
-            )
-            self.__connect_sa_button.on_clicked(self.__disconnect_instr)
-
-            self.__ax["record"].cla()
-            self.__record_button = basic_view.Button(
-                ax=self.__ax["record"], label="Start record"
-            )
-            self.__record_button.on_clicked(self.__start_record)
-
-            self.__instr_update()
-
-            basic_view.set_title(fig=self.__fig, subtitles=[key])
-            basic_view.show_message(
-                self.__conf["name"],
-                f"""Device {key} is connected!
-    IDN:\t{idn}
-    Driver version:\t{self.__instr.driver_version}
-    Visa manufacturer:\t{self.__instr.visa_manufacturer}
-    Instrument full name:\t{self.__instr.full_instrument_model_name}
-    Instrument options:\t{",".join(self.__instr.instrument_options)}""",
-                icon=1,
-            )
+            args = {}
+            args["text"] = f"Connected!"
+            # args["icon"] = QtWidgets.QStyle.StandardPixmap.SP_DialogOkButton
+            args["image"] = get_icon_path(icon_types.CHECK)
+            # IDN:\t{idn}
+            # Driver version:\t{self.instr.driver_version}
+            # Visa manufacturer:\t{self.instr.visa_manufacturer}
+            # Instrument full name:\t{self.instr.full_instrument_model_name}
+            # Instrument options:\t{",".join(self.instr.instrument_options)}"""
+            return WindowManager(UIPopupDialog, UXPopupDialog, args).show()
         except:
             return MessageBox(
                 text=f"Error during connection device {key}:\n{traceback.format_exc()}",

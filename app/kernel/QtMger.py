@@ -190,17 +190,25 @@ class icon_types(Enum):
     REFRESH = 1
     SETTINGS = 2
     FILE_OPEN = 3
+    CHECK = 4
+
+
+def get_icon_path(i_type: icon_types) -> str | None:
+    icon_path = kernel.__path__._path[0] + "/icons/"
+    if i_type == icon_types.REFRESH:
+        return icon_path + "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+    elif i_type == icon_types.SETTINGS:
+        return icon_path + "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+    elif i_type == icon_types.FILE_OPEN:
+        return icon_path + "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+    elif i_type == icon_types.CHECK:
+        return icon_path + "check_64dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+
+    return None
 
 
 def set_icon(ui_component, i_type: icon_types):
-    icon_path = kernel.__path__._path[0] + "/icons/"
-    if i_type == icon_types.REFRESH:
-        icon_path += "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
-    elif i_type == icon_types.SETTINGS:
-        icon_path += "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
-    elif i_type == icon_types.FILE_OPEN:
-        icon_path += "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
-
+    icon_path = get_icon_path(i_type)
     icon = QIcon()
     icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
     ui_component.setIcon(icon)

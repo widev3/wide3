@@ -27,8 +27,11 @@ from PySide6 import QtWidgets
 SingletonSplash().message("IntEnum, Enum")
 from enum import IntEnum, Enum
 
-SingletonSplash().message("QPixmap, QColor")
+SingletonSplash().message("QPixmap")
 from PySide6.QtGui import QPixmap
+
+SingletonSplash().message("QtGui")
+from PySide6 import QtGui
 
 SingletonSplash().message("QColor")
 from PySide6.QtGui import QColor

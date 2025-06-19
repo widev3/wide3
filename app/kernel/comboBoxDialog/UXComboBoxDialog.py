@@ -1,4 +1,4 @@
-class BHComboBoxDialog:
+class UXComboBoxDialog:
     def __init__(self, ui, dialog, args=None):
         self.ui = ui
         self.dialog = dialog
