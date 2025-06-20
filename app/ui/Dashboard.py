@@ -46,14 +46,12 @@ from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
     QHBoxLayout,
-    QHeaderView,
     QLabel,
     QProgressBar,
     QPushButton,
     QSizePolicy,
+    QSpacerItem,
     QTabWidget,
-    QTableWidget,
-    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
@@ -66,59 +64,6 @@ class Ui_Dialog(object):
         Dialog.resize(968, 625)
         self.gridLayout = QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.tabWidget = QTabWidget(Dialog)
-        self.tabWidget.setObjectName("tabWidget")
-        self.tabView = QWidget()
-        self.tabView.setObjectName("tabView")
-        self.gridLayout_2 = QGridLayout(self.tabView)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.frame = QFrame(self.tabView)
-        self.frame.setObjectName("frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout = QVBoxLayout(self.frame)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.tableWidget = QTableWidget(self.frame)
-        self.tableWidget.setObjectName("tableWidget")
-
-        self.verticalLayout.addWidget(self.tableWidget)
-
-        self.gridLayout_2.addWidget(self.frame, 1, 0, 1, 1)
-
-        self.frame_2 = QFrame(self.tabView)
-        self.frame_2.setObjectName("frame_2")
-        self.horizontalLayout = QHBoxLayout(self.frame_2)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButtonRefresh = QPushButton(self.frame_2)
-        self.pushButtonRefresh.setObjectName("pushButtonRefresh")
-        self.pushButtonRefresh.setIconSize(QSize(25, 25))
-
-        self.horizontalLayout.addWidget(self.pushButtonRefresh)
-
-        self.pushButtonFileOpen = QPushButton(self.frame_2)
-        self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
-        self.pushButtonFileOpen.setIconSize(QSize(25, 25))
-
-        self.horizontalLayout.addWidget(self.pushButtonFileOpen)
-
-        self.pushButtonSettings = QPushButton(self.frame_2)
-        self.pushButtonSettings.setObjectName("pushButtonSettings")
-        self.pushButtonSettings.setIconSize(QSize(25, 25))
-
-        self.horizontalLayout.addWidget(self.pushButtonSettings)
-
-        self.gridLayout_2.addWidget(self.frame_2, 0, 0, 1, 1, Qt.AlignLeft)
-
-        self.tabWidget.addTab(self.tabView, "")
-        self.tabPositioning = QWidget()
-        self.tabPositioning.setObjectName("tabPositioning")
-        self.tabWidget.addTab(self.tabPositioning, "")
-        self.tabAcquisition = QWidget()
-        self.tabAcquisition.setObjectName("tabAcquisition")
-        self.tabWidget.addTab(self.tabAcquisition, "")
-
-        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
-
         self.frame_3 = QFrame(Dialog)
         self.frame_3.setObjectName("frame_3")
         self.horizontalLayout_2 = QHBoxLayout(self.frame_3)
@@ -137,6 +82,61 @@ class Ui_Dialog(object):
 
         self.gridLayout.addWidget(self.frame_3, 1, 0, 1, 1)
 
+        self.tabWidget = QTabWidget(Dialog)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tabView = QWidget()
+        self.tabView.setObjectName("tabView")
+        self.gridLayout_2 = QGridLayout(self.tabView)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.frameButtons = QFrame(self.tabView)
+        self.frameButtons.setObjectName("frameButtons")
+        self.horizontalLayout = QHBoxLayout(self.frameButtons)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.pushButtonConnect = QPushButton(self.frameButtons)
+        self.pushButtonConnect.setObjectName("pushButtonConnect")
+        self.pushButtonConnect.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout.addWidget(self.pushButtonConnect)
+
+        self.pushButtonFileOpen = QPushButton(self.frameButtons)
+        self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
+        self.pushButtonFileOpen.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout.addWidget(self.pushButtonFileOpen)
+
+        self.pushButtonSettings = QPushButton(self.frameButtons)
+        self.pushButtonSettings.setObjectName("pushButtonSettings")
+        self.pushButtonSettings.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout.addWidget(self.pushButtonSettings)
+
+        self.gridLayout_2.addWidget(
+            self.frameButtons,
+            0,
+            0,
+            1,
+            1,
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+        )
+
+        self.frameSpec = QFrame(self.tabView)
+        self.frameSpec.setObjectName("frameSpec")
+        self.frameSpec.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frameSpec.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout = QVBoxLayout(self.frameSpec)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalSpacer = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+
+        self.verticalLayout.addItem(self.verticalSpacer)
+
+        self.gridLayout_2.addWidget(self.frameSpec, 1, 0, 1, 1)
+
+        self.tabWidget.addTab(self.tabView, "")
+
+        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+
         self.retranslateUi(Dialog)
 
         self.tabWidget.setCurrentIndex(0)
@@ -149,18 +149,10 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(
             QCoreApplication.translate("Dialog", "Whistle Of Wind", None)
         )
+        self.label.setText("")
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.tabView),
             QCoreApplication.translate("Dialog", "View", None),
         )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tabPositioning),
-            QCoreApplication.translate("Dialog", "Positioning", None),
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tabAcquisition),
-            QCoreApplication.translate("Dialog", "Acquisition", None),
-        )
-        self.label.setText("")
 
     # retranslateUi

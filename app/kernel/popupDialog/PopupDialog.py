@@ -44,9 +44,9 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QFrame,
-    QGridLayout,
     QLabel,
     QSizePolicy,
+    QVBoxLayout,
     QWidget,
 )
 
@@ -55,20 +55,20 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.resize(292, 144)
+        Dialog.resize(308, 300)
         Dialog.setMinimumSize(QSize(292, 144))
-        self.gridLayout = QGridLayout(Dialog)
-        self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QVBoxLayout(Dialog)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.frame = QFrame(Dialog)
         self.frame.setObjectName("frame")
 
-        self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.frame)
 
         self.label = QLabel(Dialog)
         self.label.setObjectName("label")
         self.label.setMinimumSize(QSize(274, 60))
 
-        self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
+        self.verticalLayout.addWidget(self.label)
 
         self.retranslateUi(Dialog)
 
@@ -77,7 +77,7 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle("")
         self.label.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
+        pass
 
     # retranslateUi

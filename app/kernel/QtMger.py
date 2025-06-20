@@ -191,18 +191,24 @@ class icon_types(Enum):
     SETTINGS = 2
     FILE_OPEN = 3
     CHECK = 4
+    ADD_LINK = 5
+    LINK_OFF = 6
 
 
 def get_icon_path(i_type: icon_types) -> str | None:
     icon_path = kernel.__path__._path[0] + "/icons/"
     if i_type == icon_types.REFRESH:
-        return icon_path + "refresh_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+        return icon_path + "refresh_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
     elif i_type == icon_types.SETTINGS:
-        return icon_path + "settings_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+        return icon_path + "settings_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
     elif i_type == icon_types.FILE_OPEN:
-        return icon_path + "file_open_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+        return icon_path + "file_open_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
     elif i_type == icon_types.CHECK:
-        return icon_path + "check_64dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+        return icon_path + "check_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+    elif i_type == icon_types.ADD_LINK:
+        return icon_path + "add_link_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+    elif i_type == icon_types.LINK_OFF:
+        return icon_path + "link_off_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
 
     return None
 

@@ -7,3 +7,4 @@ visa
 pyvisa-py
 zeroconf
 psutil
+matplotlib

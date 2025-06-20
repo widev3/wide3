@@ -18,6 +18,9 @@ from PySide6 import QtWidgets
 SingletonSplash().message("Qt")
 from PySide6.QtCore import Qt
 
+SingletonSplash().message("QtCore")
+from PySide6 import QtCore
+
 SingletonSplash().message("QTimer")
 from PySide6.QtCore import QTimer
 

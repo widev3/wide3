@@ -16,6 +16,7 @@ SingletonSplash(abs_path("icons/whistle_of_wind.png", __file__))
 SingletonSplash().message("Loading...")
 
 import Config
+from single_include import Qt
 from kernel.QtMger import WindowManager
 from ui.Dashboard import Ui_Dialog
 from ux.Dashboard import Dashboard
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     Config.Config("config.json")
     c = Config.Config().instance().config
     win = WindowManager(Ui_Dialog, Dashboard, c)
+    win.setWindowState(Qt.WindowMaximized)
     win.show()
     SingletonSplash().finish(win)
     sys.exit(app.exec())

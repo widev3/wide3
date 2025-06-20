@@ -1,33 +1,25 @@
 {
-    "global": {
-        "startup_package": "controller",
-        "port": 32482,
-        "lo": [
-            {
-                "value": 5150,
-                "band": "C"
-            },
-            {
-                "value": 9750,
-                "band": "Ku Tone OFF"
-            },
-            {
-                "value": 10600,
-                "band": "Ku Tone ON"
-            }
-        ]
-    },
+    "lo": [
+        {
+            "value": 5150,
+            "band": "C"
+        },
+        {
+            "value": 9750,
+            "band": "Ku Tone OFF"
+        },
+        {
+            "value": 10600,
+            "band": "Ku Tone ON"
+        }
+    ],
     "viewer": {
-        "package": "viewer",
-        "name": "Viewer",
         "filename": "input/Spectrogram_wave_long.csv",
         "separator": ",",
         "gamma": 0.3,
         "cmap": "magma"
     },
     "controller": {
-        "package": "controller",
-        "name": "Controller",
         "instrument": "TCPIP::172.16.10.10::INSTR",
         "central": 394.3,
         "span": 0.6,
