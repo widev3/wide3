@@ -110,6 +110,12 @@ class Ui_Dialog(object):
 
         self.horizontalLayout.addWidget(self.pushButtonSettings)
 
+        self.pushButtonInfo = QPushButton(self.frameButtons)
+        self.pushButtonInfo.setObjectName("pushButtonInfo")
+        self.pushButtonInfo.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout.addWidget(self.pushButtonInfo)
+
         self.gridLayout_2.addWidget(
             self.frameButtons,
             0,
@@ -150,6 +156,7 @@ class Ui_Dialog(object):
             QCoreApplication.translate("Dialog", "Whistle Of Wind", None)
         )
         self.label.setText("")
+        self.pushButtonInfo.setText("")
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.tabView),
             QCoreApplication.translate("Dialog", "View", None),

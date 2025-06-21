@@ -15,7 +15,8 @@ from kernel.popupDialog.UXPopupDialog import UXPopupDialog
 from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog as UIComboBoxDialog
 from kernel.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
 
-from kernel.QtMger import set_icon, icon_types, WindowManager, MessageBox, get_icon_path
+from kernel.QtMger import set_icon, icon_types, WindowManager, get_icon_path
+from kernel.MessageBox import MessageBox
 
 from spectrogram import reader
 
@@ -31,11 +32,57 @@ class Dashboard:
         set_icon(self.ui.pushButtonConnect, icon_types.ADD_LINK)
         set_icon(self.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
         set_icon(self.ui.pushButtonSettings, icon_types.SETTINGS)
+        set_icon(self.ui.pushButtonInfo, icon_types.INFO)
 
-        self.ui.pushButtonConnect.clicked.connect(self.__search_instr)
+        self.ui.pushButtonConnect.clicked.connect(self.__conn_disconn)
         self.ui.pushButtonFileOpen.clicked.connect(self.__open_track)
+        self.ui.pushButtonSettings.clicked.connect(lambda x: None)
+        self.ui.pushButtonInfo.clicked.connect(self.__info)
 
-    def __search_instr(self):
+    def __conn_disconn(self):
+        def __disconnect_instr(self):
+            if self.__instr and self.__instr.is_connection_active:
+                self.__instr.close()
+                self.__instr = None
+
+        def __connect_instr(self, key: str):
+            if self.__instr:
+                __disconnect_instr(self)
+
+            try:
+                self.__instr = RsInstrument(key, id_query=True, reset=True)
+
+                now = datetime.now()
+                self.__instr.write_str("SYST:BEEP:KEY:VOL 0")
+                self.__instr.write_str("SYST:BEEP:POV ON")
+                self.__instr.write_str("SYST:BEEP:VOL 1")
+                self.__instr.write_str("SYST:DISP:UPD ON")
+                self.__instr.write_str(f"SYST:DATE {now.year},{now.month},{now.day}")
+                self.__instr.write_str(
+                    f"SYST:TIME {now.hour},{now.minute},{now.second}"
+                )
+                self.__instr.write_str("SYST:TZON 01,00")
+                self.__instr.write_str("UNIT:LENG MET")
+                self.__instr.write_str("INST:SEL SAN")
+                self.__instr.write_str("UNIT:POW W")
+                self.__instr.write_str("INIT:CONT ON")
+
+                args = {}
+                args["text"] = f"Connected!"
+                args["image"] = get_icon_path(icon_types.CHECK)
+                WindowManager(UIPopupDialog, UXPopupDialog, args).show()
+
+                return True
+            except:
+                MessageBox(
+                    text=f"Error during connection device {key}:\n{traceback.format_exc()}",
+                    title="WOW",
+                    icon=QMessageBox.Icon.Critical,
+                    buttons=QMessageBox.StandardButton.Ok,
+                ).result()
+
+                return False
+
         try:
             start_prog(self.ui.label, self.ui.progressBar, "Looking for instrument...")
             instr_list = RsInstrument.list_resources("?*")
@@ -61,7 +108,7 @@ class Dashboard:
                     win.exec()
                     key = win.bh.text
 
-                if self.__connect_instr(key):
+                if __connect_instr(self, key):
                     set_icon(self.ui.pushButtonConnect, icon_types.LINK_OFF)
             else:
                 MessageBox(
@@ -77,53 +124,6 @@ class Dashboard:
                 icon=QMessageBox.Icon.Critical,
                 buttons=QMessageBox.StandardButton.Ok,
             ).result()
-
-    def __disconnect_instr(self):
-        if self.__instr and self.__instr.is_connection_active:
-            self.__instr.close()
-            self.__instr = None
-
-    def __connect_instr(self, key: str):
-        if self.__instr:
-            self.__disconnect_instr()
-
-        try:
-            self.__instr = RsInstrument(key, id_query=True, reset=True)
-
-            now = datetime.now()
-            self.__instr.write_str("SYST:BEEP:KEY:VOL 0")
-            self.__instr.write_str("SYST:BEEP:POV ON")
-            self.__instr.write_str("SYST:BEEP:VOL 1")
-            self.__instr.write_str("SYST:DISP:UPD ON")
-            self.__instr.write_str(f"SYST:DATE {now.year},{now.month},{now.day}")
-            self.__instr.write_str(f"SYST:TIME {now.hour},{now.minute},{now.second}")
-            self.__instr.write_str("SYST:TZON 01,00")
-            self.__instr.write_str("UNIT:LENG MET")
-            self.__instr.write_str("INST:SEL SAN")
-            self.__instr.write_str("UNIT:POW W")
-            self.__instr.write_str("INIT:CONT ON")
-
-            args = {}
-            args["text"] = f"Connected!"
-            args["image"] = get_icon_path(icon_types.CHECK)
-            # idn = self.__instr.query_str("*IDN?")
-            # IDN:\t{idn}
-            # Driver version:\t{self.instr.driver_version}
-            # Visa manufacturer:\t{self.instr.visa_manufacturer}
-            # Instrument full name:\t{self.instr.full_instrument_model_name}
-            # Instrument options:\t{",".join(self.instr.instrument_options)}"""
-            WindowManager(UIPopupDialog, UXPopupDialog, args).show()
-
-            return True
-        except:
-            MessageBox(
-                text=f"Error during connection device {key}:\n{traceback.format_exc()}",
-                title="WOW",
-                icon=QMessageBox.Icon.Critical,
-                buttons=QMessageBox.StandardButton.Ok,
-            ).result()
-
-            return False
 
     def __open_track(self):
         filename, _ = QFileDialog.getOpenFileUrl(
@@ -147,3 +147,18 @@ class Dashboard:
             self.canvas.fig.set_figwidth(self.ui.frameSpec.width())
 
             stop_prog(self.ui.label, self.ui.progressBar)
+
+    def __info(self):
+        if self.__instr:
+            idn = self.__instr.query_str("*IDN?")
+            content = f"""IDN: {idn}
+Driver version: {self.__instr.driver_version}
+Visa manufacturer: {self.__instr.visa_manufacturer}
+Instrument full name: {self.__instr.full_instrument_model_name}
+Instrument options: {",".join(self.__instr.instrument_options)}"""
+            MessageBox(
+                text=content,
+                title="Info",
+                icon=QMessageBox.Icon.Information,
+                buttons=QMessageBox.StandardButton.Ok,
+            ).result()

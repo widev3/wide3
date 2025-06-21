@@ -2,7 +2,6 @@ import csv
 import kernel
 from enum import IntEnum, Enum
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
 from PySide6.QtWidgets import QPushButton
@@ -11,24 +10,6 @@ from PySide6.QtWidgets import QTableWidget
 from PySide6.QtWidgets import QTableWidgetItem
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtGui import QIcon
-
-
-class MessageBox(QWidget):
-    def __init__(self, text: str, title: str, icon: Enum, buttons):
-        super().__init__()
-        self.__text = text
-        self.__title = title
-        self.__icon = icon
-        self.__buttons = buttons
-        self.__msg = QMessageBox()
-        self.__msg.setText(self.__text)
-        self.__msg.setWindowTitle(self.__title)
-        self.__msg.setIcon(self.__icon)
-        self.__msg.setStandardButtons(self.__buttons)
-
-    def result(self):
-        self.__result = self.__msg.exec()
-        return self.__result
 
 
 class QTWQPB(object):
@@ -193,6 +174,7 @@ class icon_types(Enum):
     CHECK = 4
     ADD_LINK = 5
     LINK_OFF = 6
+    INFO = 7
 
 
 def get_icon_path(i_type: icon_types) -> str | None:
@@ -209,6 +191,8 @@ def get_icon_path(i_type: icon_types) -> str | None:
         return icon_path + "add_link_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
     elif i_type == icon_types.LINK_OFF:
         return icon_path + "link_off_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+    elif i_type == icon_types.INFO:
+        return icon_path + "info_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
 
     return None
 
