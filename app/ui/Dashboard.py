@@ -52,7 +52,6 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QSpacerItem,
     QTabWidget,
-    QVBoxLayout,
     QWidget,
 )
 
@@ -125,19 +124,69 @@ class Ui_Dialog(object):
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
         )
 
-        self.frameSpec = QFrame(self.tabView)
+        self.framePlots = QFrame(self.tabView)
+        self.framePlots.setObjectName("framePlots")
+        self.framePlots.setFrameShape(QFrame.Shape.StyledPanel)
+        self.framePlots.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_3 = QGridLayout(self.framePlots)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.frameSpec = QFrame(self.framePlots)
         self.frameSpec.setObjectName("frameSpec")
         self.frameSpec.setFrameShape(QFrame.Shape.StyledPanel)
         self.frameSpec.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout = QVBoxLayout(self.frameSpec)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.gridLayout_4 = QGridLayout(self.frameSpec)
+        self.gridLayout_4.setObjectName("gridLayout_4")
         self.verticalSpacer = QSpacerItem(
             20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
-        self.verticalLayout.addItem(self.verticalSpacer)
+        self.gridLayout_4.addItem(self.verticalSpacer, 0, 0, 1, 1)
 
-        self.gridLayout_2.addWidget(self.frameSpec, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.frameSpec, 0, 0, 1, 1)
+
+        self.frameFreq = QFrame(self.framePlots)
+        self.frameFreq.setObjectName("frameFreq")
+        self.frameFreq.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frameFreq.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_7 = QGridLayout(self.frameFreq)
+        self.gridLayout_7.setObjectName("gridLayout_7")
+        self.verticalSpacer_2 = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+
+        self.gridLayout_7.addItem(self.verticalSpacer_2, 0, 0, 1, 1)
+
+        self.gridLayout_3.addWidget(self.frameFreq, 1, 0, 1, 1)
+
+        self.frameTime = QFrame(self.framePlots)
+        self.frameTime.setObjectName("frameTime")
+        self.frameTime.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frameTime.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_5 = QGridLayout(self.frameTime)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.verticalSpacer_3 = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+
+        self.gridLayout_5.addItem(self.verticalSpacer_3, 0, 0, 1, 1)
+
+        self.gridLayout_3.addWidget(self.frameTime, 0, 1, 1, 1)
+
+        self.frameSettings = QFrame(self.framePlots)
+        self.frameSettings.setObjectName("frameSettings")
+        self.frameSettings.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frameSettings.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_6 = QGridLayout(self.frameSettings)
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.verticalSpacer_4 = QSpacerItem(
+            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+
+        self.gridLayout_6.addItem(self.verticalSpacer_4, 0, 0, 1, 1)
+
+        self.gridLayout_3.addWidget(self.frameSettings, 1, 1, 1, 1)
+
+        self.gridLayout_2.addWidget(self.framePlots, 1, 0, 1, 1)
 
         self.tabWidget.addTab(self.tabView, "")
 

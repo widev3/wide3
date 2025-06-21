@@ -1,4 +1,3 @@
-import numpy
 from ux.MplSpecCanvas import MplSpecCanvas
 from single_include import (
     RsInstrument,
@@ -137,14 +136,20 @@ class Dashboard:
             start_prog(self.ui.label, self.ui.progressBar, f"Reading {filename}...")
 
             pr, fr, sp = reader(filename, self.args["viewer"]["separator"])
-            x = numpy.linspace(0, 1, 1000)
-            xx, yy = numpy.meshgrid(x, x)
-            im = numpy.sin(xx) + numpy.cos(yy) ** 2
-            self.canvas = MplSpecCanvas(im)
-
-            self.ui.verticalLayout.addWidget(self.canvas)
+            self.canvas = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_4.addWidget(self.canvas)
             self.canvas.fig.set_figheight(self.ui.frameSpec.height())
             self.canvas.fig.set_figwidth(self.ui.frameSpec.width())
+
+            self.canvas_time = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_5.addWidget(self.canvas_time)
+            self.canvas_time.fig.set_figheight(self.ui.frameTime.height())
+            self.canvas_time.fig.set_figwidth(self.ui.frameTime.width())
+
+            self.canvas_freq = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_7.addWidget(self.canvas_freq)
+            self.canvas_freq.fig.set_figheight(self.ui.frameFreq.height())
+            self.canvas_freq.fig.set_figwidth(self.ui.frameFreq.width())
 
             stop_prog(self.ui.label, self.ui.progressBar)
 
