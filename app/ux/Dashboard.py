@@ -110,12 +110,10 @@ class Dashboard:
                 if __connect_instr(self, key):
                     set_icon(self.ui.pushButtonConnect, icon_types.LINK_OFF)
             else:
-                MessageBox(
-                    text="No instrument available",
-                    title="WOW",
-                    icon=QMessageBox.Icon.Warning,
-                    buttons=QMessageBox.StandardButton.Ok,
-                ).result()
+                args = {}
+                args["text"] = f"No instrument available"
+                args["image"] = get_icon_path(icon_types.INFO)
+                WindowManager(UIPopupDialog, UXPopupDialog, args).show()
         except:
             MessageBox(
                 text=f"Error during searching devices:\n{traceback.format_exc()}",
@@ -167,3 +165,8 @@ Instrument options: {",".join(self.__instr.instrument_options)}"""
                 icon=QMessageBox.Icon.Information,
                 buttons=QMessageBox.StandardButton.Ok,
             ).result()
+        else:
+            args = {}
+            args["text"] = f"Connect to get information about the instrument!"
+            args["image"] = get_icon_path(icon_types.INFO)
+            WindowManager(UIPopupDialog, UXPopupDialog, args).show()

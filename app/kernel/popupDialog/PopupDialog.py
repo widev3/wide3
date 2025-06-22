@@ -55,8 +55,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.resize(308, 300)
-        Dialog.setMinimumSize(QSize(292, 144))
+        Dialog.resize(500, 200)
         self.verticalLayout = QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.frame = QFrame(Dialog)
@@ -67,8 +66,11 @@ class Ui_Dialog(object):
         self.label = QLabel(Dialog)
         self.label.setObjectName("label")
         self.label.setMinimumSize(QSize(274, 60))
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.label)
+        self.verticalLayout.addWidget(
+            self.label, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
+        )
 
         self.retranslateUi(Dialog)
 
@@ -77,7 +79,6 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        self.label.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         pass
 
     # retranslateUi

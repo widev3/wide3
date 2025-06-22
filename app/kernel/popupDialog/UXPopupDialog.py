@@ -33,7 +33,7 @@ class UXPopupDialog(object):
                 icon_label.setPixmap(icon_pixmap)
                 frame_layout.addWidget(icon_label)
 
-            if "dur" in args:
-                duration = float(args["dur"])
+            if "duration" in args:
+                duration = float(args["duration"])
 
         QTimer.singleShot(duration, self.dialog.close)
