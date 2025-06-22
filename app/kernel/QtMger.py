@@ -4,11 +4,13 @@ from enum import IntEnum, Enum
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget
 from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QTableWidget
+from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtWidgets import QCheckBox
+from PySide6.QtGui import QScreen
 from PySide6.QtGui import QIcon
 
 

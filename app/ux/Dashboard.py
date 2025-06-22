@@ -19,6 +19,11 @@ from kernel.MessageBox import MessageBox
 
 from spectrogram import reader
 
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg,
+    NavigationToolbar2QT as NavigationToolbar,
+)
+
 
 class Dashboard:
     def __init__(self, ui, dialog, args=None):
@@ -135,16 +140,19 @@ class Dashboard:
 
             pr, fr, sp = reader(filename, self.args["viewer"]["separator"])
             self.canvas = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_4.addWidget(self.canvas.add_toolbar())
             self.ui.gridLayout_4.addWidget(self.canvas)
             self.canvas.fig.set_figheight(self.ui.frameSpec.height())
             self.canvas.fig.set_figwidth(self.ui.frameSpec.width())
 
             self.canvas_time = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_5.addWidget(self.canvas_time.add_toolbar())
             self.ui.gridLayout_5.addWidget(self.canvas_time)
             self.canvas_time.fig.set_figheight(self.ui.frameTime.height())
             self.canvas_time.fig.set_figwidth(self.ui.frameTime.width())
 
             self.canvas_freq = MplSpecCanvas(sp, self.args["viewer"])
+            self.ui.gridLayout_7.addWidget(self.canvas_freq.add_toolbar())
             self.ui.gridLayout_7.addWidget(self.canvas_freq)
             self.canvas_freq.fig.set_figheight(self.ui.frameFreq.height())
             self.canvas_freq.fig.set_figwidth(self.ui.frameFreq.width())
