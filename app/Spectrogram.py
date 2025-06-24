@@ -6,9 +6,12 @@ import datetime
 import re
 
 
-def reader(filename: str, separator: str):
-    def split_file_by_empty_lines(filepath: str):
-        with open(filepath, "r") as file:
+class Spectrogram(object):
+    def __init__(self):
+        pass
+
+    def __split_file_by_empty_lines(self):
+        with open(self.__filename, "r") as file:
             lines = file.readlines()
             chunks = []
             current_chunk = []
@@ -26,13 +29,13 @@ def reader(filename: str, separator: str):
 
         return chunks
 
-    def properties(file, separator: str):
-        return pd.read_csv(io.StringIO("".join(file)), sep=separator)
+    def __properties(self, file):
+        return pd.read_csv(io.StringIO("".join(file)), sep=self.__separator)
 
-    def frequencies(file, separator):
-        return pd.read_csv(io.StringIO("".join(file)), sep=separator)
+    def __frequencies(self, file):
+        return pd.read_csv(io.StringIO("".join(file)), sep=self.__separator)
 
-    def spectrogram(file, separator: str):
+    def __spectrogram(self, file):
         def qty_and_unit(string):
             match = re.match(r"(.+)\s\[(.+)\]", string)
             if match:
@@ -63,7 +66,7 @@ def reader(filename: str, separator: str):
                         datetime.datetime.strptime(x, "%H:%M:%S %d/%m/%Y").timetuple()
                     ),
                     pd.read_csv(
-                        io.StringIO(file[0]), sep=separator, header=None
+                        io.StringIO(file[0]), sep=self.__separator, header=None
                     ).values[0][1:-1],
                 )
             )
@@ -77,7 +80,7 @@ def reader(filename: str, separator: str):
                             ).timetuple()
                         ),
                         pd.read_csv(
-                            io.StringIO(file[0]), sep=separator, header=None
+                            io.StringIO(file[0]), sep=self.__separator, header=None
                         ).values[0][1:-1],
                     )
                 )
@@ -92,7 +95,7 @@ def reader(filename: str, separator: str):
                         datetime.datetime.strptime(x, "%H:%M:%S:%f")
                     ),
                     pd.read_csv(
-                        io.StringIO(file[1]), sep=separator, header=None
+                        io.StringIO(file[1]), sep=self.__separator, header=None
                     ).values[0][1:-1],
                 )
             )
@@ -103,7 +106,7 @@ def reader(filename: str, separator: str):
             map(lambda x: relative_tss_zero_end[0] - x, relative_tss_zero_end)
         )
 
-        spec = pd.read_csv(io.StringIO("\n".join(file[2:])), sep=separator)
+        spec = pd.read_csv(io.StringIO("\n".join(file[2:])), sep=self.__separator)
         columns = spec.columns
         for column in columns:
             spec = spec.drop(column, axis=1) if np.isnan(spec[column]).all() else spec
@@ -133,9 +136,17 @@ def reader(filename: str, separator: str):
             "u": um,
         }
 
-    file = split_file_by_empty_lines(filename)
-    pr = properties(file[0], separator)
-    fr = frequencies(file[1], separator)
-    sp = spectrogram(file[2], separator)
+    def read_file(self, filename: str, separator: str):
+        self.__filename = filename
+        self.__separator = separator
 
-    return pr, fr, sp
+        chunks = self.__split_file_by_empty_lines()
+        self.prop = self.__properties(chunks[0])
+        self.freq = self.__frequencies(chunks[1])
+        self.spec = self.__spectrogram(chunks[2])
+
+    def time_slice(self, x):
+        return self.spec["m"][x.y]
+
+    def freq_slice(self, x):
+        return self.spec["m"][:, x.x]

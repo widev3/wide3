@@ -8,9 +8,8 @@ from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtWidgets import QHBoxLayout
 from PySide6.QtWidgets import QTableWidget
-from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QTableWidgetItem
-from PySide6.QtGui import QScreen
+from PySide6.QtGui import QPixmap
 from PySide6.QtGui import QIcon
 
 
@@ -177,30 +176,49 @@ class icon_types(Enum):
     ADD_LINK = 5
     LINK_OFF = 6
     INFO = 7
+    ADJUST = 8
+    ARROW_RANGE = 9
+    ARROW_MENU_CLOSE = 10
+    ARROW_MENU_OPEN = 11
+    CADENCE = 12
 
 
 def get_icon_path(i_type: icon_types) -> str | None:
     icon_path = kernel.__path__._path[0] + "/icons/"
-    if i_type == icon_types.REFRESH:
-        return icon_path + "refresh_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.SETTINGS:
-        return icon_path + "settings_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.FILE_OPEN:
-        return icon_path + "file_open_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.CHECK:
-        return icon_path + "check_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.ADD_LINK:
-        return icon_path + "add_link_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.LINK_OFF:
-        return icon_path + "link_off_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
-    elif i_type == icon_types.INFO:
-        return icon_path + "info_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png"
+    icon_dict = {
+        icon_types.REFRESH: "refresh_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.SETTINGS: "settings_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.FILE_OPEN: "file_open_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.CHECK: "check_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.ADD_LINK: "add_link_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.LINK_OFF: "link_off_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.INFO: "info_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.ADJUST: "adjust_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.ARROW_RANGE: "arrow_range_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.ARROW_MENU_CLOSE: "arrow_menu_close_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.ARROW_MENU_OPEN: "arrow_menu_open_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.CADENCE: "cadence_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+    }
+
+    if i_type in icon_dict:
+        return icon_path + icon_dict[i_type]
 
     return None
 
 
-def set_icon(ui_component, i_type: icon_types):
+def set_icon(ui_component, i_type: icon_types, size: tuple | None = None):
     icon_path = get_icon_path(i_type)
-    icon = QIcon()
-    icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-    ui_component.setIcon(icon)
+    if hasattr(ui_component, "setIcon"):
+        icon = QIcon()
+        icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        ui_component.setIcon(icon)
+    elif hasattr(ui_component, "setPicture"):
+        pixmap = QPixmap(icon_path)
+        if size:
+            pixmap = pixmap.scaled(
+                size[0],
+                size[1],
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+        ui_component.setPixmap(pixmap)

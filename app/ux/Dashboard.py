@@ -1,12 +1,14 @@
+from Spectrogram import Spectrogram
 from ux.MplSpecCanvas import MplSpecCanvas
+from ux.Mpl2DPlotCanvas import Mpl2DPlotCanvas
 from single_include import (
     RsInstrument,
     traceback,
     datetime,
     QMessageBox,
     QFileDialog,
+    Qt,
 )
-from utils import start_prog, stop_prog
 
 from kernel.popupDialog.PopupDialog import Ui_Dialog as UIPopupDialog
 from kernel.popupDialog.UXPopupDialog import UXPopupDialog
@@ -17,13 +19,6 @@ from kernel.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
 from kernel.QtMger import set_icon, icon_types, WindowManager, get_icon_path
 from kernel.MessageBox import MessageBox
 
-from spectrogram import reader
-
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg,
-    NavigationToolbar2QT as NavigationToolbar,
-)
-
 
 class Dashboard:
     def __init__(self, ui, dialog, args=None):
@@ -31,17 +26,62 @@ class Dashboard:
         self.dialog = dialog
         self.args = args
         self.__instr = None
-        stop_prog(self.ui.label, self.ui.progressBar)
+        self.__filename = None
 
         set_icon(self.ui.pushButtonConnect, icon_types.ADD_LINK)
         set_icon(self.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
-        set_icon(self.ui.pushButtonSettings, icon_types.SETTINGS)
         set_icon(self.ui.pushButtonInfo, icon_types.INFO)
+        set_icon(self.ui.labelCenter, icon_types.ADJUST, (30, 30))
+        set_icon(self.ui.labelSpan, icon_types.ARROW_RANGE, (30, 30))
+        set_icon(self.ui.labelMin, icon_types.ARROW_MENU_CLOSE, (30, 30))
+        set_icon(self.ui.labelMax, icon_types.ARROW_MENU_OPEN, (30, 30))
+        set_icon(self.ui.labelOffsets, icon_types.CADENCE, (30, 30))
+
+        self.ui.comboBoxOffsets.currentIndexChanged.connect(
+            self.__comboBoxOffsetsCurrentIndexChanged
+        )
+
+        self.ui.doubleSpinBoxCenter.valueChanged.connect(
+            self.__doubleSpinBoxCenterValueChanged
+        )
+
+        self.ui.doubleSpinBoxSpan.valueChanged.connect(
+            self.__doubleSpinBoxSpanValueChanged
+        )
+
+        self.ui.doubleSpinBoxMin.valueChanged.connect(
+            self.__doubleSpinBoxMinValueChanged
+        )
+
+        self.ui.doubleSpinBoxMax.valueChanged.connect(
+            self.__doubleSpinBoxMaxValueChanged
+        )
+
+        self.ui.comboBoxOffsets.addItems(
+            list(map(lambda x: f"{x["band"]}: {x["value"]}", self.args["lo"]))
+        )
 
         self.ui.pushButtonConnect.clicked.connect(self.__conn_disconn)
         self.ui.pushButtonFileOpen.clicked.connect(self.__open_track)
-        self.ui.pushButtonSettings.clicked.connect(lambda x: None)
         self.ui.pushButtonInfo.clicked.connect(self.__info)
+
+        self.dialog.setWindowState(Qt.WindowMaximized)
+
+    def __comboBoxOffsetsCurrentIndexChanged(self, d):
+        self.__lo = self.args["lo"][d]["value"]
+        self.__load_track()
+
+    def __doubleSpinBoxCenterValueChanged(self, d):
+        self.ui.horizontalSliderCenter.setValue(d)
+
+    def __doubleSpinBoxSpanValueChanged(self, d):
+        self.ui.horizontalSliderSpan.setValue(d)
+
+    def __doubleSpinBoxMinValueChanged(self, d):
+        self.ui.horizontalSliderMin.setValue(d)
+
+    def __doubleSpinBoxMaxValueChanged(self, d):
+        self.ui.horizontalSliderMax.setValue(d)
 
     def __conn_disconn(self):
         def __disconnect_instr(self):
@@ -88,9 +128,7 @@ class Dashboard:
                 return False
 
         try:
-            start_prog(self.ui.label, self.ui.progressBar, "Looking for instrument...")
             instr_list = RsInstrument.list_resources("?*")
-            stop_prog(self.ui.label, self.ui.progressBar)
 
             if instr_list:
                 key = None
@@ -134,30 +172,35 @@ class Dashboard:
             filter="CSV Files (*.csv);;All Files (*)",
         )
 
-        if filename:
-            filename = filename.path()
-            start_prog(self.ui.label, self.ui.progressBar, f"Reading {filename}...")
+        self.__filename = filename.path() if filename else self.__filename
+        self.__load_track()
 
-            pr, fr, sp = reader(filename, self.args["viewer"]["separator"])
-            self.canvas = MplSpecCanvas(sp, self.args["viewer"])
-            self.ui.gridLayout_4.addWidget(self.canvas.add_toolbar())
-            self.ui.gridLayout_4.addWidget(self.canvas)
-            self.canvas.fig.set_figheight(self.ui.frameSpec.height())
-            self.canvas.fig.set_figwidth(self.ui.frameSpec.width())
+    def __load_track(self):
 
-            self.canvas_time = MplSpecCanvas(sp, self.args["viewer"])
-            self.ui.gridLayout_5.addWidget(self.canvas_time.add_toolbar())
-            self.ui.gridLayout_5.addWidget(self.canvas_time)
-            self.canvas_time.fig.set_figheight(self.ui.frameTime.height())
-            self.canvas_time.fig.set_figwidth(self.ui.frameTime.width())
+        def update_slice_canvas(data_coord, plot_coord, array_coord, exact_val_coord):
+            self.canvas_time = Mpl2DPlotCanvas(time)
+            self.ui.verticalLayoutTime.addWidget(self.canvas_time.add_toolbar())
+            self.ui.verticalLayoutTime.addWidget(self.canvas_time)
 
-            self.canvas_freq = MplSpecCanvas(sp, self.args["viewer"])
-            self.ui.gridLayout_7.addWidget(self.canvas_freq.add_toolbar())
-            self.ui.gridLayout_7.addWidget(self.canvas_freq)
-            self.canvas_freq.fig.set_figheight(self.ui.frameFreq.height())
-            self.canvas_freq.fig.set_figwidth(self.ui.frameFreq.width())
+            self.canvas_freq = Mpl2DPlotCanvas(freq)
+            self.ui.verticalLayoutFreq.addWidget(self.canvas_freq.add_toolbar())
+            self.ui.verticalLayoutFreq.addWidget(self.canvas_freq)
 
-            stop_prog(self.ui.label, self.ui.progressBar)
+        if not self.__filename:
+            return
+
+        spec = Spectrogram()
+        spec.read_file(self.__filename, self.args["viewer"]["separator"])
+        self.canvas_freq = MplSpecCanvas(
+            spec.spec,
+            self.args["viewer"],
+            self.__lo,
+            lambda data_coord, plot_coord, array_coord, exact_val_coord: update_slice_canvas(
+                data_coord, plot_coord, array_coord, exact_val_coord
+            ),
+        )
+        self.ui.verticalLayoutSpec.addWidget(self.canvas_freq.add_toolbar())
+        self.ui.verticalLayoutSpec.addWidget(self.canvas_freq)
 
     def __info(self):
         if self.__instr:

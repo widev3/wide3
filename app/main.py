@@ -26,7 +26,6 @@ if __name__ == "__main__":
     Config.Config("config.json")
     c = Config.Config().instance().config
     win = WindowManager(Ui_Dialog, Dashboard, c)
-    win.setWindowState(Qt.WindowMaximized)
     win.show()
     SingletonSplash().finish(win)
     sys.exit(app.exec())
