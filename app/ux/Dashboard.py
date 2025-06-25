@@ -16,7 +16,13 @@ from kernel.popupDialog.UXPopupDialog import UXPopupDialog
 from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog as UIComboBoxDialog
 from kernel.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
 
-from kernel.QtMger import set_icon, icon_types, WindowManager, get_icon_path
+from kernel.QtMger import (
+    set_icon,
+    icon_types,
+    WindowManager,
+    get_icon_path,
+    remove_widgets,
+)
 from kernel.MessageBox import MessageBox
 
 
@@ -27,6 +33,7 @@ class Dashboard:
         self.args = args
         self.__instr = None
         self.__filename = None
+        self.__spec = None
 
         set_icon(self.ui.pushButtonConnect, icon_types.ADD_LINK)
         set_icon(self.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
@@ -176,27 +183,39 @@ class Dashboard:
         self.__load_track()
 
     def __load_track(self):
-
-        def update_slice_canvas(data_coord, plot_coord, array_coord, exact_val_coord):
-            self.canvas_time = Mpl2DPlotCanvas(time)
+        def update_slice_canvas(
+            data, plot, array, data_exact, span, span_array, span_exact
+        ):
+            time = self.__spec.time_slice(array[1])
+            self.canvas_time = Mpl2DPlotCanvas(
+                x=self.__spec.spec["r"], y=time, labels=("time", "intensity")
+            )
+            remove_widgets(self.ui.verticalLayoutTime)
             self.ui.verticalLayoutTime.addWidget(self.canvas_time.add_toolbar())
             self.ui.verticalLayoutTime.addWidget(self.canvas_time)
 
-            self.canvas_freq = Mpl2DPlotCanvas(freq)
+            freq = self.__spec.freq_slice(array[0])
+            self.canvas_freq = Mpl2DPlotCanvas(
+                x=freq, y=self.__spec.spec["f"], labels=("intensity", "frequency")
+            )
+            remove_widgets(self.ui.verticalLayoutFreq)
             self.ui.verticalLayoutFreq.addWidget(self.canvas_freq.add_toolbar())
             self.ui.verticalLayoutFreq.addWidget(self.canvas_freq)
 
         if not self.__filename:
             return
 
-        spec = Spectrogram()
-        spec.read_file(self.__filename, self.args["viewer"]["separator"])
+        remove_widgets(self.ui.verticalLayoutSpec)
+
+        self.__spec = Spectrogram()
+        self.__spec.read_file(
+            self.__filename, self.args["viewer"]["separator"], self.__lo
+        )
         self.canvas_freq = MplSpecCanvas(
-            spec.spec,
+            self.__spec.spec,
             self.args["viewer"],
-            self.__lo,
-            lambda data_coord, plot_coord, array_coord, exact_val_coord: update_slice_canvas(
-                data_coord, plot_coord, array_coord, exact_val_coord
+            lambda data, plot, array, data_exact, span, span_array, span_exact: update_slice_canvas(
+                data, plot, array, data_exact, span, span_array, span_exact
             ),
         )
         self.ui.verticalLayoutSpec.addWidget(self.canvas_freq.add_toolbar())

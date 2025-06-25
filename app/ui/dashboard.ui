@@ -548,14 +548,14 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="1">
-           <widget class="QDockWidget" name="dockWidgetTime">
+           <widget class="QDockWidget" name="dockWidgetFreq">
             <property name="features">
              <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
             </property>
-            <widget class="QWidget" name="dockWidgetContentsTime">
+            <widget class="QWidget" name="dockWidgetContentsFreq">
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="0" column="0">
-               <layout class="QVBoxLayout" name="verticalLayoutTime"/>
+               <layout class="QVBoxLayout" name="verticalLayoutFreq"/>
               </item>
              </layout>
             </widget>
@@ -708,14 +708,14 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QDockWidget" name="dockWidgetFreq">
+           <widget class="QDockWidget" name="dockWidgetTime">
             <property name="features">
              <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
             </property>
-            <widget class="QWidget" name="dockWidgetContentsFreq">
+            <widget class="QWidget" name="dockWidgetContentsTime">
              <layout class="QGridLayout" name="gridLayout_7">
               <item row="0" column="0">
-               <layout class="QVBoxLayout" name="verticalLayoutFreq"/>
+               <layout class="QVBoxLayout" name="verticalLayoutTime"/>
               </item>
              </layout>
             </widget>

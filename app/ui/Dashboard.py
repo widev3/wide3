@@ -262,24 +262,24 @@ class Ui_Dialog(object):
         self.framePlots.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_3 = QGridLayout(self.framePlots)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.dockWidgetTime = QDockWidget(self.framePlots)
-        self.dockWidgetTime.setObjectName("dockWidgetTime")
-        self.dockWidgetTime.setFeatures(
+        self.dockWidgetFreq = QDockWidget(self.framePlots)
+        self.dockWidgetFreq.setObjectName("dockWidgetFreq")
+        self.dockWidgetFreq.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
-        self.dockWidgetContentsTime = QWidget()
-        self.dockWidgetContentsTime.setObjectName("dockWidgetContentsTime")
-        self.gridLayout_6 = QGridLayout(self.dockWidgetContentsTime)
+        self.dockWidgetContentsFreq = QWidget()
+        self.dockWidgetContentsFreq.setObjectName("dockWidgetContentsFreq")
+        self.gridLayout_6 = QGridLayout(self.dockWidgetContentsFreq)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.verticalLayoutTime = QVBoxLayout()
-        self.verticalLayoutTime.setObjectName("verticalLayoutTime")
+        self.verticalLayoutFreq = QVBoxLayout()
+        self.verticalLayoutFreq.setObjectName("verticalLayoutFreq")
 
-        self.gridLayout_6.addLayout(self.verticalLayoutTime, 0, 0, 1, 1)
+        self.gridLayout_6.addLayout(self.verticalLayoutFreq, 0, 0, 1, 1)
 
-        self.dockWidgetTime.setWidget(self.dockWidgetContentsTime)
+        self.dockWidgetFreq.setWidget(self.dockWidgetContentsFreq)
 
-        self.gridLayout_3.addWidget(self.dockWidgetTime, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.dockWidgetFreq, 0, 1, 1, 1)
 
         self.dockWidgetSpec = QDockWidget(self.framePlots)
         self.dockWidgetSpec.setObjectName("dockWidgetSpec")
@@ -401,24 +401,24 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addWidget(self.dockWidget, 1, 1, 1, 1)
 
-        self.dockWidgetFreq = QDockWidget(self.framePlots)
-        self.dockWidgetFreq.setObjectName("dockWidgetFreq")
-        self.dockWidgetFreq.setFeatures(
+        self.dockWidgetTime = QDockWidget(self.framePlots)
+        self.dockWidgetTime.setObjectName("dockWidgetTime")
+        self.dockWidgetTime.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
-        self.dockWidgetContentsFreq = QWidget()
-        self.dockWidgetContentsFreq.setObjectName("dockWidgetContentsFreq")
-        self.gridLayout_7 = QGridLayout(self.dockWidgetContentsFreq)
+        self.dockWidgetContentsTime = QWidget()
+        self.dockWidgetContentsTime.setObjectName("dockWidgetContentsTime")
+        self.gridLayout_7 = QGridLayout(self.dockWidgetContentsTime)
         self.gridLayout_7.setObjectName("gridLayout_7")
-        self.verticalLayoutFreq = QVBoxLayout()
-        self.verticalLayoutFreq.setObjectName("verticalLayoutFreq")
+        self.verticalLayoutTime = QVBoxLayout()
+        self.verticalLayoutTime.setObjectName("verticalLayoutTime")
 
-        self.gridLayout_7.addLayout(self.verticalLayoutFreq, 0, 0, 1, 1)
+        self.gridLayout_7.addLayout(self.verticalLayoutTime, 0, 0, 1, 1)
 
-        self.dockWidgetFreq.setWidget(self.dockWidgetContentsFreq)
+        self.dockWidgetTime.setWidget(self.dockWidgetContentsTime)
 
-        self.gridLayout_3.addWidget(self.dockWidgetFreq, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.dockWidgetTime, 1, 0, 1, 1)
 
         self.gridLayout_2.addWidget(self.framePlots, 1, 0, 1, 1)
 

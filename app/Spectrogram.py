@@ -131,14 +131,15 @@ class Spectrogram(object):
         return {
             "r": relative_tss_zero_start,
             "a": absolute_tss,
-            "f": frequency,
+            "f": list(map(lambda x: x + self.__lo, frequency)),
             "m": magnitude,
             "u": um,
         }
 
-    def read_file(self, filename: str, separator: str):
+    def read_file(self, filename: str, separator: str, lo: float):
         self.__filename = filename
         self.__separator = separator
+        self.__lo = lo
 
         chunks = self.__split_file_by_empty_lines()
         self.prop = self.__properties(chunks[0])
@@ -146,7 +147,7 @@ class Spectrogram(object):
         self.spec = self.__spectrogram(chunks[2])
 
     def time_slice(self, x):
-        return self.spec["m"][x.y]
+        return self.spec["m"][x]
 
     def freq_slice(self, x):
-        return self.spec["m"][:, x.x]
+        return self.spec["m"][:, x]
