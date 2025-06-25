@@ -584,6 +584,9 @@
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="3" column="0">
                <widget class="QLabel" name="labelMax">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
@@ -594,6 +597,9 @@
               </item>
               <item row="0" column="0">
                <widget class="QLabel" name="labelCenter">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
@@ -604,6 +610,9 @@
               </item>
               <item row="2" column="3">
                <widget class="QSlider" name="horizontalSliderMin">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -614,6 +623,9 @@
               </item>
               <item row="3" column="3">
                <widget class="QSlider" name="horizontalSliderMax">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -624,6 +636,9 @@
               </item>
               <item row="0" column="3">
                <widget class="QSlider" name="horizontalSliderCenter">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -634,6 +649,9 @@
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="labelMin">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
@@ -644,6 +662,9 @@
               </item>
               <item row="1" column="3">
                <widget class="QSlider" name="horizontalSliderSpan">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -654,6 +675,9 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="labelSpan">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
@@ -677,6 +701,9 @@
               </item>
               <item row="0" column="4">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxCenter">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>6</number>
                 </property>
@@ -684,6 +711,9 @@
               </item>
               <item row="1" column="4">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxSpan">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>6</number>
                 </property>
@@ -691,6 +721,9 @@
               </item>
               <item row="2" column="4">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxMin">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>6</number>
                 </property>
@@ -698,6 +731,9 @@
               </item>
               <item row="3" column="4">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxMax">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>6</number>
                 </property>

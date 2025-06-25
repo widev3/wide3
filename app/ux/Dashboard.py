@@ -91,15 +91,29 @@ class Dashboard:
         self.ui.horizontalSliderMax.setValue(d)
 
     def __conn_disconn(self):
+        def __enable_disable(self, enable):
+            set_icon(
+                self.ui.pushButtonConnect,
+                icon_types.LINK_OFF if enable else icon_types.ADD_LINK,
+            )
+            self.ui.labelCenter.setEnabled(enable)
+            self.ui.horizontalSliderCenter.setEnabled(enable)
+            self.ui.doubleSpinBoxCenter.setEnabled(enable)
+            self.ui.labelSpan.setEnabled(enable)
+            self.ui.horizontalSliderSpan.setEnabled(enable)
+            self.ui.doubleSpinBoxSpan.setEnabled(enable)
+            self.ui.labelMin.setEnabled(enable)
+            self.ui.horizontalSliderMin.setEnabled(enable)
+            self.ui.doubleSpinBoxMin.setEnabled(enable)
+            self.ui.labelMax.setEnabled(enable)
+            self.ui.horizontalSliderMax.setEnabled(enable)
+            self.ui.doubleSpinBoxMax.setEnabled(enable)
+
         def __disconnect_instr(self):
-            if self.__instr and self.__instr.is_connection_active:
-                self.__instr.close()
-                self.__instr = None
+            self.__instr.close()
+            self.__instr = None
 
         def __connect_instr(self, key: str):
-            if self.__instr:
-                __disconnect_instr(self)
-
             try:
                 self.__instr = RsInstrument(key, id_query=True, reset=True)
 
@@ -134,6 +148,15 @@ class Dashboard:
 
                 return False
 
+        if self.__instr and self.__instr.is_connection_active:
+            __disconnect_instr(self)
+            __enable_disable(self, False)
+            args = {}
+            args["text"] = f"Successful disconnection"
+            args["image"] = get_icon_path(icon_types.INFO)
+            WindowManager(UIPopupDialog, UXPopupDialog, args).show()
+            return
+
         try:
             instr_list = RsInstrument.list_resources("?*")
 
@@ -158,7 +181,7 @@ class Dashboard:
                     key = win.bh.text
 
                 if __connect_instr(self, key):
-                    set_icon(self.ui.pushButtonConnect, icon_types.LINK_OFF)
+                    __enable_disable(self, True)
             else:
                 args = {}
                 args["text"] = f"No instrument available"
@@ -183,20 +206,27 @@ class Dashboard:
         self.__load_track()
 
     def __load_track(self):
-        def update_slice_canvas(
-            data, plot, array, data_exact, span, span_array, span_exact
-        ):
+        def update_slice_canvas(data, plot, array, data_exact, span):
+
+            # update time plot
             time = self.__spec.time_slice(array[1])
             self.canvas_time = Mpl2DPlotCanvas(
-                x=self.__spec.spec["r"], y=time, labels=("time", "intensity")
+                x=self.__spec.spec["r"],
+                y=time,
+                xlim=span[0],
+                labels=("time", "intensity"),
             )
             remove_widgets(self.ui.verticalLayoutTime)
             self.ui.verticalLayoutTime.addWidget(self.canvas_time.add_toolbar())
             self.ui.verticalLayoutTime.addWidget(self.canvas_time)
 
+            # update freq plot
             freq = self.__spec.freq_slice(array[0])
             self.canvas_freq = Mpl2DPlotCanvas(
-                x=freq, y=self.__spec.spec["f"], labels=("intensity", "frequency")
+                x=freq,
+                y=self.__spec.spec["f"],
+                ylim=span[1],
+                labels=("intensity", "frequency"),
             )
             remove_widgets(self.ui.verticalLayoutFreq)
             self.ui.verticalLayoutFreq.addWidget(self.canvas_freq.add_toolbar())
@@ -214,8 +244,8 @@ class Dashboard:
         self.canvas_freq = MplSpecCanvas(
             self.__spec.spec,
             self.args["viewer"],
-            lambda data, plot, array, data_exact, span, span_array, span_exact: update_slice_canvas(
-                data, plot, array, data_exact, span, span_array, span_exact
+            lambda data, plot, array, data_exact, span: update_slice_canvas(
+                data, plot, array, data_exact, span
             ),
         )
         self.ui.verticalLayoutSpec.addWidget(self.canvas_freq.add_toolbar())

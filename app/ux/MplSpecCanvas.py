@@ -14,10 +14,10 @@ class MplSpecCanvas(FigureCanvasQTAgg):
         self.__button_press_event = button_press_event
 
         self.__fig = Figure()
-        self.__axes = self.__fig.add_subplot(111)
-        self.__axes.set_xlabel("time")
-        self.__axes.set_ylabel("frequency")
-        self.im = self.__axes.imshow(
+        self.axes = self.__fig.add_subplot(111)
+        self.axes.set_xlabel("time")
+        self.axes.set_ylabel("frequency")
+        self.im = self.axes.imshow(
             X=self.sp["m"],
             norm=colors.PowerNorm(
                 gamma=self.__conf["gamma"],
@@ -36,44 +36,42 @@ class MplSpecCanvas(FigureCanvasQTAgg):
             ],
         )
 
-        self.__xlim = self.im.get_extent()[2:4]
-        self.__ylim = self.im.get_extent()[0:2]
+        self.__xlim = self.axes.get_xlim()
+        self.__ylim = self.axes.get_ylim()
 
         self.__fig.canvas.mpl_connect(
             "button_press_event", self.__internal_button_press_event
         )
-        self.__axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
-        self.__axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
+        self.axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
+        self.axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
 
         self.__fig.colorbar(self.im)
         super().__init__(self.__fig)
 
-    def __internal_button_press_event(self, x):
-        if self.__button_press_event:
-            idx_x = list(filter(lambda y: x.xdata >= y[1], enumerate(self.sp["r"])))[-1]
-            idx_y = list(filter(lambda y: x.ydata >= y[1], enumerate(self.sp["f"])))[-1]
+    def __internal_button_press_event(self, x=None):
+        def get_idx(arr, val):
+            return list(filter(lambda y: val >= y[1], enumerate(arr)))[-1]
 
-            data = (x.xdata, x.ydata)  # respect of plot data (interpol)
-            plot = (x.x, x.y)  # respect of plot frame
+        self.__x = x if x else self.__x
+        if self.__button_press_event and self.__x:
+            idx_x = get_idx(self.sp["r"], self.__x.xdata)
+            idx_y = get_idx(self.sp["f"], self.__x.ydata)
+
+            data = (self.__x.xdata, self.__x.ydata)  # respect of plot data (interpol)
+            plot = (self.__x.x, self.__x.y)  # respect of plot frame
             array = (idx_x[0], idx_y[0])  # respect of array indices
             data_exact = (idx_x[1], idx_y[1])  # respect of plot data (no interpol)
 
             span = (self.__xlim, self.__ylim)  # respect of plot data (interpol)
-            # TODO complete with X and Y components of span
-            idx_x = list(filter(lambda y: span[0] >= y[1], enumerate(self.sp["r"])))[-1]
-            idx_y = list(filter(lambda y: span[1] >= y[1], enumerate(self.sp["f"])))[-1]
-            span_array = (idx_x[0], idx_y[0])  # span respect of array indices
-            span_exact = (idx_x[1], idx_y[1])  # span respect of plot data (no interpol)
-
-            self.__button_press_event(
-                data, plot, array, data_exact, span, span_array, span_exact
-            )
+            self.__button_press_event(data, plot, array, data_exact, span)
 
     def __internal_xlim_changed(self, x):
-        self.__xlim = x
+        self.__xlim = self.axes.get_xlim()
+        self.__internal_button_press_event()
 
     def __internal_ylim_changed(self, y):
-        self.__ylim = y
+        self.__ylim = self.axes.get_ylim()
+        self.__internal_button_press_event()
 
     def add_toolbar(self):
         self.toolbar = NavigationToolbar(self)

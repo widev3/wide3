@@ -312,18 +312,21 @@ class Ui_Dialog(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.labelMax = QLabel(self.dockWidgetContents_4)
         self.labelMax.setObjectName("labelMax")
+        self.labelMax.setEnabled(False)
         self.labelMax.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_4.addWidget(self.labelMax, 3, 0, 1, 1)
 
         self.labelCenter = QLabel(self.dockWidgetContents_4)
         self.labelCenter.setObjectName("labelCenter")
+        self.labelCenter.setEnabled(False)
         self.labelCenter.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_4.addWidget(self.labelCenter, 0, 0, 1, 1)
 
         self.horizontalSliderMin = QSlider(self.dockWidgetContents_4)
         self.horizontalSliderMin.setObjectName("horizontalSliderMin")
+        self.horizontalSliderMin.setEnabled(False)
         self.horizontalSliderMin.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSliderMin.setTickInterval(1)
 
@@ -331,6 +334,7 @@ class Ui_Dialog(object):
 
         self.horizontalSliderMax = QSlider(self.dockWidgetContents_4)
         self.horizontalSliderMax.setObjectName("horizontalSliderMax")
+        self.horizontalSliderMax.setEnabled(False)
         self.horizontalSliderMax.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSliderMax.setTickInterval(1)
 
@@ -338,6 +342,7 @@ class Ui_Dialog(object):
 
         self.horizontalSliderCenter = QSlider(self.dockWidgetContents_4)
         self.horizontalSliderCenter.setObjectName("horizontalSliderCenter")
+        self.horizontalSliderCenter.setEnabled(False)
         self.horizontalSliderCenter.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSliderCenter.setTickInterval(1)
 
@@ -345,12 +350,14 @@ class Ui_Dialog(object):
 
         self.labelMin = QLabel(self.dockWidgetContents_4)
         self.labelMin.setObjectName("labelMin")
+        self.labelMin.setEnabled(False)
         self.labelMin.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_4.addWidget(self.labelMin, 2, 0, 1, 1)
 
         self.horizontalSliderSpan = QSlider(self.dockWidgetContents_4)
         self.horizontalSliderSpan.setObjectName("horizontalSliderSpan")
+        self.horizontalSliderSpan.setEnabled(False)
         self.horizontalSliderSpan.setOrientation(Qt.Orientation.Horizontal)
         self.horizontalSliderSpan.setTickInterval(1)
 
@@ -358,6 +365,7 @@ class Ui_Dialog(object):
 
         self.labelSpan = QLabel(self.dockWidgetContents_4)
         self.labelSpan.setObjectName("labelSpan")
+        self.labelSpan.setEnabled(False)
         self.labelSpan.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_4.addWidget(self.labelSpan, 1, 0, 1, 1)
@@ -375,24 +383,28 @@ class Ui_Dialog(object):
 
         self.doubleSpinBoxCenter = QDoubleSpinBox(self.dockWidgetContents_4)
         self.doubleSpinBoxCenter.setObjectName("doubleSpinBoxCenter")
+        self.doubleSpinBoxCenter.setEnabled(False)
         self.doubleSpinBoxCenter.setDecimals(6)
 
         self.gridLayout_4.addWidget(self.doubleSpinBoxCenter, 0, 4, 1, 1)
 
         self.doubleSpinBoxSpan = QDoubleSpinBox(self.dockWidgetContents_4)
         self.doubleSpinBoxSpan.setObjectName("doubleSpinBoxSpan")
+        self.doubleSpinBoxSpan.setEnabled(False)
         self.doubleSpinBoxSpan.setDecimals(6)
 
         self.gridLayout_4.addWidget(self.doubleSpinBoxSpan, 1, 4, 1, 1)
 
         self.doubleSpinBoxMin = QDoubleSpinBox(self.dockWidgetContents_4)
         self.doubleSpinBoxMin.setObjectName("doubleSpinBoxMin")
+        self.doubleSpinBoxMin.setEnabled(False)
         self.doubleSpinBoxMin.setDecimals(6)
 
         self.gridLayout_4.addWidget(self.doubleSpinBoxMin, 2, 4, 1, 1)
 
         self.doubleSpinBoxMax = QDoubleSpinBox(self.dockWidgetContents_4)
         self.doubleSpinBoxMax.setObjectName("doubleSpinBoxMax")
+        self.doubleSpinBoxMax.setEnabled(False)
         self.doubleSpinBoxMax.setDecimals(6)
 
         self.gridLayout_4.addWidget(self.doubleSpinBoxMax, 3, 4, 1, 1)
