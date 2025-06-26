@@ -25,8 +25,10 @@
     },
     "controller": {
         "instrument": "TCPIP::172.16.10.10::INSTR",
-        "central": 394.3,
-        "span": 0.6,
-        "sweep": 100
+        "center": 394300000,
+        "span": 600000,
+        "min": 0,
+        "max": 3000000000,
+        "sweep": 1
     }
 }

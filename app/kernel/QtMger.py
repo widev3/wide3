@@ -181,6 +181,9 @@ class icon_types(Enum):
     ARROW_MENU_CLOSE = 10
     ARROW_MENU_OPEN = 11
     CADENCE = 12
+    CAMERA = 13
+    NOTE_STACK = 14
+    WAVES = 15
 
 
 def get_icon_path(i_type: icon_types) -> str | None:
@@ -198,6 +201,9 @@ def get_icon_path(i_type: icon_types) -> str | None:
         icon_types.ARROW_MENU_CLOSE: "arrow_menu_close_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
         icon_types.ARROW_MENU_OPEN: "arrow_menu_open_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
         icon_types.CADENCE: "cadence_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.CAMERA: "camera_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.NOTE_STACK: "note_stack_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.WAVES: "waves_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
     }
 
     if i_type in icon_dict:
@@ -206,13 +212,20 @@ def get_icon_path(i_type: icon_types) -> str | None:
     return None
 
 
-def set_icon(ui_component, i_type: icon_types, size: tuple | None = None):
+def get_icon(i_type: icon_types, size: tuple | None = None) -> QIcon | None:
     icon_path = get_icon_path(i_type)
+    icon = QIcon()
+    size = QSize(size[0], size[1]) if size else QSize()
+    icon.addFile(icon_path, size, QIcon.Mode.Normal, QIcon.State.Off)
+
+    return icon
+
+
+def set_icon(ui_component, i_type: icon_types, size: tuple | None = None):
     if hasattr(ui_component, "setIcon"):
-        icon = QIcon()
-        icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        ui_component.setIcon(icon)
+        ui_component.setIcon(get_icon(i_type))
     elif hasattr(ui_component, "setPicture"):
+        icon_path = get_icon_path(i_type)
         pixmap = QPixmap(icon_path)
         if size:
             pixmap = pixmap.scaled(
