@@ -222,7 +222,7 @@ class Ui_Dialog(object):
         self.gridLayout.setObjectName("gridLayout")
         self.tabWidget = QTabWidget(Dialog)
         self.tabWidget.setObjectName("tabWidget")
-        self.tabWidget.setTabPosition(QTabWidget.TabPosition.North)
+        self.tabWidget.setTabPosition(QTabWidget.TabPosition.West)
         self.tabWidget.setTabShape(QTabWidget.TabShape.Rounded)
         self.tabWidget.setIconSize(QSize(25, 25))
         self.tabInstr = QWidget()
@@ -420,11 +420,6 @@ class Ui_Dialog(object):
 
         self.gridLayout_11.addWidget(self.horizontalSliderMin, 3, 4, 1, 1)
 
-        self.comboBoxOffsetsInstr = QComboBox(self.dockWidgetContentsInstr)
-        self.comboBoxOffsetsInstr.setObjectName("comboBoxOffsetsInstr")
-
-        self.gridLayout_11.addWidget(self.comboBoxOffsetsInstr, 5, 4, 1, 1)
-
         self.checkBoxMin = QCheckBox(self.dockWidgetContentsInstr)
         self.checkBoxMin.setObjectName("checkBoxMin")
 
@@ -479,6 +474,11 @@ class Ui_Dialog(object):
 
         self.gridLayout_11.addWidget(self.labelOptions, 10, 4, 1, 1)
 
+        self.comboBoxOffsetsInstr = QComboBox(self.dockWidgetContentsInstr)
+        self.comboBoxOffsetsInstr.setObjectName("comboBoxOffsetsInstr")
+
+        self.gridLayout_11.addWidget(self.comboBoxOffsetsInstr, 5, 4, 1, 2)
+
         self.dockWidgetInstr.setWidget(self.dockWidgetContentsInstr)
 
         self.gridLayout_13.addWidget(
@@ -517,25 +517,6 @@ class Ui_Dialog(object):
         self.framePlotsView.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_3 = QGridLayout(self.framePlotsView)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.dockWidgetSpec = QDockWidget(self.framePlotsView)
-        self.dockWidgetSpec.setObjectName("dockWidgetSpec")
-        self.dockWidgetSpec.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetFloatable
-            | QDockWidget.DockWidgetFeature.DockWidgetMovable
-        )
-        self.dockWidgetContentsSpec = QWidget()
-        self.dockWidgetContentsSpec.setObjectName("dockWidgetContentsSpec")
-        self.gridLayout_5 = QGridLayout(self.dockWidgetContentsSpec)
-        self.gridLayout_5.setObjectName("gridLayout_5")
-        self.verticalLayoutSpec = QVBoxLayout()
-        self.verticalLayoutSpec.setObjectName("verticalLayoutSpec")
-
-        self.gridLayout_5.addLayout(self.verticalLayoutSpec, 0, 0, 1, 1)
-
-        self.dockWidgetSpec.setWidget(self.dockWidgetContentsSpec)
-
-        self.gridLayout_3.addWidget(self.dockWidgetSpec, 0, 0, 1, 1)
-
         self.dockWidgetTime = QDockWidget(self.framePlotsView)
         self.dockWidgetTime.setObjectName("dockWidgetTime")
         self.dockWidgetTime.setFeatures(
@@ -555,43 +536,24 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addWidget(self.dockWidgetTime, 1, 0, 1, 1)
 
-        self.dockWidget = QDockWidget(self.framePlotsView)
-        self.dockWidget.setObjectName("dockWidget")
-        self.dockWidget.setFeatures(
+        self.dockWidgetSpec = QDockWidget(self.framePlotsView)
+        self.dockWidgetSpec.setObjectName("dockWidgetSpec")
+        self.dockWidgetSpec.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
-        self.dockWidgetContentsView = QWidget()
-        self.dockWidgetContentsView.setObjectName("dockWidgetContentsView")
-        self.gridLayout_4 = QGridLayout(self.dockWidgetContentsView)
-        self.gridLayout_4.setObjectName("gridLayout_4")
-        self.labelOffsetsView = QLabel(self.dockWidgetContentsView)
-        self.labelOffsetsView.setObjectName("labelOffsetsView")
+        self.dockWidgetContentsSpec = QWidget()
+        self.dockWidgetContentsSpec.setObjectName("dockWidgetContentsSpec")
+        self.gridLayout_5 = QGridLayout(self.dockWidgetContentsSpec)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.verticalLayoutSpec = QVBoxLayout()
+        self.verticalLayoutSpec.setObjectName("verticalLayoutSpec")
 
-        self.gridLayout_4.addWidget(
-            self.labelOffsetsView, 0, 0, 1, 1, Qt.AlignmentFlag.AlignLeft
-        )
+        self.gridLayout_5.addLayout(self.verticalLayoutSpec, 0, 0, 1, 1)
 
-        self.label = QLabel(self.dockWidgetContentsView)
-        self.label.setObjectName("label")
+        self.dockWidgetSpec.setWidget(self.dockWidgetContentsSpec)
 
-        self.gridLayout_4.addWidget(self.label, 1, 0, 1, 1, Qt.AlignmentFlag.AlignLeft)
-
-        self.comboBoxOffsetsView = QComboBox(self.dockWidgetContentsView)
-        self.comboBoxOffsetsView.setObjectName("comboBoxOffsetsView")
-
-        self.gridLayout_4.addWidget(self.comboBoxOffsetsView, 0, 1, 1, 1)
-
-        self.labelFilename = QLabel(self.dockWidgetContentsView)
-        self.labelFilename.setObjectName("labelFilename")
-
-        self.gridLayout_4.addWidget(self.labelFilename, 1, 1, 1, 1)
-
-        self.dockWidget.setWidget(self.dockWidgetContentsView)
-
-        self.gridLayout_3.addWidget(
-            self.dockWidget, 1, 1, 1, 1, Qt.AlignmentFlag.AlignTop
-        )
+        self.gridLayout_3.addWidget(self.dockWidgetSpec, 0, 0, 1, 1)
 
         self.dockWidgetFreq = QDockWidget(self.framePlotsView)
         self.dockWidgetFreq.setObjectName("dockWidgetFreq")
@@ -612,6 +574,82 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addWidget(self.dockWidgetFreq, 0, 1, 1, 1)
 
+        self.dockWidget = QDockWidget(self.framePlotsView)
+        self.dockWidget.setObjectName("dockWidget")
+        self.dockWidget.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetFloatable
+            | QDockWidget.DockWidgetFeature.DockWidgetMovable
+        )
+        self.dockWidgetContentsView = QWidget()
+        self.dockWidgetContentsView.setObjectName("dockWidgetContentsView")
+        self.gridLayout_4 = QGridLayout(self.dockWidgetContentsView)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.labelOffsetsView = QLabel(self.dockWidgetContentsView)
+        self.labelOffsetsView.setObjectName("labelOffsetsView")
+
+        self.gridLayout_4.addWidget(self.labelOffsetsView, 1, 0, 1, 1)
+
+        self.horizontalSliderGammaView = QSlider(self.dockWidgetContentsView)
+        self.horizontalSliderGammaView.setObjectName("horizontalSliderGammaView")
+        self.horizontalSliderGammaView.setMaximum(1000)
+        self.horizontalSliderGammaView.setSingleStep(1)
+        self.horizontalSliderGammaView.setPageStep(50)
+        self.horizontalSliderGammaView.setSliderPosition(500)
+        self.horizontalSliderGammaView.setOrientation(Qt.Orientation.Horizontal)
+
+        self.gridLayout_4.addWidget(self.horizontalSliderGammaView, 2, 2, 1, 1)
+
+        self.labelFilename = QLabel(self.dockWidgetContentsView)
+        self.labelFilename.setObjectName("labelFilename")
+
+        self.gridLayout_4.addWidget(self.labelFilename, 3, 2, 1, 1)
+
+        self.comboBoxOffsetsView = QComboBox(self.dockWidgetContentsView)
+        self.comboBoxOffsetsView.setObjectName("comboBoxOffsetsView")
+
+        self.gridLayout_4.addWidget(self.comboBoxOffsetsView, 1, 2, 1, 2)
+
+        self.label_11 = QLabel(self.dockWidgetContentsView)
+        self.label_11.setObjectName("label_11")
+
+        self.gridLayout_4.addWidget(self.label_11, 5, 0, 1, 1)
+
+        self.label_9 = QLabel(self.dockWidgetContentsView)
+        self.label_9.setObjectName("label_9")
+
+        self.gridLayout_4.addWidget(self.label_9, 4, 0, 1, 1)
+
+        self.label_10 = QLabel(self.dockWidgetContentsView)
+        self.label_10.setObjectName("label_10")
+
+        self.gridLayout_4.addWidget(self.label_10, 4, 2, 1, 1)
+
+        self.label_2 = QLabel(self.dockWidgetContentsView)
+        self.label_2.setObjectName("label_2")
+
+        self.gridLayout_4.addWidget(self.label_2, 2, 0, 1, 1)
+
+        self.label_12 = QLabel(self.dockWidgetContentsView)
+        self.label_12.setObjectName("label_12")
+
+        self.gridLayout_4.addWidget(self.label_12, 5, 2, 1, 1)
+
+        self.labelGammaView = QLabel(self.dockWidgetContentsView)
+        self.labelGammaView.setObjectName("labelGammaView")
+
+        self.gridLayout_4.addWidget(self.labelGammaView, 2, 3, 1, 1)
+
+        self.label = QLabel(self.dockWidgetContentsView)
+        self.label.setObjectName("label")
+
+        self.gridLayout_4.addWidget(self.label, 3, 0, 1, 1)
+
+        self.dockWidget.setWidget(self.dockWidgetContentsView)
+
+        self.gridLayout_3.addWidget(
+            self.dockWidget, 1, 1, 1, 1, Qt.AlignmentFlag.AlignTop
+        )
+
         self.gridLayout_2.addWidget(self.framePlotsView, 1, 0, 1, 1)
 
         self.tabWidget.addTab(self.tabView, "")
@@ -620,7 +658,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
         QMetaObject.connectSlotsByName(Dialog)
 
@@ -658,10 +696,16 @@ class Ui_Dialog(object):
         self.labelOffsetsView.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
-        self.labelFilename.setText(
+        self.labelFilename.setText(QCoreApplication.translate("Dialog", "---", None))
+        self.label_11.setText(QCoreApplication.translate("Dialog", "f. pwr", None))
+        self.label_9.setText(QCoreApplication.translate("Dialog", "t. pwr", None))
+        self.label_10.setText(QCoreApplication.translate("Dialog", "---", None))
+        self.label_2.setText(QCoreApplication.translate("Dialog", "gamma", None))
+        self.label_12.setText(QCoreApplication.translate("Dialog", "---", None))
+        self.labelGammaView.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
+        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabView), "")
 
     # retranslateUi

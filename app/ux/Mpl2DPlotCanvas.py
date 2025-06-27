@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import (
 
 
 class Mpl2DPlotCanvas(FigureCanvasQTAgg):
-    def __init__(self, x, y, xlim=None, ylim=None, labels: str | str = None):
+    def __init__(self, x, y, labels: str | str = None):
         self.__x = x
         self.__y = y
 
@@ -18,13 +18,7 @@ class Mpl2DPlotCanvas(FigureCanvasQTAgg):
             self.__axes.set_ylabel(labels[1])
 
         self.__im = self.__axes.plot(self.__x, self.__y)
-
-        if xlim:
-            self.__axes.set_xlim(xlim)
-
-        if ylim:
-            self.__axes.set_ylim(ylim)
-
+        self.__fig.tight_layout()
         super().__init__(self.__fig)
 
     def add_toolbar(self):

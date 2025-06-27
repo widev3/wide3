@@ -20,8 +20,8 @@
     "viewer": {
         "filename": "input/Spectrogram_wave_long.csv",
         "separator": ",",
-        "gamma": 0.3,
-        "cmap": "magma"
+        "gamma": 0.45,
+        "cmap": "berlin"
     },
     "controller": {
         "instrument": "TCPIP::172.16.10.10::INSTR",

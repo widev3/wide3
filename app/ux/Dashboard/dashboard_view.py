@@ -13,6 +13,12 @@ def init(self):
         lambda d: __comboBoxOffsetsViewCurrentIndexChanged(self, d)
     )
 
+    self.ui.horizontalSliderGammaView.valueChanged.connect(
+        lambda d: __horizontalSliderGammaViewValueChanged(self, d)
+    )
+
+    self.ui.horizontalSliderGammaView.setValue(self.args["viewer"]["gamma"] * 1000)
+
     bands = list(map(lambda x: f"{x["band"]}: {x["value"]}", self.args["lo"]))
     self.ui.comboBoxOffsetsView.addItems(bands)
     self.ui.pushButtonFileOpen.clicked.connect(lambda: __open_track(self))
@@ -21,6 +27,14 @@ def init(self):
 def __comboBoxOffsetsViewCurrentIndexChanged(self, d):
     self.lo = self.args["lo"][d]["value"]
     __load_track(self)
+
+
+def __horizontalSliderGammaViewValueChanged(self, d):
+    d /= 1000
+    self.ui.labelGammaView.setText(str(d))
+    self.canvas_freq.im.norm.gamma = d
+    self.canvas_freq.fig.canvas.draw()
+    self.canvas_freq.fig.canvas.flush_events()
 
 
 def __open_track(self):
@@ -39,10 +53,11 @@ def __load_track(self):
 
         # update time plot
         time = self.spec.time_slice(array[1])
+        xy = zip(self.spec.spec["r"], time)
+        xy = list(filter(lambda x: x[0] >= span[0][0] and x[0] <= span[0][1], xy))
         self.canvas_time = Mpl2DPlotCanvas(
-            x=self.spec.spec["r"],
-            y=time,
-            xlim=span[0],
+            x=list(map(lambda x: x[0], xy)),
+            y=list(map(lambda x: x[1], xy)),
             labels=("time", "intensity"),
         )
         remove_widgets(self.ui.verticalLayoutTime)
@@ -51,10 +66,11 @@ def __load_track(self):
 
         # update freq plot
         freq = self.spec.freq_slice(array[0])
+        xy = zip(freq, self.spec.spec["f"])
+        xy = list(filter(lambda x: x[1] >= span[1][0] and x[1] <= span[1][1], xy))
         self.canvas_freq = Mpl2DPlotCanvas(
-            x=freq,
-            y=self.spec.spec["f"],
-            ylim=span[1],
+            x=list(map(lambda x: x[0], xy)),
+            y=list(map(lambda x: x[1], xy)),
             labels=("intensity", "frequency"),
         )
         remove_widgets(self.ui.verticalLayoutFreq)

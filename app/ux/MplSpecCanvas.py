@@ -9,44 +9,45 @@ from matplotlib.backends.backend_qt5agg import (
 
 class MplSpecCanvas(FigureCanvasQTAgg):
     def __init__(self, sp, conf, button_press_event=None):
-        self.sp = sp
+        self.__sp = sp
         self.__conf = conf
         self.__button_press_event = button_press_event
 
-        self.__fig = Figure()
-        self.axes = self.__fig.add_subplot(111)
-        self.axes.set_xlabel("time")
-        self.axes.set_ylabel("frequency")
-        self.im = self.axes.imshow(
-            X=self.sp["m"],
+        self.fig = Figure()
+        self.__axes = self.fig.add_subplot(111)
+        self.__axes.set_xlabel("time")
+        self.__axes.set_ylabel("frequency")
+        self.im = self.__axes.imshow(
+            X=self.__sp["m"],
             norm=colors.PowerNorm(
                 gamma=self.__conf["gamma"],
-                vmin=np.min(self.sp["m"]),
-                vmax=np.max(self.sp["m"]),
+                vmin=np.min(self.__sp["m"]),
+                vmax=np.max(self.__sp["m"]),
             ),
             cmap=self.__conf["cmap"],
             aspect="auto",
             interpolation="bilinear",
             origin="lower",
             extent=[
-                min(self.sp["r"]),
-                max(self.sp["r"]),
-                min(self.sp["f"]),
-                max(self.sp["f"]),
+                min(self.__sp["r"]),
+                max(self.__sp["r"]),
+                min(self.__sp["f"]),
+                max(self.__sp["f"]),
             ],
         )
 
-        self.__xlim = self.axes.get_xlim()
-        self.__ylim = self.axes.get_ylim()
+        self.__xlim = self.__axes.get_xlim()
+        self.__ylim = self.__axes.get_ylim()
 
-        self.__fig.canvas.mpl_connect(
+        self.fig.canvas.mpl_connect(
             "button_press_event", self.__internal_button_press_event
         )
-        self.axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
-        self.axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
+        self.__axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
+        self.__axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
 
-        self.__fig.colorbar(self.im)
-        super().__init__(self.__fig)
+        self.fig.colorbar(self.im)
+        self.fig.tight_layout()
+        super().__init__(self.fig)
 
     def __internal_button_press_event(self, x=None):
         def get_idx(arr, val):
@@ -54,8 +55,8 @@ class MplSpecCanvas(FigureCanvasQTAgg):
 
         self.__x = x if x else self.__x
         if self.__button_press_event and self.__x:
-            idx_x = get_idx(self.sp["r"], self.__x.xdata)
-            idx_y = get_idx(self.sp["f"], self.__x.ydata)
+            idx_x = get_idx(self.__sp["r"], self.__x.xdata)
+            idx_y = get_idx(self.__sp["f"], self.__x.ydata)
 
             data = (self.__x.xdata, self.__x.ydata)  # respect of plot data (interpol)
             plot = (self.__x.x, self.__x.y)  # respect of plot frame
@@ -66,11 +67,11 @@ class MplSpecCanvas(FigureCanvasQTAgg):
             self.__button_press_event(data, plot, array, data_exact, span)
 
     def __internal_xlim_changed(self, x):
-        self.__xlim = self.axes.get_xlim()
+        self.__xlim = self.__axes.get_xlim()
         self.__internal_button_press_event()
 
     def __internal_ylim_changed(self, y):
-        self.__ylim = self.axes.get_ylim()
+        self.__ylim = self.__axes.get_ylim()
         self.__internal_button_press_event()
 
     def add_toolbar(self):
