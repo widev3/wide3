@@ -6,6 +6,7 @@ from kernel.QtMger import set_icon, icon_types, remove_widgets
 
 
 def init(self):
+    self.canvas_freq = None
     set_icon(self.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
     set_icon(self.ui.labelOffsetsView, icon_types.CADENCE, (30, 30))
 
@@ -32,9 +33,10 @@ def __comboBoxOffsetsViewCurrentIndexChanged(self, d):
 def __horizontalSliderGammaViewValueChanged(self, d):
     d /= 1000
     self.ui.labelGammaView.setText(str(d))
-    self.canvas_freq.im.norm.gamma = d
-    self.canvas_freq.fig.canvas.draw()
-    self.canvas_freq.fig.canvas.flush_events()
+    if self.canvas_freq:
+        self.canvas_freq.im.norm.gamma = d
+        self.canvas_freq.fig.canvas.draw()
+        self.canvas_freq.fig.canvas.flush_events()
 
 
 def __open_track(self):

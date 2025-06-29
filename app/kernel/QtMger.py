@@ -184,6 +184,9 @@ class icon_types(Enum):
     CAMERA = 13
     NOTE_STACK = 14
     WAVES = 15
+    AV_TIMER = 16
+    HOURGLASS = 17
+    LOCAL_PIZZA = 18
 
 
 def get_icon_path(i_type: icon_types) -> str | None:
@@ -204,6 +207,9 @@ def get_icon_path(i_type: icon_types) -> str | None:
         icon_types.CAMERA: "camera_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
         icon_types.NOTE_STACK: "note_stack_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
         icon_types.WAVES: "waves_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.AV_TIMER: "av_timer_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.HOURGLASS: "hourglass_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
+        icon_types.LOCAL_PIZZA: "local_pizza_128dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
     }
 
     if i_type in icon_dict:
