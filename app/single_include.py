@@ -87,6 +87,9 @@ from PySide6.QtWidgets import QVBoxLayout
 SingletonSplash().message("datetime")
 from datetime import datetime
 
+SingletonSplash().message("timezone")
+from datetime import timezone
+
 SingletonSplash().message("JollyClass")
 from kernel.JollyClass import JollyClass
 
@@ -95,6 +98,12 @@ from urllib.parse import urljoin
 
 SingletonSplash().message("QCoreApplication")
 from PySide6.QtCore import QCoreApplication
+
+SingletonSplash().message("Signal")
+from PySide6.QtCore import Signal
+
+SingletonSplash().message("QObject")
+from PySide6.QtCore import QObject
 
 SingletonSplash().message("time")
 import time
@@ -110,3 +119,9 @@ from threading import Timer
 
 SingletonSplash().message("QProgressBar")
 from PySide6.QtWidgets import QProgressBar
+
+SingletonSplash().message("QThread")
+from PySide6.QtCore import QThread
+
+SingletonSplash().message("Slot")
+from PySide6.QtCore import Slot

@@ -241,8 +241,3 @@ def set_icon(ui_component, i_type: icon_types, size: tuple | None = None):
                 Qt.TransformationMode.SmoothTransformation,
             )
         ui_component.setPixmap(pixmap)
-
-
-def remove_widgets(layout):
-    for i in reversed(range(layout.count())):
-        layout.itemAt(i).widget().deleteLater()
