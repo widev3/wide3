@@ -1,8 +1,9 @@
+import globals
 from Spectrogram import Spectrogram
 from single_include import QFileDialog
 from ux.MplSpecCanvas import MplSpecCanvas
 from ux.Mpl2DPlotCanvas import Mpl2DPlotCanvas
-from kernel.QtMger import set_icon, icon_types
+from kernel.QtMger import set_icon, icon_name
 
 
 class DashboardView:
@@ -11,8 +12,17 @@ class DashboardView:
         self.__canvas_spec = None
         self.__filename = None
 
-        set_icon(self.__parent.ui.pushButtonFileOpen, icon_types.FILE_OPEN)
-        set_icon(self.__parent.ui.labelOffsetsView, icon_types.CADENCE, (30, 30))
+        set_icon(
+            self.__parent.ui.pushButtonFileOpen,
+            icon_name.FILE_OPEN,
+            globals.global_theme,
+        )
+        set_icon(
+            self.__parent.ui.labelOffsetsView,
+            icon_name.CADENCE,
+            globals.global_theme,
+            (30, 30),
+        )
 
         self.__parent.ui.comboBoxOffsetsView.currentIndexChanged.connect(
             self.__comboBoxOffsetsViewCurrentIndexChanged
