@@ -15,8 +15,8 @@ class Mpl2DPlotCanvas(FigureCanvasQTAgg):
             self.__axes.set_xlabel(labels[0])
             self.__axes.set_ylabel(labels[1])
 
-        self.__axes.autoscale(True)
         (self.__im,) = self.__axes.plot([], [])
+        self.__fig.tight_layout()
         super().__init__(self.__fig)
 
     def set_data(self, x, y):

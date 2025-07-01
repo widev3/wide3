@@ -15,7 +15,5 @@ class Dashboard:
         self.dashboard_instr = DashboardInstr(self)
         self.dashboard_view = DashboardView(self)
         self.dialog.setWindowState(Qt.WindowMaximized)
-        self.ui.tabWidget.setTabIcon(0, get_icon(icon_name.WAVES, globals.global_theme))
-        self.ui.tabWidget.setTabIcon(
-            1, get_icon(icon_name.NOTE_STACK, globals.global_theme)
-        )
+        self.ui.tabWidget.setTabIcon(0, get_icon(icon_name.WAVES, globals.theme))
+        self.ui.tabWidget.setTabIcon(1, get_icon(icon_name.NOTE_STACK, globals.theme))

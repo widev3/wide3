@@ -26,23 +26,24 @@ class MplSpecCanvas(FigureCanvasQTAgg):
         self.__axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
         self.__axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
 
-        self.__im = self.__axes.imshow([[]])
-        self.__fig.colorbar(self.__im)
+        self.__im = self.__axes.imshow(X=[[]], aspect="auto")
+        # self.__fig.colorbar(self.__im)
+        self.__fig.tight_layout()
         super().__init__(self.__fig)
 
     def set_data(self, sp, conf):
         self.__sp = sp
         self.__im = self.__axes.imshow(
             X=self.__sp["m"],
-            norm=colors.PowerNorm(
-                gamma=conf["gamma"],
-                vmin=np.min(self.__sp["m"]),
-                vmax=np.max(self.__sp["m"]),
-            ),
-            cmap=conf["cmap"],
+            # norm=colors.PowerNorm(
+            #     gamma=conf["gamma"],
+            #     vmin=np.min(self.__sp["m"]),
+            #     vmax=np.max(self.__sp["m"]),
+            # ),
+            # cmap=conf["cmap"],
             aspect="auto",
-            interpolation="none",
-            origin="lower",
+            # interpolation="none",
+            # origin="lower",
             extent=[
                 min(self.__sp["r"]),
                 max(self.__sp["r"]),

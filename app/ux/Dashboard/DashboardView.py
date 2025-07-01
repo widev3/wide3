@@ -13,14 +13,12 @@ class DashboardView:
         self.__filename = None
 
         set_icon(
-            self.__parent.ui.pushButtonFileOpen,
-            icon_name.FILE_OPEN,
-            globals.global_theme,
+            self.__parent.ui.pushButtonFileOpen, icon_name.FILE_OPEN, globals.theme
         )
         set_icon(
             self.__parent.ui.labelOffsetsView,
             icon_name.CADENCE,
-            globals.global_theme,
+            globals.theme,
             (30, 30),
         )
 

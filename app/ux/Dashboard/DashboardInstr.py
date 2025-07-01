@@ -59,69 +59,46 @@ class DashboardInstr:
     def __init__(self, parent):
         self.__parent = parent
 
+        set_icon(self.__parent.ui.pushButtonConnect, icon_name.ADD_LINK, globals.theme)
+        set_icon(self.__parent.ui.pushButtonRecord, icon_name.CAMERA, globals.theme)
         set_icon(
-            self.__parent.ui.pushButtonConnect,
-            icon_name.ADD_LINK,
-            globals.global_theme,
+            self.__parent.ui.labelCenter, icon_name.ADJUST, globals.theme, (30, 30)
         )
         set_icon(
-            self.__parent.ui.pushButtonRecord,
-            icon_name.CAMERA,
-            globals.global_theme,
-        )
-        set_icon(
-            self.__parent.ui.labelCenter,
-            icon_name.ADJUST,
-            globals.global_theme,
-            (30, 30),
-        )
-        set_icon(
-            self.__parent.ui.labelSpan,
-            icon_name.ARROW_RANGE,
-            globals.global_theme,
-            (30, 30),
+            self.__parent.ui.labelSpan, icon_name.ARROW_RANGE, globals.theme, (30, 30)
         )
         set_icon(
             self.__parent.ui.labelMin,
             icon_name.ARROW_MENU_CLOSE,
-            globals.global_theme,
+            globals.theme,
             (30, 30),
         )
         set_icon(
             self.__parent.ui.labelMax,
             icon_name.ARROW_MENU_OPEN,
-            globals.global_theme,
+            globals.theme,
             (30, 30),
         )
         set_icon(
             self.__parent.ui.labelOffsetsInstr,
             icon_name.CADENCE,
-            globals.global_theme,
+            globals.theme,
             (30, 30),
         )
         set_icon(
-            self.__parent.ui.labelSweep,
-            icon_name.AV_TIMER,
-            globals.global_theme,
-            (30, 30),
+            self.__parent.ui.labelSweep, icon_name.AV_TIMER, globals.theme, (30, 30)
         )
         set_icon(
             self.__parent.ui.labelStartTime,
             icon_name.TIMER_PLAY,
-            globals.global_theme,
+            globals.theme,
             (30, 30),
         )
         set_icon(
-            self.__parent.ui.labelDuration,
-            icon_name.HOURGLASS,
-            globals.global_theme,
-            (30, 30),
+            self.__parent.ui.labelDuration, icon_name.HOURGLASS, globals.theme, (30, 30)
         )
         set_icon(
-            self.__parent.ui.labelSlices,
-            icon_name.LOCAL_PIZZA,
-            globals.global_theme,
-            (30, 30),
+            self.__parent.ui.labelSlices, icon_name.LOCAL_PIZZA, globals.theme, (30, 30)
         )
 
         self.__parent.ui.doubleSpinBoxCenter.valueChanged.connect(lambda x: None)
@@ -174,7 +151,7 @@ class DashboardInstr:
 
         args = {}
         args["text"] = f"Successful disconnection"
-        args["image"] = get_icon_path(icon_name.CHECK, globals.global_theme)
+        args["image"] = get_icon_path(icon_name.CHECK, globals.theme)
         WindowManager(UIPopupDialog, UXPopupDialog, args).show()
 
     def __connect_instr(self, key: str):
@@ -227,7 +204,7 @@ class DashboardInstr:
 
             args = {}
             args["text"] = f"Connected!"
-            args["image"] = get_icon_path(icon_name.CHECK, globals.global_theme)
+            args["image"] = get_icon_path(icon_name.CHECK, globals.theme)
             WindowManager(UIPopupDialog, UXPopupDialog, args).show()
         except:
             MessageBox(
@@ -274,7 +251,7 @@ class DashboardInstr:
             else:
                 args = {}
                 args["text"] = f"No instrument available"
-                args["image"] = get_icon_path(icon_name.INFO, globals.global_theme)
+                args["image"] = get_icon_path(icon_name.INFO, globals.theme)
                 WindowManager(UIPopupDialog, UXPopupDialog, args).show()
         except:
             MessageBox(
@@ -309,15 +286,11 @@ class DashboardInstr:
     def __enable_disable(self, enable):
         if enable:
             set_icon(
-                self.__parent.ui.pushButtonConnect,
-                icon_name.LINK_OFF,
-                globals.global_theme,
+                self.__parent.ui.pushButtonConnect, icon_name.LINK_OFF, globals.theme
             )
         else:
             set_icon(
-                self.__parent.ui.pushButtonConnect,
-                icon_name.ADD_LINK,
-                globals.global_theme,
+                self.__parent.ui.pushButtonConnect, icon_name.ADD_LINK, globals.theme
             )
 
         self.__parent.ui.pushButtonRecord.setEnabled(enable)

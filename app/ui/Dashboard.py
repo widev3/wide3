@@ -228,18 +228,36 @@ class Ui_Dialog(object):
         self.tabInstr.setObjectName("tabInstr")
         self.gridLayout_8 = QGridLayout(self.tabInstr)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.framePlotsInstr = QFrame(self.tabInstr)
-        self.framePlotsInstr.setObjectName("framePlotsInstr")
-        self.framePlotsInstr.setFrameShape(QFrame.Shape.StyledPanel)
-        self.framePlotsInstr.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout_13 = QGridLayout(self.framePlotsInstr)
-        self.gridLayout_13.setObjectName("gridLayout_13")
+        self.widgetButtonsInstr = QWidget(self.tabInstr)
+        self.widgetButtonsInstr.setObjectName("widgetButtonsInstr")
+        self.horizontalLayout_2 = QHBoxLayout(self.widgetButtonsInstr)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.pushButtonConnect = QPushButton(self.widgetButtonsInstr)
+        self.pushButtonConnect.setObjectName("pushButtonConnect")
+        self.pushButtonConnect.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout_2.addWidget(self.pushButtonConnect)
+
+        self.pushButtonRecord = QPushButton(self.widgetButtonsInstr)
+        self.pushButtonRecord.setObjectName("pushButtonRecord")
+        self.pushButtonRecord.setIconSize(QSize(25, 25))
+
+        self.horizontalLayout_2.addWidget(self.pushButtonRecord)
+
+        self.gridLayout_8.addWidget(
+            self.widgetButtonsInstr, 0, 0, 1, 1, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.widgetPlotsInstr = QWidget(self.tabInstr)
+        self.widgetPlotsInstr.setObjectName("widgetPlotsInstr")
+        self.gridLayout_4 = QGridLayout(self.widgetPlotsInstr)
+        self.gridLayout_4.setObjectName("gridLayout_4")
         self.verticalLayoutSpecInstr = QVBoxLayout()
         self.verticalLayoutSpecInstr.setObjectName("verticalLayoutSpecInstr")
 
-        self.gridLayout_13.addLayout(self.verticalLayoutSpecInstr, 0, 1, 1, 1)
+        self.gridLayout_4.addLayout(self.verticalLayoutSpecInstr, 0, 0, 1, 1)
 
-        self.scrollArea = QScrollArea(self.framePlotsInstr)
+        self.scrollArea = QScrollArea(self.widgetPlotsInstr)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollArea.setMinimumSize(QSize(400, 0))
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
@@ -252,242 +270,287 @@ class Ui_Dialog(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 384, 996))
-        self.gridLayout_14 = QGridLayout(self.scrollAreaWidgetContents)
-        self.gridLayout_14.setObjectName("gridLayout_14")
-        self.lineEditVisa = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditVisa.setObjectName("lineEditVisa")
-        self.lineEditVisa.setReadOnly(True)
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 384, 978))
+        self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.frame_7 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_7.setObjectName("frame_7")
+        self.frame_7.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_7.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_5 = QGridLayout(self.frame_7)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.pushButton = QPushButton(self.frame_7)
+        self.pushButton.setObjectName("pushButton")
 
-        self.gridLayout_14.addWidget(self.lineEditVisa, 12, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.pushButton, 0, 2, 1, 1)
 
-        self.label_13 = QLabel(self.scrollAreaWidgetContents)
-        self.label_13.setObjectName("label_13")
+        self.label_17 = QLabel(self.frame_7)
+        self.label_17.setObjectName("label_17")
 
-        self.gridLayout_14.addWidget(self.label_13, 1, 2, 1, 1)
+        self.gridLayout_5.addWidget(self.label_17, 0, 0, 1, 1)
 
-        self.labelSpan = QLabel(self.scrollAreaWidgetContents)
-        self.labelSpan.setObjectName("labelSpan")
+        self.comboBox = QComboBox(self.frame_7)
+        self.comboBox.setObjectName("comboBox")
 
-        self.gridLayout_14.addWidget(self.labelSpan, 1, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.comboBox, 0, 1, 1, 1)
 
-        self.doubleSpinBoxMin = QDoubleSpinBox(self.scrollAreaWidgetContents)
-        self.doubleSpinBoxMin.setObjectName("doubleSpinBoxMin")
-        self.doubleSpinBoxMin.setDecimals(0)
-        self.doubleSpinBoxMin.setMaximum(3000000000.000000000000000)
+        self.horizontalSpacer_7 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
 
-        self.gridLayout_14.addWidget(self.doubleSpinBoxMin, 2, 1, 1, 1)
+        self.gridLayout_5.addItem(self.horizontalSpacer_7, 1, 1, 1, 1)
 
-        self.label_6 = QLabel(self.scrollAreaWidgetContents)
-        self.label_6.setObjectName("label_6")
+        self.verticalLayout_2.addWidget(self.frame_7)
 
-        self.gridLayout_14.addWidget(self.label_6, 13, 0, 1, 1)
-
-        self.label_8 = QLabel(self.scrollAreaWidgetContents)
-        self.label_8.setObjectName("label_8")
-
-        self.gridLayout_14.addWidget(self.label_8, 0, 2, 1, 1)
-
-        self.doubleSpinBoxMax = QDoubleSpinBox(self.scrollAreaWidgetContents)
-        self.doubleSpinBoxMax.setObjectName("doubleSpinBoxMax")
-        self.doubleSpinBoxMax.setDecimals(0)
-        self.doubleSpinBoxMax.setMaximum(3000000000.000000000000000)
-
-        self.gridLayout_14.addWidget(self.doubleSpinBoxMax, 3, 1, 1, 1)
-
-        self.lineEditSlices = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditSlices.setObjectName("lineEditSlices")
-        self.lineEditSlices.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditSlices, 8, 1, 1, 1)
-
-        self.comboBoxOffsetsInstr = QComboBox(self.scrollAreaWidgetContents)
-        self.comboBoxOffsetsInstr.setObjectName("comboBoxOffsetsInstr")
-
-        self.gridLayout_14.addWidget(self.comboBoxOffsetsInstr, 5, 1, 1, 1)
-
-        self.label_3 = QLabel(self.scrollAreaWidgetContents)
-        self.label_3.setObjectName("label_3")
-
-        self.gridLayout_14.addWidget(self.label_3, 10, 0, 1, 1)
-
-        self.lineEditDuration = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditDuration.setObjectName("lineEditDuration")
-        self.lineEditDuration.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditDuration, 7, 1, 1, 1)
-
-        self.doubleSpinBoxSweep = QDoubleSpinBox(self.scrollAreaWidgetContents)
-        self.doubleSpinBoxSweep.setObjectName("doubleSpinBoxSweep")
-        self.doubleSpinBoxSweep.setDecimals(0)
-        self.doubleSpinBoxSweep.setMaximum(3000000000.000000000000000)
-
-        self.gridLayout_14.addWidget(self.doubleSpinBoxSweep, 4, 1, 1, 1)
-
-        self.labelOffsetsInstr = QLabel(self.scrollAreaWidgetContents)
-        self.labelOffsetsInstr.setObjectName("labelOffsetsInstr")
-
-        self.gridLayout_14.addWidget(self.labelOffsetsInstr, 5, 0, 1, 1)
-
-        self.label_14 = QLabel(self.scrollAreaWidgetContents)
-        self.label_14.setObjectName("label_14")
-
-        self.gridLayout_14.addWidget(self.label_14, 2, 2, 1, 1)
-
-        self.label_16 = QLabel(self.scrollAreaWidgetContents)
-        self.label_16.setObjectName("label_16")
-
-        self.gridLayout_14.addWidget(self.label_16, 4, 2, 1, 1)
-
-        self.label_15 = QLabel(self.scrollAreaWidgetContents)
-        self.label_15.setObjectName("label_15")
-
-        self.gridLayout_14.addWidget(self.label_15, 3, 2, 1, 1)
-
-        self.labelSlices = QLabel(self.scrollAreaWidgetContents)
-        self.labelSlices.setObjectName("labelSlices")
-
-        self.gridLayout_14.addWidget(self.labelSlices, 8, 0, 1, 1)
-
-        self.labelCenter = QLabel(self.scrollAreaWidgetContents)
-        self.labelCenter.setObjectName("labelCenter")
-
-        self.gridLayout_14.addWidget(self.labelCenter, 0, 0, 1, 1)
-
-        self.labelSweep = QLabel(self.scrollAreaWidgetContents)
-        self.labelSweep.setObjectName("labelSweep")
-
-        self.gridLayout_14.addWidget(self.labelSweep, 4, 0, 1, 1)
-
-        self.doubleSpinBoxSpan = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.frame_2 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_2.setObjectName("frame_2")
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_9 = QGridLayout(self.frame_2)
+        self.gridLayout_9.setObjectName("gridLayout_9")
+        self.doubleSpinBoxSpan = QDoubleSpinBox(self.frame_2)
         self.doubleSpinBoxSpan.setObjectName("doubleSpinBoxSpan")
         self.doubleSpinBoxSpan.setDecimals(0)
         self.doubleSpinBoxSpan.setMaximum(3000000000.000000000000000)
 
-        self.gridLayout_14.addWidget(self.doubleSpinBoxSpan, 1, 1, 1, 1)
+        self.gridLayout_9.addWidget(self.doubleSpinBoxSpan, 1, 1, 1, 1)
 
-        self.labelMin = QLabel(self.scrollAreaWidgetContents)
-        self.labelMin.setObjectName("labelMin")
+        self.labelSpan = QLabel(self.frame_2)
+        self.labelSpan.setObjectName("labelSpan")
 
-        self.gridLayout_14.addWidget(self.labelMin, 2, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.labelSpan, 1, 0, 1, 1)
 
-        self.label_4 = QLabel(self.scrollAreaWidgetContents)
-        self.label_4.setObjectName("label_4")
-
-        self.gridLayout_14.addWidget(self.label_4, 11, 0, 1, 1)
-
-        self.labelDuration = QLabel(self.scrollAreaWidgetContents)
-        self.labelDuration.setObjectName("labelDuration")
-
-        self.gridLayout_14.addWidget(self.labelDuration, 7, 0, 1, 1)
-
-        self.label_7 = QLabel(self.scrollAreaWidgetContents)
-        self.label_7.setObjectName("label_7")
-
-        self.gridLayout_14.addWidget(self.label_7, 14, 0, 1, 1)
-
-        self.labelMax = QLabel(self.scrollAreaWidgetContents)
-        self.labelMax.setObjectName("labelMax")
-
-        self.gridLayout_14.addWidget(self.labelMax, 3, 0, 1, 1)
-
-        self.doubleSpinBoxCenter = QDoubleSpinBox(self.scrollAreaWidgetContents)
+        self.doubleSpinBoxCenter = QDoubleSpinBox(self.frame_2)
         self.doubleSpinBoxCenter.setObjectName("doubleSpinBoxCenter")
         self.doubleSpinBoxCenter.setDecimals(0)
         self.doubleSpinBoxCenter.setMaximum(3000000000.000000000000000)
 
-        self.gridLayout_14.addWidget(self.doubleSpinBoxCenter, 0, 1, 1, 1)
+        self.gridLayout_9.addWidget(self.doubleSpinBoxCenter, 0, 1, 1, 1)
 
-        self.label_5 = QLabel(self.scrollAreaWidgetContents)
-        self.label_5.setObjectName("label_5")
+        self.labelCenter = QLabel(self.frame_2)
+        self.labelCenter.setObjectName("labelCenter")
 
-        self.gridLayout_14.addWidget(self.label_5, 12, 0, 1, 1)
-
-        self.lineEditStartTime = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditStartTime.setObjectName("lineEditStartTime")
-        self.lineEditStartTime.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditStartTime, 6, 1, 1, 1)
-
-        self.lineEditIDN = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditIDN.setObjectName("lineEditIDN")
-        self.lineEditIDN.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditIDN, 10, 1, 1, 1)
-
-        self.lineEditOptions = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditOptions.setObjectName("lineEditOptions")
-        self.lineEditOptions.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditOptions, 14, 1, 1, 1)
-
-        self.labelStartTime = QLabel(self.scrollAreaWidgetContents)
-        self.labelStartTime.setObjectName("labelStartTime")
-
-        self.gridLayout_14.addWidget(self.labelStartTime, 6, 0, 1, 1)
-
-        self.lineEditName = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditName.setObjectName("lineEditName")
-        self.lineEditName.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditName, 13, 1, 1, 1)
-
-        self.lineEditDriver = QLineEdit(self.scrollAreaWidgetContents)
-        self.lineEditDriver.setObjectName("lineEditDriver")
-        self.lineEditDriver.setReadOnly(True)
-
-        self.gridLayout_14.addWidget(self.lineEditDriver, 11, 1, 1, 1)
-
-        self.verticalSpacer_4 = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
-        )
-
-        self.gridLayout_14.addItem(self.verticalSpacer_4, 9, 1, 1, 1)
-
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-        self.gridLayout_13.addWidget(
-            self.scrollArea, 0, 2, 1, 1, Qt.AlignmentFlag.AlignRight
-        )
+        self.gridLayout_9.addWidget(self.labelCenter, 0, 0, 1, 1)
 
         self.horizontalSpacer_3 = QSpacerItem(
             0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
         )
 
-        self.gridLayout_13.addItem(self.horizontalSpacer_3, 1, 1, 1, 1)
+        self.gridLayout_9.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame_2)
+
+        self.frame = QFrame(self.scrollAreaWidgetContents)
+        self.frame.setObjectName("frame")
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_7 = QGridLayout(self.frame)
+        self.gridLayout_7.setObjectName("gridLayout_7")
+        self.labelMax = QLabel(self.frame)
+        self.labelMax.setObjectName("labelMax")
+
+        self.gridLayout_7.addWidget(self.labelMax, 2, 0, 1, 1)
+
+        self.doubleSpinBoxMax = QDoubleSpinBox(self.frame)
+        self.doubleSpinBoxMax.setObjectName("doubleSpinBoxMax")
+        self.doubleSpinBoxMax.setDecimals(0)
+        self.doubleSpinBoxMax.setMaximum(3000000000.000000000000000)
+
+        self.gridLayout_7.addWidget(self.doubleSpinBoxMax, 2, 1, 1, 1)
+
+        self.labelMin = QLabel(self.frame)
+        self.labelMin.setObjectName("labelMin")
+
+        self.gridLayout_7.addWidget(self.labelMin, 1, 0, 1, 1)
+
+        self.doubleSpinBoxMin = QDoubleSpinBox(self.frame)
+        self.doubleSpinBoxMin.setObjectName("doubleSpinBoxMin")
+        self.doubleSpinBoxMin.setDecimals(0)
+        self.doubleSpinBoxMin.setMaximum(3000000000.000000000000000)
+
+        self.gridLayout_7.addWidget(self.doubleSpinBoxMin, 1, 1, 1, 1)
+
+        self.horizontalSpacer_6 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_6, 3, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame)
+
+        self.frame_4 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_4.setObjectName("frame_4")
+        self.frame_4.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_10 = QGridLayout(self.frame_4)
+        self.gridLayout_10.setObjectName("gridLayout_10")
+        self.labelStartTime = QLabel(self.frame_4)
+        self.labelStartTime.setObjectName("labelStartTime")
+
+        self.gridLayout_10.addWidget(self.labelStartTime, 1, 0, 1, 1)
+
+        self.lineEditSlices = QLineEdit(self.frame_4)
+        self.lineEditSlices.setObjectName("lineEditSlices")
+        self.lineEditSlices.setReadOnly(True)
+
+        self.gridLayout_10.addWidget(self.lineEditSlices, 3, 1, 1, 1)
+
+        self.labelSlices = QLabel(self.frame_4)
+        self.labelSlices.setObjectName("labelSlices")
+
+        self.gridLayout_10.addWidget(self.labelSlices, 3, 0, 1, 1)
+
+        self.lineEditDuration = QLineEdit(self.frame_4)
+        self.lineEditDuration.setObjectName("lineEditDuration")
+        self.lineEditDuration.setReadOnly(True)
+
+        self.gridLayout_10.addWidget(self.lineEditDuration, 2, 1, 1, 1)
+
+        self.labelDuration = QLabel(self.frame_4)
+        self.labelDuration.setObjectName("labelDuration")
+
+        self.gridLayout_10.addWidget(self.labelDuration, 2, 0, 1, 1)
+
+        self.lineEditStartTime = QLineEdit(self.frame_4)
+        self.lineEditStartTime.setObjectName("lineEditStartTime")
+        self.lineEditStartTime.setReadOnly(True)
+
+        self.gridLayout_10.addWidget(self.lineEditStartTime, 1, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame_4)
+
+        self.frame_8 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_8.setObjectName("frame_8")
+        self.frame_8.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_8.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_13 = QGridLayout(self.frame_8)
+        self.gridLayout_13.setObjectName("gridLayout_13")
+        self.labelSweep = QLabel(self.frame_8)
+        self.labelSweep.setObjectName("labelSweep")
+
+        self.gridLayout_13.addWidget(self.labelSweep, 0, 0, 1, 1)
+
+        self.doubleSpinBoxSweep = QDoubleSpinBox(self.frame_8)
+        self.doubleSpinBoxSweep.setObjectName("doubleSpinBoxSweep")
+        self.doubleSpinBoxSweep.setDecimals(0)
+        self.doubleSpinBoxSweep.setMaximum(3000000000.000000000000000)
+
+        self.gridLayout_13.addWidget(self.doubleSpinBoxSweep, 0, 1, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_13.addItem(self.horizontalSpacer_2, 1, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame_8)
+
+        self.frame_9 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_9.setObjectName("frame_9")
+        self.frame_9.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_9.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_14 = QGridLayout(self.frame_9)
+        self.gridLayout_14.setObjectName("gridLayout_14")
+        self.comboBoxOffsetsInstr = QComboBox(self.frame_9)
+        self.comboBoxOffsetsInstr.setObjectName("comboBoxOffsetsInstr")
+
+        self.gridLayout_14.addWidget(self.comboBoxOffsetsInstr, 0, 1, 1, 1)
+
+        self.labelOffsetsInstr = QLabel(self.frame_9)
+        self.labelOffsetsInstr.setObjectName("labelOffsetsInstr")
+
+        self.gridLayout_14.addWidget(self.labelOffsetsInstr, 0, 0, 1, 1)
+
+        self.horizontalSpacer_8 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_14.addItem(self.horizontalSpacer_8, 1, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame_9)
 
         self.verticalSpacer_3 = QSpacerItem(
             0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
-        self.gridLayout_13.addItem(self.verticalSpacer_3, 0, 0, 1, 1)
+        self.verticalLayout_2.addItem(self.verticalSpacer_3)
 
-        self.gridLayout_8.addWidget(self.framePlotsInstr, 1, 0, 1, 1)
+        self.frame_3 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_3.setObjectName("frame_3")
+        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_6 = QGridLayout(self.frame_3)
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.label_3 = QLabel(self.frame_3)
+        self.label_3.setObjectName("label_3")
 
-        self.frameButtonsInstr = QFrame(self.tabInstr)
-        self.frameButtonsInstr.setObjectName("frameButtonsInstr")
-        self.horizontalLayout_2 = QHBoxLayout(self.frameButtonsInstr)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.pushButtonConnect = QPushButton(self.frameButtonsInstr)
-        self.pushButtonConnect.setObjectName("pushButtonConnect")
-        self.pushButtonConnect.setIconSize(QSize(25, 25))
+        self.gridLayout_6.addWidget(self.label_3, 0, 0, 1, 1)
 
-        self.horizontalLayout_2.addWidget(self.pushButtonConnect)
+        self.lineEditIDN = QLineEdit(self.frame_3)
+        self.lineEditIDN.setObjectName("lineEditIDN")
+        self.lineEditIDN.setReadOnly(True)
 
-        self.pushButtonRecord = QPushButton(self.frameButtonsInstr)
-        self.pushButtonRecord.setObjectName("pushButtonRecord")
-        self.pushButtonRecord.setIconSize(QSize(25, 25))
+        self.gridLayout_6.addWidget(self.lineEditIDN, 0, 1, 1, 1)
 
-        self.horizontalLayout_2.addWidget(self.pushButtonRecord)
+        self.label_4 = QLabel(self.frame_3)
+        self.label_4.setObjectName("label_4")
 
-        self.gridLayout_8.addWidget(
-            self.frameButtonsInstr,
-            0,
-            0,
-            1,
-            1,
-            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+        self.gridLayout_6.addWidget(self.label_4, 1, 0, 1, 1)
+
+        self.lineEditDriver = QLineEdit(self.frame_3)
+        self.lineEditDriver.setObjectName("lineEditDriver")
+        self.lineEditDriver.setReadOnly(True)
+
+        self.gridLayout_6.addWidget(self.lineEditDriver, 1, 1, 1, 1)
+
+        self.label_5 = QLabel(self.frame_3)
+        self.label_5.setObjectName("label_5")
+
+        self.gridLayout_6.addWidget(self.label_5, 2, 0, 1, 1)
+
+        self.lineEditVisa = QLineEdit(self.frame_3)
+        self.lineEditVisa.setObjectName("lineEditVisa")
+        self.lineEditVisa.setReadOnly(True)
+
+        self.gridLayout_6.addWidget(self.lineEditVisa, 2, 1, 1, 1)
+
+        self.label_6 = QLabel(self.frame_3)
+        self.label_6.setObjectName("label_6")
+
+        self.gridLayout_6.addWidget(self.label_6, 3, 0, 1, 1)
+
+        self.lineEditName = QLineEdit(self.frame_3)
+        self.lineEditName.setObjectName("lineEditName")
+        self.lineEditName.setReadOnly(True)
+
+        self.gridLayout_6.addWidget(self.lineEditName, 3, 1, 1, 1)
+
+        self.label_7 = QLabel(self.frame_3)
+        self.label_7.setObjectName("label_7")
+
+        self.gridLayout_6.addWidget(self.label_7, 4, 0, 1, 1)
+
+        self.lineEditOptions = QLineEdit(self.frame_3)
+        self.lineEditOptions.setObjectName("lineEditOptions")
+        self.lineEditOptions.setReadOnly(True)
+
+        self.gridLayout_6.addWidget(self.lineEditOptions, 4, 1, 1, 1)
+
+        self.verticalLayout_2.addWidget(self.frame_3)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.gridLayout_4.addWidget(
+            self.scrollArea, 0, 1, 1, 1, Qt.AlignmentFlag.AlignRight
         )
+
+        self.horizontalSpacer = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_4.addItem(self.horizontalSpacer, 1, 0, 1, 1)
+
+        self.gridLayout_8.addWidget(self.widgetPlotsInstr, 1, 0, 1, 1)
 
         self.tabWidget.addTab(self.tabInstr, "")
         self.tabView = QWidget()
@@ -513,18 +576,10 @@ class Ui_Dialog(object):
             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
         )
 
-        self.framePlotsView = QFrame(self.tabView)
-        self.framePlotsView.setObjectName("framePlotsView")
-        self.framePlotsView.setFrameShape(QFrame.Shape.StyledPanel)
-        self.framePlotsView.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout_3 = QGridLayout(self.framePlotsView)
+        self.widgetPlotsView = QWidget(self.tabView)
+        self.widgetPlotsView.setObjectName("widgetPlotsView")
+        self.gridLayout_3 = QGridLayout(self.widgetPlotsView)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.horizontalSpacer_5 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
-        )
-
-        self.gridLayout_3.addItem(self.horizontalSpacer_5, 2, 2, 1, 1)
-
         self.verticalLayoutTime = QVBoxLayout()
         self.verticalLayoutTime.setObjectName("verticalLayoutTime")
 
@@ -536,7 +591,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addLayout(self.verticalLayoutFreq, 0, 2, 1, 1)
 
         self.verticalSpacer = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+            0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
         self.gridLayout_3.addItem(self.verticalSpacer, 0, 0, 1, 1)
@@ -547,14 +602,17 @@ class Ui_Dialog(object):
         self.gridLayout_3.addLayout(self.verticalLayoutSpec, 0, 1, 1, 1)
 
         self.horizontalSpacer_4 = QSpacerItem(
-            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
         )
 
         self.gridLayout_3.addItem(self.horizontalSpacer_4, 2, 1, 1, 1)
 
-        self.scrollAreaView = QScrollArea(self.framePlotsView)
+        self.scrollAreaView = QScrollArea(self.widgetPlotsView)
         self.scrollAreaView.setObjectName("scrollAreaView")
         self.scrollAreaView.setMinimumSize(QSize(400, 0))
+        self.scrollAreaView.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOn
+        )
         self.scrollAreaView.setHorizontalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
@@ -564,55 +622,26 @@ class Ui_Dialog(object):
         self.scrollAreaView.setWidgetResizable(True)
         self.scrollAreaWidgetContentsView = QWidget()
         self.scrollAreaWidgetContentsView.setObjectName("scrollAreaWidgetContentsView")
-        self.scrollAreaWidgetContentsView.setGeometry(QRect(0, 0, 254, 151))
-        self.gridLayout_5 = QGridLayout(self.scrollAreaWidgetContentsView)
-        self.gridLayout_5.setObjectName("gridLayout_5")
-        self.label = QLabel(self.scrollAreaWidgetContentsView)
-        self.label.setObjectName("label")
-
-        self.gridLayout_5.addWidget(self.label, 3, 0, 1, 1)
-
-        self.labelGammaView = QLabel(self.scrollAreaWidgetContentsView)
-        self.labelGammaView.setObjectName("labelGammaView")
-
-        self.gridLayout_5.addWidget(self.labelGammaView, 1, 2, 1, 1)
-
-        self.label_2 = QLabel(self.scrollAreaWidgetContentsView)
-        self.label_2.setObjectName("label_2")
-
-        self.gridLayout_5.addWidget(self.label_2, 1, 0, 1, 1)
-
-        self.labelFilename = QLabel(self.scrollAreaWidgetContentsView)
-        self.labelFilename.setObjectName("labelFilename")
-
-        self.gridLayout_5.addWidget(self.labelFilename, 3, 1, 1, 1)
-
-        self.labelOffsetsView = QLabel(self.scrollAreaWidgetContentsView)
+        self.scrollAreaWidgetContentsView.setGeometry(QRect(0, 0, 384, 495))
+        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContentsView)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.frame_5 = QFrame(self.scrollAreaWidgetContentsView)
+        self.frame_5.setObjectName("frame_5")
+        self.frame_5.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_5.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_11 = QGridLayout(self.frame_5)
+        self.gridLayout_11.setObjectName("gridLayout_11")
+        self.labelOffsetsView = QLabel(self.frame_5)
         self.labelOffsetsView.setObjectName("labelOffsetsView")
 
-        self.gridLayout_5.addWidget(self.labelOffsetsView, 0, 0, 1, 1)
+        self.gridLayout_11.addWidget(self.labelOffsetsView, 0, 0, 1, 1)
 
-        self.label_10 = QLabel(self.scrollAreaWidgetContentsView)
-        self.label_10.setObjectName("label_10")
+        self.label_2 = QLabel(self.frame_5)
+        self.label_2.setObjectName("label_2")
 
-        self.gridLayout_5.addWidget(self.label_10, 4, 1, 1, 1)
+        self.gridLayout_11.addWidget(self.label_2, 1, 0, 1, 1)
 
-        self.label_11 = QLabel(self.scrollAreaWidgetContentsView)
-        self.label_11.setObjectName("label_11")
-
-        self.gridLayout_5.addWidget(self.label_11, 5, 0, 1, 1)
-
-        self.label_12 = QLabel(self.scrollAreaWidgetContentsView)
-        self.label_12.setObjectName("label_12")
-
-        self.gridLayout_5.addWidget(self.label_12, 5, 1, 1, 1)
-
-        self.label_9 = QLabel(self.scrollAreaWidgetContentsView)
-        self.label_9.setObjectName("label_9")
-
-        self.gridLayout_5.addWidget(self.label_9, 4, 0, 1, 1)
-
-        self.horizontalSliderGammaView = QSlider(self.scrollAreaWidgetContentsView)
+        self.horizontalSliderGammaView = QSlider(self.frame_5)
         self.horizontalSliderGammaView.setObjectName("horizontalSliderGammaView")
         self.horizontalSliderGammaView.setMaximum(1000)
         self.horizontalSliderGammaView.setSingleStep(1)
@@ -620,18 +649,63 @@ class Ui_Dialog(object):
         self.horizontalSliderGammaView.setSliderPosition(500)
         self.horizontalSliderGammaView.setOrientation(Qt.Orientation.Horizontal)
 
-        self.gridLayout_5.addWidget(self.horizontalSliderGammaView, 1, 1, 1, 1)
+        self.gridLayout_11.addWidget(self.horizontalSliderGammaView, 1, 1, 1, 1)
 
-        self.comboBoxOffsetsView = QComboBox(self.scrollAreaWidgetContentsView)
+        self.labelGammaView = QLabel(self.frame_5)
+        self.labelGammaView.setObjectName("labelGammaView")
+
+        self.gridLayout_11.addWidget(self.labelGammaView, 1, 2, 1, 1)
+
+        self.comboBoxOffsetsView = QComboBox(self.frame_5)
         self.comboBoxOffsetsView.setObjectName("comboBoxOffsetsView")
 
-        self.gridLayout_5.addWidget(self.comboBoxOffsetsView, 0, 1, 1, 1)
+        self.gridLayout_11.addWidget(self.comboBoxOffsetsView, 0, 1, 1, 2)
 
-        self.verticalSpacer_5 = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        self.verticalLayout.addWidget(self.frame_5)
+
+        self.verticalSpacer_4 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
-        self.gridLayout_5.addItem(self.verticalSpacer_5, 2, 1, 1, 1)
+        self.verticalLayout.addItem(self.verticalSpacer_4)
+
+        self.frame_6 = QFrame(self.scrollAreaWidgetContentsView)
+        self.frame_6.setObjectName("frame_6")
+        self.frame_6.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_6.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_12 = QGridLayout(self.frame_6)
+        self.gridLayout_12.setObjectName("gridLayout_12")
+        self.label = QLabel(self.frame_6)
+        self.label.setObjectName("label")
+
+        self.gridLayout_12.addWidget(self.label, 0, 0, 1, 1)
+
+        self.label_9 = QLabel(self.frame_6)
+        self.label_9.setObjectName("label_9")
+
+        self.gridLayout_12.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.label_11 = QLabel(self.frame_6)
+        self.label_11.setObjectName("label_11")
+
+        self.gridLayout_12.addWidget(self.label_11, 2, 0, 1, 1)
+
+        self.lineEditFilename = QLineEdit(self.frame_6)
+        self.lineEditFilename.setObjectName("lineEditFilename")
+
+        self.gridLayout_12.addWidget(self.lineEditFilename, 0, 2, 1, 1)
+
+        self.lineEditTPwr = QLineEdit(self.frame_6)
+        self.lineEditTPwr.setObjectName("lineEditTPwr")
+
+        self.gridLayout_12.addWidget(self.lineEditTPwr, 1, 2, 1, 1)
+
+        self.lineEditFPwr = QLineEdit(self.frame_6)
+        self.lineEditFPwr.setObjectName("lineEditFPwr")
+
+        self.gridLayout_12.addWidget(self.lineEditFPwr, 2, 2, 1, 1)
+
+        self.verticalLayout.addWidget(self.frame_6)
 
         self.scrollAreaView.setWidget(self.scrollAreaWidgetContentsView)
 
@@ -640,12 +714,18 @@ class Ui_Dialog(object):
         )
 
         self.verticalSpacer_2 = QSpacerItem(
-            20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+            0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
 
         self.gridLayout_3.addItem(self.verticalSpacer_2, 1, 0, 1, 1)
 
-        self.gridLayout_2.addWidget(self.framePlotsView, 1, 0, 1, 1)
+        self.horizontalSpacer_5 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_3.addItem(self.horizontalSpacer_5, 2, 2, 1, 1)
+
+        self.gridLayout_2.addWidget(self.widgetPlotsView, 1, 0, 1, 1)
 
         self.tabWidget.addTab(self.tabView, "")
 
@@ -653,7 +733,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
         QMetaObject.connectSlotsByName(Dialog)
 
@@ -663,50 +743,46 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(
             QCoreApplication.translate("Dialog", "Whistle Of Wind", None)
         )
-        self.label_13.setText(QCoreApplication.translate("Dialog", "Hz", None))
+        self.pushButtonRecord.setText("")
+        self.pushButton.setText(
+            QCoreApplication.translate("Dialog", "PushButton", None)
+        )
+        self.label_17.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         self.labelSpan.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.label_6.setText(QCoreApplication.translate("Dialog", "Name", None))
-        self.label_8.setText(QCoreApplication.translate("Dialog", "Hz", None))
-        self.label_3.setText(QCoreApplication.translate("Dialog", "IDN", None))
-        self.labelOffsetsInstr.setText(
-            QCoreApplication.translate("Dialog", "TextLabel", None)
-        )
-        self.label_14.setText(QCoreApplication.translate("Dialog", "Hz", None))
-        self.label_16.setText(QCoreApplication.translate("Dialog", "s", None))
-        self.label_15.setText(QCoreApplication.translate("Dialog", "Hz", None))
-        self.labelSlices.setText(
-            QCoreApplication.translate("Dialog", "TextLabel", None)
-        )
         self.labelCenter.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.labelSweep.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.labelMin.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.label_4.setText(QCoreApplication.translate("Dialog", "Driver", None))
-        self.labelDuration.setText(
-            QCoreApplication.translate("Dialog", "TextLabel", None)
-        )
-        self.label_7.setText(QCoreApplication.translate("Dialog", "Options", None))
         self.labelMax.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.label_5.setText(QCoreApplication.translate("Dialog", "VISA", None))
+        self.labelMin.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         self.labelStartTime.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.pushButtonRecord.setText("")
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabInstr), "")
-        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
-        self.labelGammaView.setText(
+        self.labelSlices.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.label_2.setText(QCoreApplication.translate("Dialog", "gamma", None))
-        self.labelFilename.setText(QCoreApplication.translate("Dialog", "---", None))
+        self.labelDuration.setText(
+            QCoreApplication.translate("Dialog", "TextLabel", None)
+        )
+        self.labelSweep.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
+        self.labelOffsetsInstr.setText(
+            QCoreApplication.translate("Dialog", "TextLabel", None)
+        )
+        self.label_3.setText(QCoreApplication.translate("Dialog", "IDN", None))
+        self.label_4.setText(QCoreApplication.translate("Dialog", "Driver", None))
+        self.label_5.setText(QCoreApplication.translate("Dialog", "VISA", None))
+        self.label_6.setText(QCoreApplication.translate("Dialog", "Name", None))
+        self.label_7.setText(QCoreApplication.translate("Dialog", "Options", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabInstr), "")
         self.labelOffsetsView.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.label_10.setText(QCoreApplication.translate("Dialog", "---", None))
-        self.label_11.setText(QCoreApplication.translate("Dialog", "f. pwr", None))
-        self.label_12.setText(QCoreApplication.translate("Dialog", "---", None))
+        self.label_2.setText(QCoreApplication.translate("Dialog", "gamma", None))
+        self.labelGammaView.setText(
+            QCoreApplication.translate("Dialog", "TextLabel", None)
+        )
+        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
         self.label_9.setText(QCoreApplication.translate("Dialog", "t. pwr", None))
+        self.label_11.setText(QCoreApplication.translate("Dialog", "f. pwr", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabView), "")
 
     # retranslateUi
