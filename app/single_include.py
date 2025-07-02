@@ -1,4 +1,4 @@
-from kernel.SingletonSplash import SingletonSplash
+from despyner.SingletonSplash import SingletonSplash
 
 SingletonSplash().message("json")
 import json
@@ -91,7 +91,7 @@ SingletonSplash().message("timezone")
 from datetime import timezone
 
 SingletonSplash().message("JollyClass")
-from kernel.JollyClass import JollyClass
+from despyner.JollyClass import JollyClass
 
 SingletonSplash().message("urljoin")
 from urllib.parse import urljoin

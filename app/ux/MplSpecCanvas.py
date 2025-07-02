@@ -13,27 +13,27 @@ class MplSpecCanvas(FigureCanvasQTAgg):
         self.__x = None
 
         self.__fig = Figure()
-        self.__axes = self.__fig.add_subplot(111)
-        self.__axes.set_xlabel("time")
-        self.__axes.set_ylabel("frequency")
+        self.axes = self.__fig.add_subplot(111)
+        self.axes.set_xlabel("time")
+        self.axes.set_ylabel("frequency")
 
-        self.__xlim = self.__axes.get_xlim()
-        self.__ylim = self.__axes.get_ylim()
+        self.__xlim = self.axes.get_xlim()
+        self.__ylim = self.axes.get_ylim()
 
         self.__fig.canvas.mpl_connect(
             "button_press_event", self.__internal_button_press_event
         )
-        self.__axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
-        self.__axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
+        self.axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
+        self.axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
 
-        self.__im = self.__axes.imshow(X=[[]], aspect="auto")
+        self.__im = self.axes.imshow(X=[[]], aspect="auto")
         # self.__fig.colorbar(self.__im)
         self.__fig.tight_layout()
         super().__init__(self.__fig)
 
     def set_data(self, sp, conf):
         self.__sp = sp
-        self.__im = self.__axes.imshow(
+        self.__im = self.axes.imshow(
             X=self.__sp["m"],
             # norm=colors.PowerNorm(
             #     gamma=conf["gamma"],
@@ -72,11 +72,11 @@ class MplSpecCanvas(FigureCanvasQTAgg):
             self.__button_press_event(data, plot, array, data_exact, span)
 
     def __internal_xlim_changed(self, x):
-        self.__xlim = self.__axes.get_xlim()
+        self.__xlim = self.axes.get_xlim()
         self.__internal_button_press_event()
 
     def __internal_ylim_changed(self, y):
-        self.__ylim = self.__axes.get_ylim()
+        self.__ylim = self.axes.get_ylim()
         self.__internal_button_press_event()
 
     def get_toolbar(self):

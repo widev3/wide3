@@ -4,7 +4,7 @@ sys.dont_write_bytecode = True
 
 from os import path
 from PySide6.QtWidgets import QApplication
-from kernel.SingletonSplash import SingletonSplash
+from despyner.SingletonSplash import SingletonSplash
 
 
 def abs_path(filename, ref_position=__file__):
@@ -12,12 +12,11 @@ def abs_path(filename, ref_position=__file__):
 
 
 app = QApplication(sys.argv)
-SingletonSplash(abs_path("icons/whistle_of_wind.png", __file__))
+SingletonSplash(abs_path("whistle_of_wind.png", __file__))
 SingletonSplash().message("Loading...")
 
 import Config
-from single_include import Qt
-from kernel.QtMger import WindowManager
+from despyner.QtMger import WindowManager
 from ui.Dashboard import Ui_Dialog
 from ux.Dashboard.Dashboard import Dashboard
 

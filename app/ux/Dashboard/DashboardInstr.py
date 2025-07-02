@@ -1,10 +1,10 @@
 import random
 import globals
 import numpy as np
-from kernel.MessageBox import MessageBox
+from despyner.MessageBox import MessageBox
 from ux.MplSpecCanvas import MplSpecCanvas
-from kernel.QtMger import set_icon, icon_name
-from kernel.popupDialog.UXPopupDialog import UXPopupDialog
+from despyner.QtMger import set_icon, icon_name
+from despyner.popupDialog.UXPopupDialog import UXPopupDialog
 from single_include import (
     RsInstrument,
     traceback,
@@ -17,10 +17,10 @@ from single_include import (
     time,
     Slot,
 )
-from kernel.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
-from kernel.popupDialog.PopupDialog import Ui_Dialog as UIPopupDialog
-from kernel.QtMger import set_icon, icon_name, WindowManager, get_icon_path
-from kernel.comboBoxDialog.ComboBoxDialog import Ui_Dialog as UIComboBoxDialog
+from despyner.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
+from despyner.popupDialog.PopupDialog import Ui_Dialog as UIPopupDialog
+from despyner.QtMger import set_icon, icon_name, WindowManager, get_icon_path
+from despyner.comboBoxDialog.ComboBoxDialog import Ui_Dialog as UIComboBoxDialog
 
 
 class Worker(QObject):
@@ -59,65 +59,11 @@ class DashboardInstr:
     def __init__(self, parent):
         self.__parent = parent
 
-        set_icon(self.__parent.ui.pushButtonConnect, icon_name.ADD_LINK, globals.theme)
-        set_icon(self.__parent.ui.pushButtonRecord, icon_name.CAMERA, globals.theme)
-        set_icon(
-            self.__parent.ui.labelCenter, icon_name.ADJUST, globals.theme, (30, 30)
-        )
-        set_icon(
-            self.__parent.ui.labelSpan, icon_name.ARROW_RANGE, globals.theme, (30, 30)
-        )
-        set_icon(
-            self.__parent.ui.labelMin,
-            icon_name.ARROW_MENU_CLOSE,
-            globals.theme,
-            (30, 30),
-        )
-        set_icon(
-            self.__parent.ui.labelMax,
-            icon_name.ARROW_MENU_OPEN,
-            globals.theme,
-            (30, 30),
-        )
-        set_icon(
-            self.__parent.ui.labelOffsetsInstr,
-            icon_name.CADENCE,
-            globals.theme,
-            (30, 30),
-        )
-        set_icon(
-            self.__parent.ui.labelSweep, icon_name.AV_TIMER, globals.theme, (30, 30)
-        )
-        set_icon(
-            self.__parent.ui.labelStartTime,
-            icon_name.TIMER_PLAY,
-            globals.theme,
-            (30, 30),
-        )
-        set_icon(
-            self.__parent.ui.labelDuration, icon_name.HOURGLASS, globals.theme, (30, 30)
-        )
-        set_icon(
-            self.__parent.ui.labelSlices, icon_name.LOCAL_PIZZA, globals.theme, (30, 30)
-        )
-
-        self.__parent.ui.doubleSpinBoxCenter.valueChanged.connect(lambda x: None)
-        self.__parent.ui.doubleSpinBoxSpan.valueChanged.connect(lambda x: None)
-        self.__parent.ui.doubleSpinBoxMin.valueChanged.connect(lambda x: None)
-        self.__parent.ui.doubleSpinBoxMax.valueChanged.connect(lambda x: None)
-        self.__parent.ui.doubleSpinBoxSweep.valueChanged.connect(lambda x: None)
-        self.__parent.ui.pushButtonConnect.clicked.connect(self.__conn_disconn)
-        self.__parent.ui.pushButtonRecord.clicked.connect(self.__record)
-        self.__parent.ui.comboBoxOffsetsInstr.addItems(self.__parent.bands)
-        self.__parent.ui.comboBoxOffsetsInstr.currentIndexChanged.connect(
-            self.__comboBoxOffsetsInstrCurrentIndexChanged
-        )
-
-        self.record = False
         self.center = 10
         self.span = 5
         self.sweep = 1
         self.slices = {}
+        self.hide = False
 
         self.worker = Worker()
         self.worker.set_parent(self)
@@ -135,13 +81,151 @@ class DashboardInstr:
         self.instr = None  # set to True in debug mode to baypass every control
         self.__enable_disable(False)
 
+        set_icon(
+            self.__parent.ui.pushButtonConnect, icon_name.ADD_LINK, globals.theme, True
+        )
+        set_icon(
+            self.__parent.ui.pushButtonSaveData,
+            icon_name.FILE_SAVE,
+            globals.theme,
+            True,
+        )
+        set_icon(
+            self.__parent.ui.pushButtonHide,
+            icon_name.VISIBILITY if self.hide else icon_name.VISIBILITY_OFF,
+            globals.theme,
+            True,
+        )
+        set_icon(
+            self.__parent.ui.pushButtonClear,
+            icon_name.CLEANING_SERVICE,
+            globals.theme,
+            True,
+        )
+
+        set_icon(
+            self.__parent.ui.pushButtonSavePreset,
+            icon_name.FILE_SAVE,
+            globals.theme,
+            True,
+        )
+
+        set_icon(
+            self.__parent.ui.labelCenter,
+            icon_name.ADJUST,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelSpan,
+            icon_name.ARROW_RANGE,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelMin,
+            icon_name.ARROW_MENU_CLOSE,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelMax,
+            icon_name.ARROW_MENU_OPEN,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelOffsetsInstr,
+            icon_name.CADENCE,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelSweep,
+            icon_name.AV_TIMER,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelStartTime,
+            icon_name.TIMER_PLAY,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelDuration,
+            icon_name.HOURGLASS,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelSlices,
+            icon_name.LOCAL_PIZZA,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+        set_icon(
+            self.__parent.ui.labelPresets,
+            icon_name.DISPLAY_SETTINGS,
+            globals.theme,
+            True,
+            (30, 30),
+        )
+
+        self.__parent.ui.doubleSpinBoxCenter.valueChanged.connect(lambda x: None)
+        self.__parent.ui.doubleSpinBoxSpan.valueChanged.connect(lambda x: None)
+        self.__parent.ui.doubleSpinBoxMin.valueChanged.connect(lambda x: None)
+        self.__parent.ui.doubleSpinBoxMax.valueChanged.connect(lambda x: None)
+        self.__parent.ui.doubleSpinBoxSweep.valueChanged.connect(lambda x: None)
+        self.__parent.ui.pushButtonConnect.clicked.connect(self.__conn_disconn)
+        self.__parent.ui.pushButtonSaveData.clicked.connect(self.__save_data)
+        self.__parent.ui.pushButtonHide.clicked.connect(self.__invert_hide)
+        self.__parent.ui.pushButtonClear.clicked.connect(lambda x: self.slices.clear())
+        self.__parent.ui.comboBoxOffsetsInstr.addItems(self.__parent.bands)
+        self.__parent.ui.comboBoxOffsetsInstr.currentIndexChanged.connect(
+            self.__comboBoxOffsetsInstrCurrentIndexChanged
+        )
+
+    def __invert_hide(self):
+        self.hide = not self.hide
+        set_icon(
+            self.__parent.ui.pushButtonHide,
+            icon_name.VISIBILITY if self.hide else icon_name.VISIBILITY_OFF,
+            globals.theme,
+            True,
+        )
+        if self.hide:
+            self.__canvas.axes.text(
+                0.45,
+                1.01,
+                "Hidden from the user!",
+                transform=self.__canvas.axes.transAxes,
+            )
+        else:
+            for txt in self.__canvas.axes.texts:
+                txt.remove()
+
+        self.__canvas.draw()
+
+    def __save_data(self):
+        print("__save_data not implemented")
+
     def __comboBoxOffsetsInstrCurrentIndexChanged(self, d):
         self.__lo = self.__parent.args["lo"][d]["value"]
 
     def __disconnect_instr(self):
         self.instr.close()
         self.instr = None
-        self.slices = {}
+        self.slices.clear()
         self.__enable_disable(False)
         self.__parent.ui.lineEditIDN.setText("---")
         self.__parent.ui.lineEditDriver.setText("---")
@@ -192,8 +276,15 @@ class DashboardInstr:
             self.__parent.ui.doubleSpinBoxMin.setValue(self.center - self.span)
             self.__parent.ui.doubleSpinBoxMax.setValue(self.center + self.span)
 
-            idn = self.instr.query_str("*IDN?")
-            self.__parent.ui.lineEditIDN.setText(idn)
+            self.__parent.ui.lineEditResourceName.setText(self.instr.resource_name)
+            self.__parent.ui.lineEditManufacturer.setText(self.instr.manufacturer)
+            self.__parent.ui.lineEditModelName.setText(
+                self.instr.full_instrument_model_name
+            )
+            self.__parent.ui.lineEditSerialNumber.setText(
+                self.instr.instrument_serial_number
+            )
+            self.__parent.ui.lineEditFW.setText(self.instr.instrument_firmware_version)
             self.__parent.ui.lineEditDriver.setText(self.instr.driver_version)
             self.__parent.ui.lineEditVisa.setText(self.instr.visa_manufacturer)
             self.__parent.ui.lineEditName.setText(self.instr.full_instrument_model_name)
@@ -261,9 +352,6 @@ class DashboardInstr:
                 buttons=QMessageBox.StandardButton.Ok,
             ).result()
 
-    def __record(self):
-        self.record = not self.record
-
     @Slot(tuple)
     def __update_spec(self, t):
         self.slices[datetime.now(timezone.utc)] = (t[0], t[1])
@@ -273,27 +361,34 @@ class DashboardInstr:
             "f": list(map(lambda x: float(x), t[0])),
             "m": np.rot90(np.array(list(self.slices.values())).astype(float)[:, 1, :]),
         }
-        self.__canvas.set_data(spec, self.__parent.args["viewer"])
+
+        if not self.hide:
+            self.__canvas.set_data(spec, self.__parent.args["viewer"])
 
         msg = list(self.slices)[0].strftime("%H:%M:%S %d-%m-%Y")
         self.__parent.ui.lineEditStartTime.setText(msg)
 
-        msg = f"{(datetime.now(timezone.utc)-list(self.slices)[0]).total_seconds()} s"
-        self.__parent.ui.lineEditDuration.setText(msg)
+        msg = (datetime.now(timezone.utc) - list(self.slices)[0]).total_seconds()
+        self.__parent.ui.lineEditDuration.setText(str(int(msg)))
 
         self.__parent.ui.lineEditSlices.setText(str(len(self.slices)))
 
     def __enable_disable(self, enable):
         if enable:
             set_icon(
-                self.__parent.ui.pushButtonConnect, icon_name.LINK_OFF, globals.theme
+                self.__parent.ui.pushButtonConnect,
+                icon_name.LINK_OFF,
+                globals.theme,
+                True,
             )
         else:
             set_icon(
-                self.__parent.ui.pushButtonConnect, icon_name.ADD_LINK, globals.theme
+                self.__parent.ui.pushButtonConnect,
+                icon_name.ADD_LINK,
+                globals.theme,
+                True,
             )
 
-        self.__parent.ui.pushButtonRecord.setEnabled(enable)
         self.__parent.ui.labelCenter.setEnabled(enable)
         self.__parent.ui.doubleSpinBoxCenter.setEnabled(enable)
         self.__parent.ui.labelSpan.setEnabled(enable)

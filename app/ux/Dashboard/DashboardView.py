@@ -3,7 +3,7 @@ from Spectrogram import Spectrogram
 from single_include import QFileDialog
 from ux.MplSpecCanvas import MplSpecCanvas
 from ux.Mpl2DPlotCanvas import Mpl2DPlotCanvas
-from kernel.QtMger import set_icon, icon_name
+from despyner.QtMger import set_icon, icon_name
 
 
 class DashboardView:
@@ -13,12 +13,16 @@ class DashboardView:
         self.__filename = None
 
         set_icon(
-            self.__parent.ui.pushButtonFileOpen, icon_name.FILE_OPEN, globals.theme
+            self.__parent.ui.pushButtonFileOpen,
+            icon_name.FILE_OPEN,
+            globals.theme,
+            True,
         )
         set_icon(
             self.__parent.ui.labelOffsetsView,
             icon_name.CADENCE,
             globals.theme,
+            True,
             (30, 30),
         )
 

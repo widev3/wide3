@@ -1,0 +1,3 @@
+[submodule "app/despyner"]
+	path = app/despyner
+	url = git@github.com:gttrcr/despyner.git

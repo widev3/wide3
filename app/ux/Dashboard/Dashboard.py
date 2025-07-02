@@ -2,7 +2,7 @@ import globals
 from single_include import Qt
 from ux.Dashboard.DashboardView import DashboardView
 from ux.Dashboard.DashboardInstr import DashboardInstr
-from kernel.QtMger import get_icon, icon_name
+from despyner.QtMger import get_icon, icon_name
 
 
 class Dashboard:
