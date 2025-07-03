@@ -12,46 +12,46 @@ class MplSpecCanvas(FigureCanvasQTAgg):
         self.__button_press_event = button_press_event
         self.__x = None
 
-        self.__fig = Figure()
-        self.axes = self.__fig.add_subplot(111)
-        self.axes.set_xlabel("time")
-        self.axes.set_ylabel("frequency")
+        self.fig = Figure()
+        self.axes = self.fig.add_subplot(111)
+        self.axes.set_xlabel("frequency")
+        self.axes.set_ylabel("time")
 
         self.__xlim = self.axes.get_xlim()
         self.__ylim = self.axes.get_ylim()
 
-        self.__fig.canvas.mpl_connect(
+        self.fig.canvas.mpl_connect(
             "button_press_event", self.__internal_button_press_event
         )
         self.axes.callbacks.connect("xlim_changed", self.__internal_xlim_changed)
         self.axes.callbacks.connect("ylim_changed", self.__internal_ylim_changed)
 
-        self.__im = self.axes.imshow(X=[[]], aspect="auto")
+        self.im = self.axes.imshow(X=[[]], aspect="auto")
         # self.__fig.colorbar(self.__im)
-        self.__fig.tight_layout()
-        super().__init__(self.__fig)
+        self.fig.tight_layout()
+        super().__init__(self.fig)
 
     def set_data(self, sp, conf):
         self.__sp = sp
-        self.__im = self.axes.imshow(
+        self.im = self.axes.imshow(
             X=self.__sp["m"],
-            # norm=colors.PowerNorm(
-            #     gamma=conf["gamma"],
-            #     vmin=np.min(self.__sp["m"]),
-            #     vmax=np.max(self.__sp["m"]),
-            # ),
-            # cmap=conf["cmap"],
+            norm=colors.PowerNorm(
+                gamma=conf["gamma"],
+                vmin=np.min(self.__sp["m"]),
+                vmax=np.max(self.__sp["m"]),
+            ),
+            cmap=conf["cmap"],
             aspect="auto",
-            # interpolation="none",
-            # origin="lower",
+            interpolation="gaussian",
+            origin="lower",
             extent=[
-                min(self.__sp["r"]),
-                max(self.__sp["r"]),
                 min(self.__sp["f"]),
                 max(self.__sp["f"]),
+                min(self.__sp["r"]),
+                max(self.__sp["r"]),
             ],
         )
-        self.__fig.tight_layout()
+        self.fig.tight_layout()
         self.draw()
 
     def __internal_button_press_event(self, x=None):

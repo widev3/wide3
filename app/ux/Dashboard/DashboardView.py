@@ -3,7 +3,7 @@ from Spectrogram import Spectrogram
 from single_include import QFileDialog
 from ux.MplSpecCanvas import MplSpecCanvas
 from ux.Mpl2DPlotCanvas import Mpl2DPlotCanvas
-from despyner.QtMger import set_icon, icon_name
+from despyner.QtMger import set_icon, i_name
 
 
 class DashboardView:
@@ -14,13 +14,13 @@ class DashboardView:
 
         set_icon(
             self.__parent.ui.pushButtonFileOpen,
-            icon_name.FILE_OPEN,
+            i_name.FILE_OPEN,
             globals.theme,
             True,
         )
         set_icon(
             self.__parent.ui.labelOffsetsView,
-            icon_name.CADENCE,
+            i_name.CADENCE,
             globals.theme,
             True,
             (30, 30),
@@ -63,9 +63,9 @@ class DashboardView:
         d /= 1000
         self.__parent.ui.labelGammaView.setText(str(d))
         if self.__canvas_spec:
-            self.__canvas_spec.__im.norm.gamma = d
-            self.__canvas_spec.__fig.canvas.draw()
-            self.__canvas_spec.__fig.canvas.flush_events()
+            self.__canvas_spec.im.norm.gamma = d
+            self.__canvas_spec.fig.canvas.draw()
+            self.__canvas_spec.fig.canvas.flush_events()
 
     def __open_track(self):
         filename, _ = QFileDialog.getOpenFileUrl(
@@ -82,8 +82,8 @@ class DashboardView:
         time = self.__spec.time_slice(array[1])
         xy = zip(self.__spec.spec["r"], time)
         xy = list(filter(lambda x: x[0] >= span[0][0] and x[0] <= span[0][1], xy))
-        pwr = sum(list(map(lambda x: 10 ** (x[1] / 10 - 3), xy)))
-        self.__parent.ui.lineEditTPwr.setText(str(pwr))
+        pwr = sum(list(map(lambda x: 10 ** (x[1] / 10 - 3), xy))) * 10**6
+        self.__parent.ui.lineEditTPwr.setText("{:e}".format(pwr))
         self.__canvas_time.set_data(
             list(map(lambda x: x[0], xy)), list(map(lambda x: x[1], xy))
         )
@@ -92,8 +92,8 @@ class DashboardView:
         freq = self.__spec.freq_slice(array[0])
         xy = zip(freq, self.__spec.spec["f"])
         xy = list(filter(lambda x: x[1] >= span[1][0] and x[1] <= span[1][1], xy))
-        # pwr = sum(list(map(lambda x: 10 ** (x[1] / 10 - 3), xy)))
-        # self.__parent.ui.lineEditFPwr.setText(str(pwr))
+        pwr = sum(list(map(lambda x: 10 ** (x[0] / 10 - 3), xy))) * 10**6
+        self.__parent.ui.lineEditFPwr.setText("{:e}".format(pwr))
         self.__canvas_freq.set_data(
             list(map(lambda x: x[0], xy)), list(map(lambda x: x[1], xy))
         )

@@ -23,7 +23,7 @@ from ux.Dashboard.Dashboard import Dashboard
 if __name__ == "__main__":
     SingletonSplash().message("Starting...")
     Config.Config("config.json")
-    c = Config.Config().instance().config
+    c = Config.Config().config
     win = WindowManager(Ui_Dialog, Dashboard, c)
     win.show()
     SingletonSplash().close()

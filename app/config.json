@@ -18,17 +18,20 @@
         }
     ],
     "viewer": {
-        "filename": "input/Spectrogram_wave_long.csv",
         "separator": ",",
         "gamma": 0.45,
         "cmap": "berlin"
     },
     "controller": {
-        "instrument": "TCPIP::172.16.10.10::INSTR",
         "center": 394300000,
         "span": 600000,
-        "min": 0,
-        "max": 3000000000,
-        "sweep": 1
+        "presets": [
+            {
+                "name": "Full FPC1500",
+                "min": 0,
+                "max": 3000000000,
+                "sweep": 0.5
+            }
+        ]
     }
 }

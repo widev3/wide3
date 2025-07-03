@@ -2,7 +2,7 @@ import globals
 from single_include import Qt
 from ux.Dashboard.DashboardView import DashboardView
 from ux.Dashboard.DashboardInstr import DashboardInstr
-from despyner.QtMger import get_icon, icon_name
+from despyner.QtMger import get_icon, i_name
 
 
 class Dashboard:
@@ -15,5 +15,5 @@ class Dashboard:
         self.dashboard_instr = DashboardInstr(self)
         self.dashboard_view = DashboardView(self)
         self.dialog.setWindowState(Qt.WindowMaximized)
-        self.ui.tabWidget.setTabIcon(0, get_icon(icon_name.WAVES, globals.theme))
-        self.ui.tabWidget.setTabIcon(1, get_icon(icon_name.NOTE_STACK, globals.theme))
+        self.ui.tabWidget.setTabIcon(0, get_icon(i_name.WAVES, globals.theme))
+        self.ui.tabWidget.setTabIcon(1, get_icon(i_name.NOTE_STACK, globals.theme))

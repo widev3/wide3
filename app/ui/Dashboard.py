@@ -234,24 +234,28 @@ class Ui_Dialog(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.pushButtonConnect = QPushButton(self.widgetButtonsInstr)
         self.pushButtonConnect.setObjectName("pushButtonConnect")
+        self.pushButtonConnect.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonConnect.setIconSize(QSize(25, 25))
 
         self.horizontalLayout_2.addWidget(self.pushButtonConnect)
 
         self.pushButtonSaveData = QPushButton(self.widgetButtonsInstr)
         self.pushButtonSaveData.setObjectName("pushButtonSaveData")
+        self.pushButtonSaveData.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonSaveData.setIconSize(QSize(25, 25))
 
         self.horizontalLayout_2.addWidget(self.pushButtonSaveData)
 
         self.pushButtonHide = QPushButton(self.widgetButtonsInstr)
         self.pushButtonHide.setObjectName("pushButtonHide")
+        self.pushButtonHide.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonHide.setIconSize(QSize(25, 25))
 
         self.horizontalLayout_2.addWidget(self.pushButtonHide)
 
         self.pushButtonClear = QPushButton(self.widgetButtonsInstr)
         self.pushButtonClear.setObjectName("pushButtonClear")
+        self.pushButtonClear.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonClear.setIconSize(QSize(25, 25))
 
         self.horizontalLayout_2.addWidget(self.pushButtonClear)
@@ -289,6 +293,7 @@ class Ui_Dialog(object):
         self.gridLayout_5.setObjectName("gridLayout_5")
         self.pushButtonSavePreset = QPushButton(self.frame_7)
         self.pushButtonSavePreset.setObjectName("pushButtonSavePreset")
+        self.pushButtonSavePreset.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonSavePreset.setIconSize(QSize(25, 25))
 
         self.gridLayout_5.addWidget(self.pushButtonSavePreset, 0, 2, 1, 1)
@@ -317,16 +322,17 @@ class Ui_Dialog(object):
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_9 = QGridLayout(self.frame_2)
         self.gridLayout_9.setObjectName("gridLayout_9")
-        self.horizontalSpacer_3 = QSpacerItem(
-            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
-        )
+        self.doubleSpinBoxCenter = QDoubleSpinBox(self.frame_2)
+        self.doubleSpinBoxCenter.setObjectName("doubleSpinBoxCenter")
+        self.doubleSpinBoxCenter.setDecimals(0)
+        self.doubleSpinBoxCenter.setMaximum(3000000000.000000000000000)
 
-        self.gridLayout_9.addItem(self.horizontalSpacer_3, 2, 1, 1, 1)
+        self.gridLayout_9.addWidget(self.doubleSpinBoxCenter, 0, 1, 1, 1)
 
-        self.labelSpan = QLabel(self.frame_2)
-        self.labelSpan.setObjectName("labelSpan")
+        self.labelCenter = QLabel(self.frame_2)
+        self.labelCenter.setObjectName("labelCenter")
 
-        self.gridLayout_9.addWidget(self.labelSpan, 1, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.labelCenter, 0, 0, 1, 1)
 
         self.doubleSpinBoxSpan = QDoubleSpinBox(self.frame_2)
         self.doubleSpinBoxSpan.setObjectName("doubleSpinBoxSpan")
@@ -335,27 +341,33 @@ class Ui_Dialog(object):
 
         self.gridLayout_9.addWidget(self.doubleSpinBoxSpan, 1, 1, 1, 1)
 
-        self.labelCenter = QLabel(self.frame_2)
-        self.labelCenter.setObjectName("labelCenter")
+        self.labelSpan = QLabel(self.frame_2)
+        self.labelSpan.setObjectName("labelSpan")
 
-        self.gridLayout_9.addWidget(self.labelCenter, 0, 0, 1, 1)
-
-        self.doubleSpinBoxCenter = QDoubleSpinBox(self.frame_2)
-        self.doubleSpinBoxCenter.setObjectName("doubleSpinBoxCenter")
-        self.doubleSpinBoxCenter.setDecimals(0)
-        self.doubleSpinBoxCenter.setMaximum(3000000000.000000000000000)
-
-        self.gridLayout_9.addWidget(self.doubleSpinBoxCenter, 0, 1, 1, 1)
+        self.gridLayout_9.addWidget(self.labelSpan, 1, 0, 1, 1)
 
         self.label_8 = QLabel(self.frame_2)
         self.label_8.setObjectName("label_8")
 
         self.gridLayout_9.addWidget(self.label_8, 0, 2, 1, 1)
 
+        self.horizontalSpacer3 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_9.addItem(self.horizontalSpacer3, 3, 1, 1, 1)
+
         self.label_10 = QLabel(self.frame_2)
         self.label_10.setObjectName("label_10")
 
         self.gridLayout_9.addWidget(self.label_10, 1, 2, 1, 1)
+
+        self.pushButtonApply1 = QPushButton(self.frame_2)
+        self.pushButtonApply1.setObjectName("pushButtonApply1")
+        self.pushButtonApply1.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.pushButtonApply1.setIconSize(QSize(25, 25))
+
+        self.gridLayout_9.addWidget(self.pushButtonApply1, 2, 1, 1, 1)
 
         self.verticalLayout_2.addWidget(self.frame_2)
 
@@ -365,6 +377,17 @@ class Ui_Dialog(object):
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_7 = QGridLayout(self.frame)
         self.gridLayout_7.setObjectName("gridLayout_7")
+        self.label_13 = QLabel(self.frame)
+        self.label_13.setObjectName("label_13")
+
+        self.gridLayout_7.addWidget(self.label_13, 2, 2, 1, 1)
+
+        self.horizontalSpacer_6 = QSpacerItem(
+            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
+        )
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_6, 4, 1, 1, 1)
+
         self.doubleSpinBoxMax = QDoubleSpinBox(self.frame)
         self.doubleSpinBoxMax.setObjectName("doubleSpinBoxMax")
         self.doubleSpinBoxMax.setDecimals(0)
@@ -379,31 +402,27 @@ class Ui_Dialog(object):
 
         self.gridLayout_7.addWidget(self.doubleSpinBoxMin, 1, 1, 1, 1)
 
-        self.labelMin = QLabel(self.frame)
-        self.labelMin.setObjectName("labelMin")
+        self.label_12 = QLabel(self.frame)
+        self.label_12.setObjectName("label_12")
 
-        self.gridLayout_7.addWidget(self.labelMin, 1, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.label_12, 1, 2, 1, 1)
 
         self.labelMax = QLabel(self.frame)
         self.labelMax.setObjectName("labelMax")
 
         self.gridLayout_7.addWidget(self.labelMax, 2, 0, 1, 1)
 
-        self.horizontalSpacer_6 = QSpacerItem(
-            0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
-        )
+        self.labelMin = QLabel(self.frame)
+        self.labelMin.setObjectName("labelMin")
 
-        self.gridLayout_7.addItem(self.horizontalSpacer_6, 3, 1, 1, 1)
+        self.gridLayout_7.addWidget(self.labelMin, 1, 0, 1, 1)
 
-        self.label_12 = QLabel(self.frame)
-        self.label_12.setObjectName("label_12")
+        self.pushButtonApply2 = QPushButton(self.frame)
+        self.pushButtonApply2.setObjectName("pushButtonApply2")
+        self.pushButtonApply2.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.pushButtonApply2.setIconSize(QSize(25, 25))
 
-        self.gridLayout_7.addWidget(self.label_12, 1, 2, 1, 1)
-
-        self.label_13 = QLabel(self.frame)
-        self.label_13.setObjectName("label_13")
-
-        self.gridLayout_7.addWidget(self.label_13, 2, 2, 1, 1)
+        self.gridLayout_7.addWidget(self.pushButtonApply2, 3, 1, 1, 1)
 
         self.verticalLayout_2.addWidget(self.frame)
 
@@ -413,15 +432,11 @@ class Ui_Dialog(object):
         self.frame_8.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_13 = QGridLayout(self.frame_8)
         self.gridLayout_13.setObjectName("gridLayout_13")
-        self.labelSweep = QLabel(self.frame_8)
-        self.labelSweep.setObjectName("labelSweep")
-
-        self.gridLayout_13.addWidget(self.labelSweep, 0, 0, 1, 1)
-
         self.doubleSpinBoxSweep = QDoubleSpinBox(self.frame_8)
         self.doubleSpinBoxSweep.setObjectName("doubleSpinBoxSweep")
-        self.doubleSpinBoxSweep.setDecimals(0)
-        self.doubleSpinBoxSweep.setMaximum(3000000000.000000000000000)
+        self.doubleSpinBoxSweep.setDecimals(2)
+        self.doubleSpinBoxSweep.setMinimum(0.010000000000000)
+        self.doubleSpinBoxSweep.setMaximum(86400.000000000000000)
 
         self.gridLayout_13.addWidget(self.doubleSpinBoxSweep, 0, 1, 1, 1)
 
@@ -429,12 +444,24 @@ class Ui_Dialog(object):
             0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum
         )
 
-        self.gridLayout_13.addItem(self.horizontalSpacer_2, 1, 1, 1, 1)
+        self.gridLayout_13.addItem(self.horizontalSpacer_2, 2, 1, 1, 1)
+
+        self.labelSweep = QLabel(self.frame_8)
+        self.labelSweep.setObjectName("labelSweep")
+
+        self.gridLayout_13.addWidget(self.labelSweep, 0, 0, 1, 1)
 
         self.label_14 = QLabel(self.frame_8)
         self.label_14.setObjectName("label_14")
 
         self.gridLayout_13.addWidget(self.label_14, 0, 2, 1, 1)
+
+        self.pushButtonApply3 = QPushButton(self.frame_8)
+        self.pushButtonApply3.setObjectName("pushButtonApply3")
+        self.pushButtonApply3.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.pushButtonApply3.setIconSize(QSize(25, 25))
+
+        self.gridLayout_13.addWidget(self.pushButtonApply3, 1, 1, 1, 1)
 
         self.verticalLayout_2.addWidget(self.frame_8)
 
@@ -643,6 +670,7 @@ class Ui_Dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButtonFileOpen = QPushButton(self.frameButtonsView)
         self.pushButtonFileOpen.setObjectName("pushButtonFileOpen")
+        self.pushButtonFileOpen.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.pushButtonFileOpen.setIconSize(QSize(25, 25))
 
         self.horizontalLayout.addWidget(self.pushButtonFileOpen)
@@ -757,20 +785,16 @@ class Ui_Dialog(object):
         self.frame_6.setFrameShadow(QFrame.Shadow.Plain)
         self.gridLayout_12 = QGridLayout(self.frame_6)
         self.gridLayout_12.setObjectName("gridLayout_12")
-        self.label = QLabel(self.frame_6)
-        self.label.setObjectName("label")
-
-        self.gridLayout_12.addWidget(self.label, 0, 0, 1, 1)
-
-        self.label_9 = QLabel(self.frame_6)
-        self.label_9.setObjectName("label_9")
-
-        self.gridLayout_12.addWidget(self.label_9, 1, 0, 1, 1)
-
         self.label_11 = QLabel(self.frame_6)
         self.label_11.setObjectName("label_11")
 
         self.gridLayout_12.addWidget(self.label_11, 2, 0, 1, 1)
+
+        self.lineEditFPwr = QLineEdit(self.frame_6)
+        self.lineEditFPwr.setObjectName("lineEditFPwr")
+        self.lineEditFPwr.setReadOnly(True)
+
+        self.gridLayout_12.addWidget(self.lineEditFPwr, 2, 2, 1, 1)
 
         self.lineEditFilename = QLineEdit(self.frame_6)
         self.lineEditFilename.setObjectName("lineEditFilename")
@@ -778,17 +802,31 @@ class Ui_Dialog(object):
 
         self.gridLayout_12.addWidget(self.lineEditFilename, 0, 2, 1, 1)
 
+        self.label_9 = QLabel(self.frame_6)
+        self.label_9.setObjectName("label_9")
+
+        self.gridLayout_12.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.label = QLabel(self.frame_6)
+        self.label.setObjectName("label")
+
+        self.gridLayout_12.addWidget(self.label, 0, 0, 1, 1)
+
         self.lineEditTPwr = QLineEdit(self.frame_6)
         self.lineEditTPwr.setObjectName("lineEditTPwr")
         self.lineEditTPwr.setReadOnly(True)
 
         self.gridLayout_12.addWidget(self.lineEditTPwr, 1, 2, 1, 1)
 
-        self.lineEditFPwr = QLineEdit(self.frame_6)
-        self.lineEditFPwr.setObjectName("lineEditFPwr")
-        self.lineEditFPwr.setReadOnly(True)
+        self.label_20 = QLabel(self.frame_6)
+        self.label_20.setObjectName("label_20")
 
-        self.gridLayout_12.addWidget(self.lineEditFPwr, 2, 2, 1, 1)
+        self.gridLayout_12.addWidget(self.label_20, 1, 3, 1, 1)
+
+        self.label_21 = QLabel(self.frame_6)
+        self.label_21.setObjectName("label_21")
+
+        self.gridLayout_12.addWidget(self.label_21, 2, 3, 1, 1)
 
         self.verticalLayout.addWidget(self.frame_6)
 
@@ -816,9 +854,36 @@ class Ui_Dialog(object):
 
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
 
+        QWidget.setTabOrder(self.tabWidget, self.scrollArea)
+        QWidget.setTabOrder(self.scrollArea, self.comboBoxPresets)
+        QWidget.setTabOrder(self.comboBoxPresets, self.doubleSpinBoxCenter)
+        QWidget.setTabOrder(self.doubleSpinBoxCenter, self.doubleSpinBoxSpan)
+        QWidget.setTabOrder(self.doubleSpinBoxSpan, self.doubleSpinBoxMin)
+        QWidget.setTabOrder(self.doubleSpinBoxMin, self.doubleSpinBoxMax)
+        QWidget.setTabOrder(self.doubleSpinBoxMax, self.doubleSpinBoxSweep)
+        QWidget.setTabOrder(self.doubleSpinBoxSweep, self.comboBoxOffsetsInstr)
+        QWidget.setTabOrder(self.comboBoxOffsetsInstr, self.lineEditStartTime)
+        QWidget.setTabOrder(self.lineEditStartTime, self.lineEditDuration)
+        QWidget.setTabOrder(self.lineEditDuration, self.lineEditSlices)
+        QWidget.setTabOrder(self.lineEditSlices, self.lineEditResourceName)
+        QWidget.setTabOrder(self.lineEditResourceName, self.lineEditManufacturer)
+        QWidget.setTabOrder(self.lineEditManufacturer, self.lineEditModelName)
+        QWidget.setTabOrder(self.lineEditModelName, self.lineEditSerialNumber)
+        QWidget.setTabOrder(self.lineEditSerialNumber, self.lineEditFW)
+        QWidget.setTabOrder(self.lineEditFW, self.lineEditDriver)
+        QWidget.setTabOrder(self.lineEditDriver, self.lineEditVisa)
+        QWidget.setTabOrder(self.lineEditVisa, self.lineEditName)
+        QWidget.setTabOrder(self.lineEditName, self.lineEditOptions)
+        QWidget.setTabOrder(self.lineEditOptions, self.scrollAreaView)
+        QWidget.setTabOrder(self.scrollAreaView, self.comboBoxOffsetsView)
+        QWidget.setTabOrder(self.comboBoxOffsetsView, self.horizontalSliderGammaView)
+        QWidget.setTabOrder(self.horizontalSliderGammaView, self.lineEditFilename)
+        QWidget.setTabOrder(self.lineEditFilename, self.lineEditTPwr)
+        QWidget.setTabOrder(self.lineEditTPwr, self.lineEditFPwr)
+
         self.retranslateUi(Dialog)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
         QMetaObject.connectSlotsByName(Dialog)
 
@@ -844,18 +909,27 @@ class Ui_Dialog(object):
         self.labelPresets.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.labelSpan.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         self.labelCenter.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
+        self.labelSpan.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         self.label_8.setText(QCoreApplication.translate("Dialog", "Hz", None))
         self.label_10.setText(QCoreApplication.translate("Dialog", "Hz", None))
-        self.labelMin.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.labelMax.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
-        self.label_12.setText(QCoreApplication.translate("Dialog", "Hz", None))
+        self.pushButtonApply1.setText(
+            QCoreApplication.translate("Dialog", "Apply", None)
+        )
         self.label_13.setText(QCoreApplication.translate("Dialog", "Hz", None))
+        self.label_12.setText(QCoreApplication.translate("Dialog", "Hz", None))
+        self.labelMax.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
+        self.labelMin.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
+        self.pushButtonApply2.setText(
+            QCoreApplication.translate("Dialog", "Apply", None)
+        )
         self.labelSweep.setText(QCoreApplication.translate("Dialog", "TextLabel", None))
         self.label_14.setText(QCoreApplication.translate("Dialog", "s", None))
+        self.pushButtonApply3.setText(
+            QCoreApplication.translate("Dialog", "Apply", None)
+        )
         self.labelOffsetsInstr.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
@@ -889,9 +963,11 @@ class Ui_Dialog(object):
         self.labelGammaView.setText(
             QCoreApplication.translate("Dialog", "TextLabel", None)
         )
-        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
-        self.label_9.setText(QCoreApplication.translate("Dialog", "t. pwr", None))
         self.label_11.setText(QCoreApplication.translate("Dialog", "f. pwr", None))
+        self.label_9.setText(QCoreApplication.translate("Dialog", "t. pwr", None))
+        self.label.setText(QCoreApplication.translate("Dialog", "Filename", None))
+        self.label_20.setText(QCoreApplication.translate("Dialog", "\u00b5W", None))
+        self.label_21.setText(QCoreApplication.translate("Dialog", "\u00b5W", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabView), "")
 
     # retranslateUi
