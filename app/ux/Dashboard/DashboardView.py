@@ -82,6 +82,8 @@ class DashboardView:
         time = self.__spec.time_slice(array[1])
         xy = zip(self.__spec.spec["r"], time)
         xy = list(filter(lambda x: x[0] >= span[0][0] and x[0] <= span[0][1], xy))
+        pwr = sum(list(map(lambda x: 10 ** (x[1] / 10 - 3), xy)))
+        self.__parent.ui.lineEditTPwr.setText(str(pwr))
         self.__canvas_time.set_data(
             list(map(lambda x: x[0], xy)), list(map(lambda x: x[1], xy))
         )
@@ -90,6 +92,8 @@ class DashboardView:
         freq = self.__spec.freq_slice(array[0])
         xy = zip(freq, self.__spec.spec["f"])
         xy = list(filter(lambda x: x[1] >= span[1][0] and x[1] <= span[1][1], xy))
+        # pwr = sum(list(map(lambda x: 10 ** (x[1] / 10 - 3), xy)))
+        # self.__parent.ui.lineEditFPwr.setText(str(pwr))
         self.__canvas_freq.set_data(
             list(map(lambda x: x[0], xy)), list(map(lambda x: x[1], xy))
         )
@@ -98,6 +102,7 @@ class DashboardView:
         if not self.__filename:
             return
 
+        self.__parent.ui.lineEditFilename.setText(self.__filename)
         self.__spec = Spectrogram()
         self.__spec.read_file(
             self.__filename, self.__parent.args["viewer"]["separator"], self.__lo

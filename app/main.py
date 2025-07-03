@@ -26,5 +26,5 @@ if __name__ == "__main__":
     c = Config.Config().instance().config
     win = WindowManager(Ui_Dialog, Dashboard, c)
     win.show()
-    SingletonSplash().finish(win)
+    SingletonSplash().close()
     sys.exit(app.exec())

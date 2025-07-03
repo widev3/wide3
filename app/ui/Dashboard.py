@@ -774,16 +774,19 @@ class Ui_Dialog(object):
 
         self.lineEditFilename = QLineEdit(self.frame_6)
         self.lineEditFilename.setObjectName("lineEditFilename")
+        self.lineEditFilename.setReadOnly(True)
 
         self.gridLayout_12.addWidget(self.lineEditFilename, 0, 2, 1, 1)
 
         self.lineEditTPwr = QLineEdit(self.frame_6)
         self.lineEditTPwr.setObjectName("lineEditTPwr")
+        self.lineEditTPwr.setReadOnly(True)
 
         self.gridLayout_12.addWidget(self.lineEditTPwr, 1, 2, 1, 1)
 
         self.lineEditFPwr = QLineEdit(self.frame_6)
         self.lineEditFPwr.setObjectName("lineEditFPwr")
+        self.lineEditFPwr.setReadOnly(True)
 
         self.gridLayout_12.addWidget(self.lineEditFPwr, 2, 2, 1, 1)
 
@@ -815,7 +818,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
         QMetaObject.connectSlotsByName(Dialog)
 
