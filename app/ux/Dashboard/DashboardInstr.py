@@ -333,7 +333,7 @@ class DashboardInstr:
         args = {}
         args["text"] = f"Successful disconnection"
         args["image"] = get_icon_path(i_name.CHECK, globals.theme)
-        WindowManager(UIPopupDialog, UXPopupDialog, args).show()
+        WindowManager(UIPopupDialog, UXPopupDialog, args, self.__par.dialog).show()
 
     def __connect_instr(self, key: str):
         try:
@@ -378,7 +378,7 @@ class DashboardInstr:
             args = {}
             args["text"] = f"Connected!"
             args["image"] = get_icon_path(i_name.CHECK, globals.theme)
-            WindowManager(UIPopupDialog, UXPopupDialog, args).show()
+            WindowManager(UIPopupDialog, UXPopupDialog, args, self.__par.dialog).show()
         except:
             MessageBox(
                 text=f"Error during connection device {key}:\n{traceback.format_exc()}",
@@ -416,7 +416,12 @@ class DashboardInstr:
                     ):
                         return
                 else:
-                    win = WindowManager(UIComboBoxDialog, UXComboBoxDialog, instr_list)
+                    win = WindowManager(
+                        UIComboBoxDialog,
+                        UXComboBoxDialog,
+                        instr_list,
+                        self.__par.dialog,
+                    )
                     win.exec()
                     key = win.bh.text
 
@@ -425,7 +430,9 @@ class DashboardInstr:
                 args = {}
                 args["text"] = f"No instrument available"
                 args["image"] = get_icon_path(i_name.INFO, globals.theme)
-                WindowManager(UIPopupDialog, UXPopupDialog, args).show()
+                WindowManager(
+                    UIPopupDialog, UXPopupDialog, args, self.__par.dialog
+                ).show()
         except:
             MessageBox(
                 text=f"Error during searching devices:\n{traceback.format_exc()}",
