@@ -1,3 +1,6 @@
 [submodule "s_view/despyner"]
 	path = s_view/despyner
 	url = git@github.com:gttrcr/despyner.git
+[submodule "mount/despyner"]
+	path = mount/despyner
+	url = git@github.com:gttrcr/despyner.git
