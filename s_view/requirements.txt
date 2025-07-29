@@ -7,5 +7,4 @@ visa
 pyvisa-py
 zeroconf
 psutil
-matplotlib
 -r despyner/requirements.txt
