@@ -122,3 +122,18 @@ from PySide6.QtCore import QThread
 
 SingletonSplash().message("Slot")
 from PySide6.QtCore import Slot
+
+SingletonSplash().message("SkyCoord")
+from astropy.coordinates import SkyCoord
+
+SingletonSplash().message("AltAz")
+from astropy.coordinates import AltAz
+
+SingletonSplash().message("EarthLocation")
+from astropy.coordinates import EarthLocation
+
+SingletonSplash().message("Time")
+from astropy.time import Time
+
+SingletonSplash().message("units")
+from astropy import units
