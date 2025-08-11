@@ -107,4 +107,5 @@ class DashboardView:
         self.__spec.read_file(
             self.__filename, self.__parent.args["viewer"]["separator"], self.__lo
         )
+        self.__spec.write_file("ciao")
         self.__canvas_spec.set_data(self.__spec.spec, self.__parent.args["viewer"])

@@ -34,11 +34,11 @@ class MplSpecCanvas(FigureCanvasQTAgg):
     def set_data(self, sp, conf):
         self.__sp = sp
         self.im = self.axes.imshow(
-            X=self.__sp["m"][-10:],
+            X=self.__sp["m"],
             norm=colors.PowerNorm(
                 gamma=conf["gamma"],
-                vmin=np.min(self.__sp["m"][-10:]),
-                vmax=np.max(self.__sp["m"][-10:]),
+                vmin=np.min(self.__sp["m"]),
+                vmax=np.max(self.__sp["m"]),
             ),
             cmap=conf["cmap"],
             aspect="auto",
@@ -47,8 +47,8 @@ class MplSpecCanvas(FigureCanvasQTAgg):
             extent=[
                 min(self.__sp["f"]),
                 max(self.__sp["f"]),
-                min(self.__sp["r"][-10:]),
-                max(self.__sp["r"][-10:]),
+                min(self.__sp["r"]),
+                max(self.__sp["r"]),
             ],
         )
         self.fig.tight_layout()

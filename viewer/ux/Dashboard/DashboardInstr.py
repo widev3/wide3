@@ -16,7 +16,6 @@ from single_include import (
     QMessageBox,
     time,
     Slot,
-    Qt,
 )
 from despyner.comboBoxDialog.UXComboBoxDialog import UXComboBoxDialog
 from despyner.popupDialog.PopupDialog import Ui_Dialog as UIPopupDialog
@@ -448,7 +447,7 @@ class DashboardInstr:
         spec = {
             "r": list(map(lambda x: x.timestamp(), self.slices.keys())),
             "f": list(map(lambda x: float(x), t[0])),
-            "m": np.array(list(self.slices.values())).astype(float)[:, 1, :],
+            "m": np.array(list(self.slices.values())).astype(float)[:, 1, :][-10:],
         }
 
         if not self.__hide:

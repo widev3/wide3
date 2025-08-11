@@ -1,3 +1,3 @@
 from despyner.QtMger import i_theme
 
-theme = i_theme.LIGHT
+theme = i_theme.DARK

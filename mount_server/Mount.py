@@ -1,5 +1,4 @@
 import time
-from enum import Enum
 from astropy import units
 from datetime import datetime
 from datetime import timezone
@@ -103,7 +102,7 @@ class Mount:
             )
         elif self.__target:
             print(
-                f"{self.__bahevior} target position {self.__offset.alt}, {self.__offset.az}"
+                f"{self.__behavior} target position {self.__target.alt}, {self.__target.az}"
             )
         else:
             print("No movement")

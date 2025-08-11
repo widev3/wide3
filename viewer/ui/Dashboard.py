@@ -68,58 +68,60 @@ class Ui_Dialog(object):
             Dialog.setObjectName("Dialog")
         Dialog.resize(1565, 1115)
         palette = QPalette()
-        brush = QBrush(QColor(0, 0, 0, 255))
+        brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(
             QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush
         )
-        brush1 = QBrush(QColor(153, 193, 241, 255))
+        brush1 = QBrush(QColor(0, 25, 75, 255))
         brush1.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, brush1)
-        brush2 = QBrush(QColor(255, 255, 255, 255))
+        brush2 = QBrush(QColor(0, 37, 112, 255))
         brush2.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Light, brush2)
-        brush3 = QBrush(QColor(204, 224, 248, 255))
+        brush3 = QBrush(QColor(0, 31, 93, 255))
         brush3.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(
             QPalette.ColorGroup.Active, QPalette.ColorRole.Midlight, brush3
         )
-        brush4 = QBrush(QColor(76, 96, 120, 255))
+        brush4 = QBrush(QColor(0, 12, 37, 255))
         brush4.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Dark, brush4)
-        brush5 = QBrush(QColor(102, 129, 161, 255))
+        brush5 = QBrush(QColor(0, 17, 50, 255))
         brush5.setStyle(Qt.BrushStyle.SolidPattern)
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Mid, brush5)
         palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Text, brush)
         palette.setBrush(
-            QPalette.ColorGroup.Active, QPalette.ColorRole.BrightText, brush2
+            QPalette.ColorGroup.Active, QPalette.ColorRole.BrightText, brush
         )
         palette.setBrush(
             QPalette.ColorGroup.Active, QPalette.ColorRole.ButtonText, brush
         )
-        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Base, brush2)
-        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Window, brush1)
-        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Shadow, brush)
-        palette.setBrush(
-            QPalette.ColorGroup.Active, QPalette.ColorRole.AlternateBase, brush3
-        )
-        brush6 = QBrush(QColor(255, 255, 220, 255))
+        brush6 = QBrush(QColor(0, 0, 0, 255))
         brush6.setStyle(Qt.BrushStyle.SolidPattern)
+        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Base, brush6)
+        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Window, brush1)
+        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Shadow, brush6)
         palette.setBrush(
-            QPalette.ColorGroup.Active, QPalette.ColorRole.ToolTipBase, brush6
+            QPalette.ColorGroup.Active, QPalette.ColorRole.AlternateBase, brush4
         )
-        palette.setBrush(
-            QPalette.ColorGroup.Active, QPalette.ColorRole.ToolTipText, brush
-        )
-        brush7 = QBrush(QColor(0, 0, 0, 127))
+        brush7 = QBrush(QColor(255, 255, 220, 255))
         brush7.setStyle(Qt.BrushStyle.SolidPattern)
+        palette.setBrush(
+            QPalette.ColorGroup.Active, QPalette.ColorRole.ToolTipBase, brush7
+        )
+        palette.setBrush(
+            QPalette.ColorGroup.Active, QPalette.ColorRole.ToolTipText, brush6
+        )
+        brush8 = QBrush(QColor(255, 255, 255, 127))
+        brush8.setStyle(Qt.BrushStyle.SolidPattern)
         # if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette.setBrush(
-            QPalette.ColorGroup.Active, QPalette.ColorRole.PlaceholderText, brush7
+            QPalette.ColorGroup.Active, QPalette.ColorRole.PlaceholderText, brush8
         )
         # endif
         # if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Accent, brush2)
+        palette.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Accent, brush6)
         # endif
         palette.setBrush(
             QPalette.ColorGroup.Inactive, QPalette.ColorRole.WindowText, brush
@@ -135,33 +137,35 @@ class Ui_Dialog(object):
         palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Mid, brush5)
         palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Text, brush)
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.BrightText, brush2
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.BrightText, brush
         )
         palette.setBrush(
             QPalette.ColorGroup.Inactive, QPalette.ColorRole.ButtonText, brush
         )
-        palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Base, brush2)
+        palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Base, brush6)
         palette.setBrush(
             QPalette.ColorGroup.Inactive, QPalette.ColorRole.Window, brush1
         )
-        palette.setBrush(QPalette.ColorGroup.Inactive, QPalette.ColorRole.Shadow, brush)
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.AlternateBase, brush3
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.Shadow, brush6
         )
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.ToolTipBase, brush6
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.AlternateBase, brush4
         )
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.ToolTipText, brush
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.ToolTipBase, brush7
+        )
+        palette.setBrush(
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.ToolTipText, brush6
         )
         # if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.PlaceholderText, brush7
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.PlaceholderText, brush8
         )
         # endif
         # if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
         palette.setBrush(
-            QPalette.ColorGroup.Inactive, QPalette.ColorRole.Accent, brush2
+            QPalette.ColorGroup.Inactive, QPalette.ColorRole.Accent, brush6
         )
         # endif
         palette.setBrush(
@@ -178,7 +182,7 @@ class Ui_Dialog(object):
         palette.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Mid, brush5)
         palette.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, brush4)
         palette.setBrush(
-            QPalette.ColorGroup.Disabled, QPalette.ColorRole.BrightText, brush2
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.BrightText, brush
         )
         palette.setBrush(
             QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, brush4
@@ -187,28 +191,30 @@ class Ui_Dialog(object):
         palette.setBrush(
             QPalette.ColorGroup.Disabled, QPalette.ColorRole.Window, brush1
         )
-        palette.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Shadow, brush)
+        palette.setBrush(
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.Shadow, brush6
+        )
         palette.setBrush(
             QPalette.ColorGroup.Disabled, QPalette.ColorRole.AlternateBase, brush1
         )
         palette.setBrush(
-            QPalette.ColorGroup.Disabled, QPalette.ColorRole.ToolTipBase, brush6
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.ToolTipBase, brush7
         )
         palette.setBrush(
-            QPalette.ColorGroup.Disabled, QPalette.ColorRole.ToolTipText, brush
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.ToolTipText, brush6
         )
-        brush8 = QBrush(QColor(76, 96, 120, 127))
-        brush8.setStyle(Qt.BrushStyle.SolidPattern)
+        brush9 = QBrush(QColor(0, 12, 37, 127))
+        brush9.setStyle(Qt.BrushStyle.SolidPattern)
         # if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette.setBrush(
-            QPalette.ColorGroup.Disabled, QPalette.ColorRole.PlaceholderText, brush8
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.PlaceholderText, brush9
         )
         # endif
-        brush9 = QBrush(QColor(220, 236, 255, 255))
-        brush9.setStyle(Qt.BrushStyle.SolidPattern)
+        brush10 = QBrush(QColor(0, 17, 53, 255))
+        brush10.setStyle(Qt.BrushStyle.SolidPattern)
         # if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
         palette.setBrush(
-            QPalette.ColorGroup.Disabled, QPalette.ColorRole.Accent, brush9
+            QPalette.ColorGroup.Disabled, QPalette.ColorRole.Accent, brush10
         )
         # endif
         Dialog.setPalette(palette)
@@ -732,7 +738,7 @@ class Ui_Dialog(object):
         self.scrollAreaView.setWidgetResizable(True)
         self.scrollAreaWidgetContentsView = QWidget()
         self.scrollAreaWidgetContentsView.setObjectName("scrollAreaWidgetContentsView")
-        self.scrollAreaWidgetContentsView.setGeometry(QRect(0, 0, 284, 494))
+        self.scrollAreaWidgetContentsView.setGeometry(QRect(0, 0, 203, 215))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContentsView)
         self.verticalLayout.setObjectName("verticalLayout")
         self.frame_5 = QFrame(self.scrollAreaWidgetContentsView)

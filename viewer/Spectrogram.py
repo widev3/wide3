@@ -146,6 +146,55 @@ class Spectrogram(object):
         self.freq = self.__frequencies(chunks[1])
         self.spec = self.__spectrogram(chunks[2])
 
+    def write_file(self, filename: str):
+        self.prop.to_csv(filename, index=False, header=False)
+
+        with open(filename, "a") as f:
+            f.write("\n")
+
+        self.freq.to_csv(filename, mode="a", index=False, header=False)
+
+        with open(filename, "a") as f:
+            f.write("\n")
+
+        df = pd.DataFrame()
+
+        row = [
+            ["Timestamp (Relative)"]
+            + list(
+                map(
+                    lambda x: datetime.datetime.strftime(
+                        datetime.datetime.fromtimestamp(x),
+                        "%H:%M:%S %m/%d/%Y",
+                    ),
+                    self.spec["r"],
+                )
+            )
+        ]
+        df = pd.concat([df, pd.DataFrame(row)])
+
+        row = [["Frequency [Hz]"] + ["Magnitude [dBm]"] * len(self.spec["m"][0])]
+        df = pd.concat([df, pd.DataFrame(row)])
+
+        for index, freq in enumerate(self.spec["f"]):
+            print(index)
+            df = pd.concat(
+                [
+                    df,
+                    pd.DataFrame([[freq] + list(self.spec["m"][index])]),
+                ]
+            )
+
+        df.columns = ["Timestamp (Absolute)"] + list(
+            map(
+                lambda x: datetime.datetime.strftime(
+                    datetime.datetime.fromtimestamp(x), "%H:%M:%S %m/%d/%Y"
+                ),
+                self.spec["a"],
+            )
+        )
+        df.to_csv(filename, mode="a", index=False)
+
     def time_slice(self, x):
         return self.spec["m"][x]
 
