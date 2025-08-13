@@ -1,5 +1,4 @@
 import math
-import threading
 from Mount import Mount
 from pathlib import Path
 from astropy import units
@@ -34,26 +33,19 @@ def mount_location():
         return jsonify({"error": "Missing required field: lat"}), 400
 
     lat = data["lat"]
-    if not is_float(lat):
-        return jsonify({"error": "Invalid value. lat must be a number"}), 400
+    lat = lat * units.deg if is_float(lat) else lat
 
     if "lon" not in data:
         return jsonify({"error": "Missing required field: lon"}), 400
 
     lon = data["lon"]
-    if not is_float(lon):
-        return jsonify({"error": "Invalid value. lon must be a number"}), 400
+    lon = lon * units.deg if is_float(lon) else lon
 
     if "height" not in data:
         return jsonify({"error": "Missing required field: height"}), 400
 
     height = data["height"]
-    if not is_float(height):
-        return jsonify({"error": "Invalid value. height must be a number"}), 400
-
-    lat *= units.deg
-    lon *= units.deg
-    height *= units.m
+    height = height * units.m if is_float(height) else height
     mount.set_location(EarthLocation(lat=lat, lon=lon, height=height))
 
     return jsonify({"message": "OK"}), 200
@@ -66,6 +58,8 @@ def mount_target():
         return jsonify({"error": "Already moving"}), 403
 
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Empty body"}), 400
 
     if "ra" in data and "dec" not in data:
         return jsonify({"error": "Missing required field: target.dec"}), 400
@@ -85,20 +79,14 @@ def mount_target():
     if "az" in data:
         alt = data["alt"]
         az = data["az"]
-        if not is_float(alt) or not is_float(az):
-            return jsonify({"error": "Invalid value. alt and az must be numbers"}), 400
-
-        alt *= units.deg
-        az *= units.deg
+        alt = alt * units.deg if is_float(alt) else alt
+        az = az * units.deg if is_float(az) else az
         mount.set_target(alt=alt, az=az)
     elif "ra" in data:
         ra = data["ra"]
         dec = data["dec"]
-        if not is_float(ra) or not is_float(dec):
-            return jsonify({"error": "Invalid value. ra and dec must be numbers"}), 400
-
-        ra *= units.deg
-        dec *= units.deg
+        ra = ra * units.deg if is_float(ra) else ra
+        dec = dec * units.deg if is_float(dec) else dec
         mount.set_target(ra=ra, dec=dec)
     else:
         return jsonify({"error": "Neither ra/dec nor alt/az"}), 400
@@ -113,6 +101,8 @@ def mount_offset():
         return jsonify({"error": "Already moving"}), 403
 
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Empty body"}), 400
 
     if "absolute" in data:
         absolute = data["absolute"]

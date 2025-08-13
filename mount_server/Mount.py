@@ -1,8 +1,6 @@
 import time
-from astropy import units
-from datetime import datetime
-from datetime import timezone
-from astropy.time import Time
+
+from utils import now_utc
 from astropy.coordinates import AltAz
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import EarthLocation
@@ -21,41 +19,32 @@ class Mount:
 
     def set_target(self, alt=None, az=None, ra=None, dec=None):
         if alt is not None and az is not None:
-            self.__target = SkyCoord(
-                alt=alt,
-                az=az,
-                frame=AltAz(
-                    obstime=Time(datetime.now(timezone.utc)), location=self.__location
-                ),
-            )
+            altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
+            self.__target = SkyCoord(alt=alt, az=az, frame=altaz_frame)
         elif ra is not None and dec is not None:
-            self.__target = SkyCoord(ra=ra, dec=dec, frame="icrs").transform_to(
-                AltAz(
-                    obstime=Time(datetime.now(timezone.utc)), location=self.__location
-                )
-            )
+            sky_coord = SkyCoord(ra=ra, dec=dec, frame="icrs")
+            altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
+            self.__target = sky_coord.transform_to(altaz_frame)
 
     def set_absolute_offset(self, alt=None, az=None, ra=None, dec=None):
         self.__offset = SkyCoord(
             alt=self.__target.alt,
             az=self.__target.az,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)), location=self.__location
-            ),
+            frame=AltAz(obstime=now_utc(), location=self.__location),
         )
         # if alt is not None and az is not None:
         #     self.__offset = SkyCoord(
         #         alt=alt,
         #         az=az,
         #         frame=AltAz(
-        #             obstime=Time(datetime.now(timezone.utc)), location=self.__location
+        #             obstime=Time(datetime.now()), location=self.__location
         #         ),
         #     )
 
         # if ra is not None and dec is not None:
         #     self.__offset = SkyCoord(ra=ra, dec=dec, frame="icrs").transform_to(
         #         AltAz(
-        #             obstime=Time(datetime.now(timezone.utc)), location=self.__location
+        #             obstime=Time(datetime.now()), location=self.__location
         #         )
         #     )
 
@@ -63,9 +52,7 @@ class Mount:
         self.__offset = SkyCoord(
             alt=self.__target.alt,
             az=self.__target.az,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)), location=self.__location
-            ),
+            frame=AltAz(obstime=now_utc(), location=self.__location),
         )
 
     # def set_absolute_offset(self, alt=None, az=None, ra=None, dec=None):
@@ -74,7 +61,7 @@ class Mount:
     #             alt=self.__target.alt - alt * units.deg,
     #             az=self.__target.az,
     #             frame=AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             ),
     #         )
 
@@ -83,7 +70,7 @@ class Mount:
     #             alt=self.__target.alt,
     #             az=self.__target.az - az * units.deg,
     #             frame=AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             ),
     #         )
 
@@ -92,7 +79,7 @@ class Mount:
     #             alt=self.__target.alt,
     #             az=self.__target.az,
     #             frame=AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             ),
     #         ).transform_to("icrs")
 
@@ -100,7 +87,7 @@ class Mount:
 
     #         self.__offset = radec.transform_to(
     #             AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             )
     #         )
 
@@ -109,7 +96,7 @@ class Mount:
     #             alt=self.__target.alt,
     #             az=self.__target.az,
     #             frame=AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             ),
     #         ).transform_to("icrs")
 
@@ -117,7 +104,7 @@ class Mount:
 
     #         self.__offset = radec.transform_to(
     #             AltAz(
-    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #                 obstime=Time(datetime.now()), location=self.__location
     #             )
     #         )
 
@@ -133,13 +120,9 @@ class Mount:
     def run(self):
         self.__moving = True
         if self.__offset:
-            print(
-                f"{self.__behavior} offset position {self.__offset.alt}, {self.__offset.az}"
-            )
+            print(f"{self.__behavior} offset {self.__offset.alt}, {self.__offset.az}")
         elif self.__target:
-            print(
-                f"{self.__behavior} target position {self.__target.alt}, {self.__target.az}"
-            )
+            print(f"{self.__behavior} target {self.__target.alt}, {self.__target.az}")
         else:
             print("No movement")
 
