@@ -1,7 +1,9 @@
 import random
 import globals
 import numpy as np
+import pandas as pd
 from despyner.MessageBox import MessageBox
+from Spectrogram import Spectrogram
 from ux.MplSpecCanvas import MplSpecCanvas
 from despyner.QtMger import set_icon, i_name
 from despyner.popupDialog.UXPopupDialog import UXPopupDialog
@@ -291,7 +293,56 @@ class DashboardInstr:
         self.__canvas.draw()
 
     def __save_data(self):
-        print("__save_data not implemented")
+        spec = Spectrogram()
+        spec.prop = pd.DataFrame()
+        spec.freq = pd.DataFrame()
+
+        tds = list(map(lambda x: max(self.slices.keys()) - x, self.slices.keys()))
+        tds = list(map(lambda x: x.total_seconds() * 1000000, tds))
+        hs = list(map(lambda x: int(x / 3600000000), tds))
+        ms = list(map(lambda x: int(tds[x[0]] / 60000000 - 60 * x[1]), enumerate(hs)))
+        ss = list(
+            map(
+                lambda x: int(tds[x[0]] / 1000000 - 60 * x[1] - 3600 * hs[x[0]]),
+                enumerate(ms),
+            )
+        )
+        mss = list(
+            map(
+                lambda x: tds[x[0]]
+                - 1000000 * x[1]
+                - 1000000 * 60 * ms[x[0]]
+                - 1000000 * 3600 * hs[x[0]],
+                enumerate(ss),
+            )
+        )
+
+        spec.spec = {
+            "r": list(
+                map(
+                    lambda x: f"{hs[x[0]]}:{ms[x[0]]}:{ss[x[0]]}:{round(x[1]/1000)}",
+                    enumerate(mss),
+                )
+            ),
+            "a": list(
+                map(
+                    lambda x: datetime.strftime(x, "%H:%M:%S %m/%d/%Y"),
+                    self.slices.keys(),
+                )
+            ),
+            "f": self.slices[list(self.slices.keys())[0]][0],
+            "m": [],
+            "u": {"time": "ms", "frequency": "Hz", "magnitude": ("Magnitude", "dBm")},
+        }
+
+        spec.freq.insert(
+            0, "Frequency [Hz]", self.slices[list(self.slices.keys())[0]][0]
+        )
+        spec.freq.insert(
+            0, "Magnitude [dBm]", self.slices[list(self.slices.keys())[0]][0]
+        )
+
+        spec.write_file("ciao")
 
     def __comboBoxPresetsCurrentIndexChanged(self, d):
         preset = self.__presets[d]

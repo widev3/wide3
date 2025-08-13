@@ -9,84 +9,117 @@ from astropy.coordinates import EarthLocation
 
 
 class Mount:
-    def __init__(self, location: EarthLocation):
+    def __init__(self):
         self.__moving = False
-        self.__location = location
-        self.__target = None
-        self.__offset = None
-        self.__behavior = "follow"
+        self.__location = None
+        self.__target = None  # it is always in alt/az
+        self.__offset = None  # it is always in alt/az
+        self.__behavior = None
 
-    def set_altaz_target(self, alt, az):
-        self.__target = SkyCoord(
-            alt=alt,
-            az=az,
+    def set_location(self, location: EarthLocation):
+        self.__location = location
+
+    def set_target(self, alt=None, az=None, ra=None, dec=None):
+        if alt is not None and az is not None:
+            self.__target = SkyCoord(
+                alt=alt,
+                az=az,
+                frame=AltAz(
+                    obstime=Time(datetime.now(timezone.utc)), location=self.__location
+                ),
+            )
+        elif ra is not None and dec is not None:
+            self.__target = SkyCoord(ra=ra, dec=dec, frame="icrs").transform_to(
+                AltAz(
+                    obstime=Time(datetime.now(timezone.utc)), location=self.__location
+                )
+            )
+
+    def set_absolute_offset(self, alt=None, az=None, ra=None, dec=None):
+        self.__offset = SkyCoord(
+            alt=self.__target.alt,
+            az=self.__target.az,
+            frame=AltAz(
+                obstime=Time(datetime.now(timezone.utc)), location=self.__location
+            ),
+        )
+        # if alt is not None and az is not None:
+        #     self.__offset = SkyCoord(
+        #         alt=alt,
+        #         az=az,
+        #         frame=AltAz(
+        #             obstime=Time(datetime.now(timezone.utc)), location=self.__location
+        #         ),
+        #     )
+
+        # if ra is not None and dec is not None:
+        #     self.__offset = SkyCoord(ra=ra, dec=dec, frame="icrs").transform_to(
+        #         AltAz(
+        #             obstime=Time(datetime.now(timezone.utc)), location=self.__location
+        #         )
+        #     )
+
+    def set_relative_offset(self, alt=None, az=None, ra=None, dec=None):
+        self.__offset = SkyCoord(
+            alt=self.__target.alt,
+            az=self.__target.az,
             frame=AltAz(
                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
             ),
         )
 
-    def set_radec_target(self, ra, dec):
-        self.__target = SkyCoord(ra=ra, dec=dec, frame="icrs").transform_to(
-            AltAz(obstime=Time(datetime.now(timezone.utc)), location=self.__location)
-        )
+    # def set_absolute_offset(self, alt=None, az=None, ra=None, dec=None):
+    #     if alt is not None:
+    #         self.__offset = SkyCoord(
+    #             alt=self.__target.alt - alt * units.deg,
+    #             az=self.__target.az,
+    #             frame=AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             ),
+    #         )
 
-    def set_ra_offset(self, ra):
-        radec = SkyCoord(
-            alt=self.__target.alt,
-            az=self.__target.az,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            ),
-        ).transform_to("icrs")
+    #     if az is not None:
+    #         self.__offset = SkyCoord(
+    #             alt=self.__target.alt,
+    #             az=self.__target.az - az * units.deg,
+    #             frame=AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             ),
+    #         )
 
-        radec = SkyCoord(ra=radec.ra - ra * units.deg, dec=radec.dec, frame="icrs")
+    #     if ra is not None:
+    #         radec = SkyCoord(
+    #             alt=self.__target.alt,
+    #             az=self.__target.az,
+    #             frame=AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             ),
+    #         ).transform_to("icrs")
 
-        self.__offset = radec.transform_to(
-            AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            )
-        )
+    #         radec = SkyCoord(ra=radec.ra - ra * units.deg, dec=radec.dec, frame="icrs")
 
-    def set_dec_offset(self, dec):
-        radec = SkyCoord(
-            alt=self.__target.alt,
-            az=self.__target.az,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            ),
-        ).transform_to("icrs")
+    #         self.__offset = radec.transform_to(
+    #             AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             )
+    #         )
 
-        radec = SkyCoord(ra=radec.ra, dec=radec.dec - dec * units.deg, frame="icrs")
+    #     if dec is not None:
+    #         radec = SkyCoord(
+    #             alt=self.__target.alt,
+    #             az=self.__target.az,
+    #             frame=AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             ),
+    #         ).transform_to("icrs")
 
-        self.__offset = radec.transform_to(
-            AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            )
-        )
+    #         radec = SkyCoord(ra=radec.ra, dec=radec.dec - dec * units.deg, frame="icrs")
 
-    def set_alt_offset(self, alt):
-        self.__offset = SkyCoord(
-            alt=self.__target.alt - alt * units.deg,
-            az=self.__target.az,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            ),
-        )
-
-    def set_az_offset(self, az):
-        self.__offset = SkyCoord(
-            alt=self.__target.alt,
-            az=self.__target.az - az * units.deg,
-            frame=AltAz(
-                obstime=Time(datetime.now(timezone.utc)),
-                location=self.__location,
-            ),
-        )
+    #         self.__offset = radec.transform_to(
+    #             AltAz(
+    #                 obstime=Time(datetime.now(timezone.utc)), location=self.__location
+    #             )
+    #         )
 
     def set_behavior(self, behavior: str):
         self.__behavior = behavior
@@ -94,7 +127,10 @@ class Mount:
     def is_moving(self):
         return self.__moving
 
-    def move(self):
+    def has_location(self):
+        return self.__location is not None
+
+    def run(self):
         self.__moving = True
         if self.__offset:
             print(

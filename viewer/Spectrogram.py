@@ -148,12 +148,10 @@ class Spectrogram(object):
 
     def write_file(self, filename: str):
         self.prop.to_csv(filename, index=False, header=False)
-
         with open(filename, "a") as f:
             f.write("\n")
 
-        self.freq.to_csv(filename, mode="a", index=False, header=False)
-
+        self.freq.to_csv(filename, mode="a", index=False)
         with open(filename, "a") as f:
             f.write("\n")
 
@@ -176,14 +174,17 @@ class Spectrogram(object):
         row = [["Frequency [Hz]"] + ["Magnitude [dBm]"] * len(self.spec["m"][0])]
         df = pd.concat([df, pd.DataFrame(row)])
 
-        for index, freq in enumerate(self.spec["f"]):
-            print(index)
-            df = pd.concat(
-                [
-                    df,
-                    pd.DataFrame([[freq] + list(self.spec["m"][index])]),
-                ]
-            )
+        df = pd.concat(
+            [
+                df,
+                pd.DataFrame(
+                    map(
+                        lambda x: [x[1]] + list(self.spec["m"][x[0]]),
+                        enumerate(self.spec["f"]),
+                    )
+                ),
+            ]
+        )
 
         df.columns = ["Timestamp (Absolute)"] + list(
             map(
