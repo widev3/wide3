@@ -12,22 +12,58 @@ curl -X POST http://localhost:5000/mount/location \
 curl -X POST http://localhost:5000/mount/target \
      -H "Content-Type: application/json" \
      -H "Authorization: $sn" \
-     -d '{"ra":"8h8m6s","dec":"-14d39m13s"}'
+     -d '{"ra":"15h21m24s","dec":"-33d6m12s"}'
 
 # set mount target by alt/az
 curl -X POST http://localhost:5000/mount/target \
      -H "Content-Type: application/json" \
      -H "Authorization: $sn" \
-     -d '{"alt":"21d37m","az":"141d54m"}'
+     -d '{"az":"181d33m","alt":"11d19m"}'
 
-# set mount offset
+# set mount absolute offset in ra/dec
 curl -X POST http://localhost:5000/mount/offset \
      -H "Content-Type: application/json" \
      -H "Authorization: $sn" \
-     -d '{"timedelta": 60}'
+     -d '{"absolute": {"ra":"18h33m","dec":"11d19m"}}'
 
-# run the mount
+# set mount absolute offset in alt/az
+curl -X POST http://localhost:5000/mount/offset \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sn" \
+     -d '{"absolute": {"az":"181d33m","alt":"11d19m"}}'
+
+# set mount relative offset in ra/dec
+curl -X POST http://localhost:5000/mount/offset \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sn" \
+     -d '{"absolute": {"ra":"3m","dec":"1d19m"}}'
+
+# set mount relative offset in alt/az
+curl -X POST http://localhost:5000/mount/offset \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sn" \
+     -d '{"absolute": {"az":"1d33m","alt":"1d19m"}}'
+
+# set mount timedelta offset
+curl -X POST http://localhost:5000/mount/offset \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sn" \
+     -d '{"timedelta": 300}'
+
+# run the mount in follow mode
+curl -X GET http://localhost:5000/mount/run?bh=follow \
+     -H "Authorization: $sn"
+
+# run the mount in transit mode
+curl -X GET http://localhost:5000/mount/run?bh=transit \
+     -H "Authorization: $sn"
+
+# run the mount in route mode
 curl -X GET http://localhost:5000/mount/run?bh=route \
+     -H "Authorization: $sn"
+
+# stop the mount
+curl -X GET http://localhost:5000/mount/stop \
      -H "Authorization: $sn"
 
 # release session

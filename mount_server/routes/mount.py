@@ -23,7 +23,7 @@ def is_float(value: str) -> bool:
 @mount_bp.route("/location", methods=["POST"])
 def mount_location():
     global mount
-    if mount.get_moving():
+    if mount.get_running():
         return jsonify({"error": "Already moving"}), 403
 
     data = request.get_json()
@@ -55,7 +55,7 @@ def mount_location():
 @mount_bp.route("/target", methods=["POST"])
 def mount_target():
     global mount
-    if mount.get_moving():
+    if mount.get_running():
         return jsonify({"error": "Already moving"}), 403
 
     data = request.get_json()
@@ -88,8 +88,8 @@ def mount_target():
                 {
                     "message": "OK",
                     "target": {
-                        "alt": mount.get_target().alt.deg,
-                        "az": mount.get_target().az.deg,
+                        "ra": mount.get_target().ra.deg,
+                        "dec": mount.get_target().dec.deg,
                     },
                 }
             ),
@@ -106,8 +106,8 @@ def mount_target():
                 {
                     "message": "OK",
                     "target": {
-                        "alt": mount.get_target().alt.deg,
-                        "az": mount.get_target().az.deg,
+                        "ra": mount.get_target().ra.deg,
+                        "dec": mount.get_target().dec.deg,
                     },
                 }
             ),
@@ -120,7 +120,7 @@ def mount_target():
 @mount_bp.route("/offset", methods=["POST"])
 def mount_offset():
     global mount
-    if mount.get_moving():
+    if mount.get_running():
         return jsonify({"error": "Already moving"}), 403
 
     data = request.get_json()
@@ -131,8 +131,8 @@ def mount_offset():
         absolute = data["absolute"]
         if "ra" in absolute and (ra := absolute["ra"]):
             mount.set_absolute_offset(ra=ra)
-        if "dec" in absolute and (dec := absolute["dec"]):
-            mount.set_absolute_offset(dec=dec)
+        if "dec" in absolute and (ra := absolute["dec"]):
+            mount.set_absolute_offset(dec=ra)
         if "alt" in absolute and (alt := absolute["alt"]):
             mount.set_absolute_offset(alt=alt)
         if "az" in absolute and (az := absolute["az"]):
@@ -141,31 +141,31 @@ def mount_offset():
         relative = data["relative"]
         if "ra" in relative and (ra := relative["ra"]):
             mount.set_relative_offset(ra=ra)
-        if "dec" in relative and (dec := relative["dec"]):
-            mount.set_relative_offset(dec=dec)
+        if "dec" in relative and (ra := relative["dec"]):
+            mount.set_relative_offset(dec=ra)
         if "alt" in relative and (alt := relative["alt"]):
             mount.set_relative_offset(alt=alt)
         if "az" in relative and (az := relative["az"]):
             mount.set_relative_offset(az=az)
     elif "timedelta" in data:
         timedelta = data["timedelta"]
-        dec_g = int(15 * timedelta / 3600)
-        timedelta -= 3600 * dec_g / 15
-        dec_m = int(timedelta / 60)
-        timedelta -= dec_m * 60
-        dec_s = timedelta
-        dec = dec_g + dec_m / 60 + dec_s / 3600
-        mount.set_relative_offset(dec=dec)
+        ra_g = int(15 * timedelta / 3600)
+        timedelta -= 3600 * ra_g / 15
+        ra_m = int(timedelta / 60)
+        timedelta -= ra_m * 60
+        ra_s = timedelta
+        ra = ra_g + ra_m / 60 + ra_s / 3600
+        mount.set_relative_offset(ra=ra * units.deg)
     else:
-        return jsonify({"error": "Neither absolute nor relative nor timedelta"}), 400
+        return jsonify({"error": "'absolute', 'relative' or 'timedelta'"}), 400
 
     return (
         jsonify(
             {
                 "message": "OK",
                 "offset": {
-                    "alt": mount.get_offset().alt.deg,
-                    "az": mount.get_offset().az.deg,
+                    "ra": mount.get_offset().ra.deg,
+                    "dec": mount.get_offset().dec.deg,
                 },
             }
         ),
@@ -183,18 +183,22 @@ def mount_run():
         return jsonify({"error": "Mount target is not set"}), 400
 
     bh = request.args.get("bh")
-    if bh == "follow":
-        return jsonify({"message": "OK"}), 200
-    elif bh == "transit":
-        if not mount.get_offset():
-            return jsonify({"error": "Mount offset is not set"}), 400
-    elif bh == "route":
-        if not mount.get_offset():
-            return jsonify({"error": "Mount offset is not set"}), 400
-    else:
-        return jsonify({"error": "bh is not 'follow', 'transit' or 'route'"}), 400
+    if bh not in ["follow", "transit", "route"]:
+        return jsonify({"error": f"bh must be 'follow', 'transit' or 'route'"}), 400
+    if bh in ["transit", "route"] and not mount.get_offset():
+        return jsonify({"error": f"Mount offset must be set in {bh} bh"}), 400
 
     thread = threading.Thread(target=lambda: mount.run(bh))
     thread.start()
 
+    return jsonify({"message": "OK"}), 200
+
+
+@mount_bp.route("/stop", methods=["GET"])
+def mount_stop():
+    global mount
+    if not mount.get_running():
+        return jsonify({"error": "Already stopped"}), 403
+
+    mount.stop()
     return jsonify({"message": "OK"}), 200
