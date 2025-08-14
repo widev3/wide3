@@ -48,33 +48,3 @@ def session_release():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# from astropy.coordinates import SkyCoord, EarthLocation, AltAz
-# from astropy.time import Time
-# import astropy.units as u
-# from datetime import datetime
-# import pytz  # To handle timezones
-
-# # Example: RA/Dec of the star (ICRS, J2000)
-# ra = "18h55m"
-# ra = 18.916666667 * u.deg
-# dec = "-26d17m"
-# dec = -26.283333333 * u.deg
-# star = SkyCoord(ra=ra, dec=dec, frame="icrs")
-
-# # Observer's location (example: New York City)
-# location = EarthLocation(lat=45.3833 * u.deg, lon=10.668056 * u.deg, height=145 * u.m)
-
-# # Local datetime with timezone
-# # local_tz = pytz.timezone("America/Rome")
-# dt_local = datetime.now()
-
-# # Convert to Astropy Time (UTC)
-# time = Time(dt_local.astimezone(pytz.UTC))
-
-# # AltAz frame for the given time and location
-# altaz_frame = AltAz(obstime=time, location=location)
-# altaz = star.transform_to(altaz_frame)
-
-# print(f"Altitude: {altaz.alt:.2f}")
-# print(f"Azimuth: {altaz.az:.2f}")
