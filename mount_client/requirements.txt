@@ -1,3 +1,0 @@
-pyside6
-astropy[all]
--r despyner/requirements.txt
