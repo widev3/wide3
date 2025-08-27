@@ -84,22 +84,21 @@ class Mount:
     def run(self, bh: str) -> None:
         print(f"behaviour {bh}")
         if self.__target is not None:
-            print(f"target {self.__target.ra}, {self.__target.dec}")
+            print(f"target {self.__target.ra:05f}, {self.__target.dec:05f}")
         if self.__offset is not None:
-            print(f"offset {self.__offset.ra}, {self.__offset.dec}")
+            print(f"offset {self.__offset.ra:05f}, {self.__offset.dec:05f}")
 
         self.__running = True
         if bh == "follow":
             while self.__running:
                 altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
                 altaz_coords = self.__target.transform_to(altaz_frame)
-                print(f"{altaz_coords.az}, {altaz_coords.alt}")
-                drivers.mount.run(self.__target.az, self.__target.alt)
+                drivers.mount.run(altaz_coords.az.deg, altaz_coords.alt.deg)
                 sleep(1)
         elif bh == "transit":
             altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
             altaz_coords = self.__target.transform_to(altaz_frame)
-            print(f"{altaz_coords.az}, {altaz_coords.alt}")
+            print(f"{altaz_coords.az:05f}, {altaz_coords.alt:05f}")
             drivers.mount.run(self.__target.az, self.__target.alt)
             drivers.buzzer.play(
                 [
@@ -135,7 +134,7 @@ class Mount:
             for path_coord in path_coords:
                 altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
                 altaz_coords = path_coord.transform_to(altaz_frame)
-                print(f"{altaz_coords.az}, {altaz_coords.alt}")
+                print(f"{altaz_coords.az:05f}, {altaz_coords.alt:05f}")
                 drivers.mount.run(self.__target.az, self.__target.alt)
                 sleep(5)
 

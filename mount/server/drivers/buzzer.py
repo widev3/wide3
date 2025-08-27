@@ -1,11 +1,5 @@
-import drivers.is_raspberry
-
-if drivers.is_raspberry.it_is():
-    from time import sleep
-    from gpiozero import TonalBuzzer
-
-    TBPIN = 4
-    tb = TonalBuzzer(TBPIN)
+from time import sleep
+import drivers.SingletonPeripherals as sp
 
 
 def play(tune):
