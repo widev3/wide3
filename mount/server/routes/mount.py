@@ -31,19 +31,19 @@ def mount_location():
         return jsonify({"error": "Empty body"}), 400
 
     if "lat" not in data:
-        return jsonify({"error": "Missing required field: lat"}), 400
+        return jsonify({"error": "Missing required field lat"}), 400
 
     lat = data["lat"]
     lat = lat * units.deg if is_float(lat) else lat
 
     if "lon" not in data:
-        return jsonify({"error": "Missing required field: lon"}), 400
+        return jsonify({"error": "Missing required field lon"}), 400
 
     lon = data["lon"]
     lon = lon * units.deg if is_float(lon) else lon
 
     if "height" not in data:
-        return jsonify({"error": "Missing required field: height"}), 400
+        return jsonify({"error": "Missing required field height"}), 400
 
     height = data["height"]
     height = height * units.m if is_float(height) else height
@@ -63,16 +63,16 @@ def mount_target():
         return jsonify({"error": "Empty body"}), 400
 
     if "ra" in data and "dec" not in data:
-        return jsonify({"error": "Missing required field: target.dec"}), 400
+        return jsonify({"error": "Missing required field target.dec"}), 400
 
     if "dec" in data and "ra" not in data:
-        return jsonify({"error": "Missing required field: target.ra"}), 400
+        return jsonify({"error": "Missing required field target.ra"}), 400
 
     if "alt" in data and "az" not in data:
-        return jsonify({"error": "Missing required field: target.az"}), 400
+        return jsonify({"error": "Missing required field target.az"}), 400
 
     if "az" in data and "alt" not in data:
-        return jsonify({"error": "Missing required field: target.alt"}), 400
+        return jsonify({"error": "Missing required field target.alt"}), 400
 
     if "ra" in data and "alt" in data:
         return jsonify({"error": "Target should be in ra/dec or alt/az"}), 400
@@ -183,10 +183,12 @@ def mount_run():
         return jsonify({"error": "Mount target is not set"}), 400
 
     bh = request.args.get("bh")
+    if not bh:
+        return jsonify({"error": "Missing required argument bh"}), 400
     if bh not in ["follow", "transit", "route"]:
-        return jsonify({"error": f"bh must be 'follow', 'transit' or 'route'"}), 400
+        return jsonify({"error": "bh must be 'follow', 'transit' or 'route'"}), 400
     if bh in ["transit", "route"] and not mount.get_offset():
-        return jsonify({"error": f"Mount offset must be set in {bh} bh"}), 400
+        return jsonify({"error": f"Mount offset must be set when bh is {bh}"}), 400
 
     thread = threading.Thread(target=lambda: mount.run(bh))
     thread.start()

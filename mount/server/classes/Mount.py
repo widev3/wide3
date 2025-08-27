@@ -1,19 +1,19 @@
-from time import sleep
 import numpy as np
 import drivers.mount
+import drivers.buzzer
+from time import sleep
+from astropy import units
 from utils import now_utc
 from astropy.coordinates import AltAz
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import EarthLocation
-from astropy import units
 
 
 class Mount:
     def __init__(self):
-        self.__moving = False
         self.__location = None
         self.__target = None  # it is always in icrs
-        self.__offset = None  # it is always in icrsù
+        self.__offset = None  # it is always in icrs
         self.__running = False
 
     def __linear_path(self, start: SkyCoord, end: SkyCoord) -> SkyCoord:
@@ -94,20 +94,49 @@ class Mount:
                 altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
                 altaz_coords = self.__target.transform_to(altaz_frame)
                 print(f"{altaz_coords.az}, {altaz_coords.alt}")
-                # drivers.mount.run(self.__target.az, self.__target.alt)
+                drivers.mount.run(self.__target.az, self.__target.alt)
                 sleep(1)
         elif bh == "transit":
             altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
             altaz_coords = self.__target.transform_to(altaz_frame)
             print(f"{altaz_coords.az}, {altaz_coords.alt}")
-            # drivers.mount.run(self.__target.az, self.__target.alt)
+            drivers.mount.run(self.__target.az, self.__target.alt)
+            drivers.buzzer.play(
+                [
+                    # Measure 1
+                    ("C4", 0.25),
+                    ("E4", 0.25),
+                    ("G4", 0.25),
+                    ("C5", 0.25),
+                    # Measure 2
+                    ("B4", 0.25),
+                    ("A4", 0.25),
+                    ("G4", 0.5),
+                    # Measure 3
+                    ("E4", 0.25),
+                    ("F4", 0.25),
+                    ("G4", 0.25),
+                    (None, 0.25),
+                    # Measure 4
+                    ("C5", 0.5),
+                    ("B4", 0.25),
+                    ("A4", 0.25),
+                    # # Measure 5
+                    ("G4", 0.25),
+                    ("A4", 0.25),
+                    ("B4", 0.25),
+                    ("D5", 0.25),
+                    # Measure 6
+                    ("C5", 0.5),
+                ]
+            )
         elif bh == "route":
             path_coords = self.__linear_path(start=self.__offset, end=self.__target)
             for path_coord in path_coords:
                 altaz_frame = AltAz(obstime=now_utc(), location=self.__location)
                 altaz_coords = path_coord.transform_to(altaz_frame)
                 print(f"{altaz_coords.az}, {altaz_coords.alt}")
-                # drivers.mount.run(self.__target.az, self.__target.alt)
+                drivers.mount.run(self.__target.az, self.__target.alt)
                 sleep(5)
 
         print("Done run")

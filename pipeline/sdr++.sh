@@ -1,0 +1,116 @@
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt autoremove -y
+sudo apt install wget -y
+sudo apt install cmake -y
+sudo apt install build-essential -y
+
+cd ~
+wget https://github.com/drowe67/codec2/archive/refs/tags/1.2.0.zip
+unzip 1.2.0.zip
+cd codec2-1.2.0
+mkdir build
+cd build
+cmake ..
+make -j $(nproc)
+sudo make install
+sudo ldconfig
+cd ~
+rm -rf codec2-1.2.0 1.2.0.zip
+
+cd ~
+wget https://www.sdrplay.com/software/SDRplay_RPi_Scripts_v0.3.zip
+mkdir SDRplayAPI
+unzip SDRplay_RPi_Scripts_v0.3.zip -d SDRplayAPI
+sed -i 's/ARM32-3.07.2.run/ARM64-3.07.1.run/g' ./SDRplayAPI/1installAPI.sh
+sh ./SDRplayAPI/1installAPI.sh
+sudo systemctl start sdrplay
+cd ~
+rm -rf SDRplayAPI  SDRplay_RPi_Scripts_v0.3.zip  SDRplay_RSP_API-ARM64-3.07.1.run
+
+cd ~
+sudo apt update -y
+sudo apt install libglfw3 -y
+sudo apt install libglfw3-dev -y
+sudo apt install libfftw3-3 -y
+sudo apt install libfftw3-dev -y
+sudo apt install libvolk2-dev -y
+
+
+# git clone https://github.com/AlexandreRouma/SDRPlusPlus
+wget https://github.com/AlexandreRouma/SDRPlusPlus/archive/refs/tags/nightly.zip
+unzip nightly.zip
+rm -rf nightly.zip
+cd SDRPlusPlus-nightly
+mkdir build
+cd build
+
+
+sudo apt install libzstd-dev -y
+sudo apt install libairspy-dev -y
+sudo apt install libairspyhf-dev -y
+sudo apt install librtaudio-dev -y
+sudo apt install libhackrf-dev -y
+sudo apt install libiio-dev -y
+sudo apt install libad9361-dev -y
+sudo apt install librtlsdr-dev -y
+
+rm -rf *
+cmake .. \
+  -DOPT_BUILD_AIRSPY_SOURCE=OFF \
+  -DOPT_BUILD_AIRSPYHF_SOURCE=OFF \
+  -DOPT_BUILD_AUDIO_SOURCE=OFF \
+  -DOPT_BUILD_BLADERF_SOURCE=OFF \
+  -DOPT_BUILD_FILE_SOURCE=OFF \
+  -DOPT_BUILD_HACKRF_SOURCE=OFF \
+  -DOPT_BUILD_HERMES_SOURCE=OFF \
+  -DOPT_BUILD_LIMESDR_SOURCE=ON \
+  -DOPT_BUILD_PERSEUS_SOURCE=OFF \
+  -DOPT_BUILD_PLUTOSDR_SOURCE=ON \
+  -DOPT_BUILD_RFSPACE_SOURCE=OFF \
+  -DOPT_BUILD_RTL_SDR_SOURCE=ON \
+  -DOPT_BUILD_RTL_TCP_SOURCE=OFF \
+  -DOPT_BUILD_SDRPLAY_SOURCE=ON \
+  -DOPT_BUILD_SDRPP_SERVER_SOURCE=ON \
+  -DOPT_BUILD_SOAPY_SOURCE=OFF \
+  -DOPT_BUILD_SPECTRAN_SOURCE=OFF \
+  -DOPT_BUILD_SPECTRAN_HTTP_SOURCE=OFF \
+  -DOPT_BUILD_SPYSERVER_SOURCE=ON \
+  -DOPT_BUILD_USRP_SOURCE=OFF \
+  -DOPT_BUILD_ANDROID_AUDIO_SINK=OFF \
+  -DOPT_BUILD_AUDIO_SINK=OFF \
+  -DOPT_BUILD_NETWORK_SINK=OFF \
+  -DOPT_BUILD_NEW_PORTAUDIO_SINK=OFF \
+  -DOPT_BUILD_PORTAUDIO_SINK=OFF \
+  -DOPT_BUILD_ATV_DECODER=OFF \
+  -DOPT_BUILD_FALCON9_DECODER=OFF \
+  -DOPT_BUILD_M17_DECODER=OFF \
+  -DOPT_BUILD_METEOR_DEMODULATOR=OFF \
+  -DOPT_BUILD_RADIO=OFF \
+  -DOPT_BUILD_WEATHER_SAT_DECODER=OFF \
+  -DOPT_BUILD_DISCORD_PRESENCE=OFF \
+  -DOPT_BUILD_FREQUENCY_MANAGER=OFF \
+  -DOPT_BUILD_RECORDER=OFF \
+  -DOPT_BUILD_RIGCTL_CLIENT=OFF \
+  -DOPT_BUILD_RIGCTL_SERVER=ON \
+  -DOPT_BUILD_SCANNER=OFF \
+  -DOPT_BUILD_SCHEDULER=OFF
+
+make -j $(nproc)
+sudo make install
+sudo ldconfig
+cd ~
+rm -rf ~/.config/sdrpp/ #in case of previous installations
+rm -rf SDRPlusPlus-nightly
+
+cd ~
+wget https://github.com/gttrcr/whistle_of_wind/archive/refs/tags/25.08.27.zip
+unzip 25.08.27.zip
+cd whistle_of_wind-25.08.27/mount/server
+sudo apt install python3-pip -y
+python3 -m venv u
+source u/bin/activate
+pip3 install -r requirements.txt
+sudo apt install ufw -y
+sudo ufw allow 5000
+python3 main.py

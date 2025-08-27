@@ -9,34 +9,38 @@ ENA = 18
 IN1 = 23
 IN2 = 24
 
-ENA = 12
-IN1 = 8
-IN2 = 25
+ENB = 12
+IN3 = 8
+IN4 = 25
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-pwm = PWMLED(ENA)
+pwm_a = PWMLED(ENA)
 GPIO.setup(IN1, GPIO.OUT)
 GPIO.setup(IN2, GPIO.OUT)
+
+pwm_b = PWMLED(ENB)
+GPIO.setup(IN3, GPIO.OUT)
+GPIO.setup(IN4, GPIO.OUT)
 
 
 def forward(speed=1):
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
-    pwm.value = speed
+    pwm_a.value = speed
 
 
 def backward(speed=1):
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
-    pwm.value = speed
+    pwm_a.value = speed
 
 
 def stop():
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.LOW)
-    pwm.value = 0
+    pwm_a.value = 0
 
 
 try:
