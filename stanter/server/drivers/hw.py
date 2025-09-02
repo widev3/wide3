@@ -1,7 +1,7 @@
 import io
 
 
-def it_is():
+def is_rpi():
     try:
         with io.open("/sys/firmware/devicetree/base/model", "r") as m:
             if "raspberry pi" in m.read().lower():

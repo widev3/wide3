@@ -1,20 +1,54 @@
-# STANTER: STANdard mounT ServER 
+# `STAN`dard moun`T` Serv`ER`
 
-## mount API
+STANTER is a set of APIs intended to be a communication standard for open source mounts, pointing, and tracking systems.
 
-### POST /mount/location/
-**body**
-* `{"lat": lat, "lon": lon, "height": height}`
+## /session route
 
-**example**
-```bash
-curl -X POST http://localhost:5000/mount/location \
-     -H "Content-Type: application/json" \
-     -H "Authorization: $sn" \
-     -d '{"lat": 17.546, "lon": 15.786, "height": 12}'
+The session endpoint is used to acquire or release the session since only one session is allowed at a time.
+
+### GET /session/acquire
+#### response
+```json
+{
+     "session_id": session_id
+}
 ```
 
-**responses**
+#### example
+```bash
+sid="$(curl -X GET http://$server:5000/session/acquire | jq -r '.session_id')"
+echo $sid
+```
+
+### GET /session/release
+#### response
+* `{"message": "OK"}`, 200
+* `{"message": "cannot release an empty session"}`, 403
+
+#### example
+```bash
+curl -X GET http://$server:5000/session/release \
+     -H "Authorization: $sid"
+```
+
+---
+---
+
+## /mount route
+
+The route endpoint is used to move and manage everything related to the mechanics of the mount.
+
+### POST /mount/location/
+#### body
+```json
+{
+     "lat": lat,
+     "lon": lon,
+     "height": height
+}
+```
+
+#### response
 * `{"message": "OK"}`, 200
 * `{"error": "Missing required field lat"}`, 400
 * `{"error": "Missing required field lon"}`, 400
@@ -22,14 +56,28 @@ curl -X POST http://localhost:5000/mount/location \
 * `{"error": "Missing required field height"}`, 400
 * `{"error": "Already moving"}`, 403
 
+#### example
+```bash
+curl -X POST http://$server:5000/mount/location \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sid" \
+     -d '{"lat": 17.546, "lon": 15.786, "height": 12}'
+```
+
 ---
 
 ### POST /mount/target
-**body**
-* `{"ra": ra, "dec": dec}`
-* `{"az": az, "alt": alt}`
+#### body
+```json
+{
+     "ra": ra,
+     "dec": dec
+     "az": az,
+     "alt": alt
+}
+```
 
-**responses**
+#### response
 * `{"message": "OK", "target": {"ra": ra_value,"dec": dec_value}}`, 200
 * `{"error": "Empty body"}`, 400
 * `{"error": "Missing required field target.dec"}`, 400
@@ -40,30 +88,53 @@ curl -X POST http://localhost:5000/mount/location \
 * `{"error": "Neither ra/dec nor alt/az"}`, 400
 * `{"error": "Already moving"}`, 403
 
-**example**
+#### example
 ```bash
-curl -X POST http://localhost:5000/mount/target \
+curl -X POST http://$server:5000/mount/target \
      -H "Content-Type: application/json" \
-     -H "Authorization: $sn" \
+     -H "Authorization: $sid" \
      -d '{"az":"181d33m","alt":"11d19m"}'
 ```
 
 ---
 
 ### POST /mount/offset
-**body**
-* `{}`
+#### body
+```json
+{
+     "absolute":
+     {
+          same_body_of_the_target_api
+     },
+     "relative":
+     {
+          same_body_of_the_target_api
+     },
+     "timedelta": timedelta
+}
+```
 
-**responses**
+#### response
 * `{"message": "OK", "offset": {"ra": ra_value,"dec": dec_value}}`, 200
 * `{"error": "Empty body"}`, 400
 * `{"error": "'absolute', 'relative' or 'timedelta'"}`, 400
 * `{"error": "Already moving"}`, 403
 
+#### example
+```bash
+curl -X POST http://$server:5000/mount/offset \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sid" \
+     -d '{"absolute": {"ra":"18h33m","dec":"11d19m"}}'
+```
+
 ---
 
 ### GET /mount/run?bh=
-**responses**
+#### body
+`/mount/run?bh=behaviour`
+
+#### response
 * `{"message": "OK"}`, 200
 * `{"error": "Mount location is not set"}`, 400
 * `{"error": "Mount target is not set"}`, 400
@@ -71,9 +142,64 @@ curl -X POST http://localhost:5000/mount/target \
 * `{"error": "bh must be 'follow', 'transit' or 'route'"}`, 400
 * `{"error": f"Mount offset must be set when bh is {bh}"}`, 400
 
+#### example
+```bash
+curl -X POST http://$server:5000/mount/run?bh=follow \
+     -H "Content-Type: application/json" \
+     -H "Authorization: $sid" \
+     -d '{"az":"181d33m","alt":"11d19m"}'
+```
+
 ---
 
 ### GET /mount/stop
-**responses**
+#### response
 * `{"message": "OK"}`, 200
 * `{"error": "Already stopped"}`, 403
+
+#### example
+```bash
+curl -X GET http://$server:5000/mount/stop \
+     -H "Authorization: $sid"
+```
+
+### GET /mount/status
+#### response
+```json
+{
+     "location":
+     {
+
+     },
+     "target":
+     {
+
+     },
+     "offset":
+     {
+
+     },
+     "position":
+     {
+
+     },
+     "bh": hebaviour,
+     "is_running": running_state
+}
+```
+
+#### example
+```bash
+curl -X GET http://$server:5000/mount/status \
+     -H "Authorization: $sid"
+```
+
+---
+---
+
+## middleware responses
+
+Every API call must pass through a middleware to check the sender's trustworthiness.
+
+#### response
+* `{"error": "Unauthorized"}`, 401

@@ -113,6 +113,4 @@ sudo apt install python3-pip -y
 python3 -m venv u
 source u/bin/activate
 pip3 install -r requirements.txt
-sudo apt install ufw -y
-sudo ufw allow 5000
 python3 main.py

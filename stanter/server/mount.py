@@ -2,14 +2,15 @@ import math
 import threading
 from pathlib import Path
 from astropy import units
-from classes.Mount import Mount
+from drivers.WOWMount import WOWMount
 from flask import request, jsonify, Blueprint
 from astropy.coordinates import EarthLocation
 
 mount_bp = Blueprint(Path(__file__).stem, __name__)
 
+
 global mount
-mount = Mount()
+mount = WOWMount()
 
 
 def is_float(value: str) -> bool:
@@ -176,6 +177,9 @@ def mount_offset():
 @mount_bp.route("/run", methods=["GET"])
 def mount_run():
     global mount
+    if mount.get_running():
+        return jsonify({"error": "Already moving"}), 403
+
     if mount.get_location() is None:
         return jsonify({"error": "Mount location is not set"}), 400
 
@@ -204,3 +208,21 @@ def mount_stop():
 
     mount.stop()
     return jsonify({"message": "OK"}), 200
+
+
+@mount_bp.route("/status", methods=["GET"])
+def mount_status():
+    global mount
+    return (
+        jsonify(
+            {
+                "location": mount.get_location(),
+                "target": mount.get_target(),
+                "offset": mount.get_offset(),
+                "position": mount.get_position(),
+                "bh": mount.get_behaviour(),
+                "is_running": mount.get_running(),
+            }
+        ),
+        200,
+    )
