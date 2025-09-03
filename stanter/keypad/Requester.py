@@ -2,16 +2,20 @@ from single_include import httpx, urljoin
 
 
 class Requester(object):
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, headers=None, verify=False, timeout=10):
         self.__endpoint = endpoint
+        self.__headers = headers
+        self.__verify = verify
+        self.__timeout = timeout
 
-    def check(self, endpoint="/", params=None):
+    def check(self, endpoint="/", params=None) -> bool:
         try:
             response = httpx.get(
                 url=urljoin(self.__endpoint, endpoint),
-                timeout=10,
-                verify=False,
+                timeout=self.__timeout,
+                verify=self.__verify,
                 params=params,
+                headers=self.__headers,
             )
             if response.status_code == 200:
                 return True
@@ -24,9 +28,10 @@ class Requester(object):
         try:
             return httpx.get(
                 url=urljoin(self.__endpoint, endpoint),
-                timeout=10,
-                verify=False,
+                timeout=self.__timeout,
+                verify=self.__verify,
                 params=params,
+                headers=self.__headers,
             ).json()
         except:
             return False
@@ -35,10 +40,11 @@ class Requester(object):
         try:
             return httpx.put(
                 url=urljoin(self.__endpoint, endpoint),
-                timeout=10,
-                verify=False,
+                timeout=self.__timeout,
+                verify=self.__verify,
                 params=params,
                 json=json,
+                headers=self.__headers,
             ).json()
         except:
             return False
@@ -47,10 +53,11 @@ class Requester(object):
         try:
             return httpx.post(
                 url=urljoin(self.__endpoint, endpoint),
-                timeout=10,
-                verify=False,
+                timeout=self.__timeout,
+                verify=self.__verify,
                 params=params,
                 json=json,
+                headers=self.__headers,
             ).json()
         except:
             return False
@@ -59,9 +66,10 @@ class Requester(object):
         try:
             return httpx.delete(
                 url=urljoin(self.__endpoint, endpoint),
-                timeout=10,
-                verify=False,
+                timeout=self.__timeout,
+                verify=self.__verify,
                 params=params,
+                headers=self.__headers,
             ).json()
         except:
             return False

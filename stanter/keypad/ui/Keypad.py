@@ -42,6 +42,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QDialog,
     QDoubleSpinBox,
     QFrame,
@@ -58,7 +59,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName("Dialog")
-        Dialog.resize(452, 332)
+        Dialog.resize(562, 520)
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.BrushStyle.SolidPattern)
@@ -210,6 +211,9 @@ class Ui_Dialog(object):
         )
         # endif
         Dialog.setPalette(palette)
+        font = QFont()
+        font.setFamilies(["Wix Madefor Display"])
+        Dialog.setFont(font)
         self.gridLayout_3 = QGridLayout(Dialog)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.frame = QFrame(Dialog)
@@ -218,11 +222,11 @@ class Ui_Dialog(object):
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout = QGridLayout(self.frame)
         self.gridLayout.setObjectName("gridLayout")
-        self.pushButtonAcquire = QPushButton(self.frame)
-        self.pushButtonAcquire.setObjectName("pushButtonAcquire")
-        self.pushButtonAcquire.setIconSize(QSize(25, 25))
+        self.pushButtonLink = QPushButton(self.frame)
+        self.pushButtonLink.setObjectName("pushButtonLink")
+        self.pushButtonLink.setIconSize(QSize(25, 25))
 
-        self.gridLayout.addWidget(self.pushButtonAcquire, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.pushButtonLink, 0, 2, 1, 1)
 
         self.lineEditEndpoint = QLineEdit(self.frame)
         self.lineEditEndpoint.setObjectName("lineEditEndpoint")
@@ -237,44 +241,151 @@ class Ui_Dialog(object):
 
         self.gridLayout_3.addWidget(self.frame, 0, 0, 1, 2)
 
+        self.frameDirections = QFrame(Dialog)
+        self.frameDirections.setObjectName("frameDirections")
+        self.frameDirections.setEnabled(False)
+        self.frameDirections.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frameDirections.setFrameShadow(QFrame.Shadow.Raised)
+        self.gridLayout_2 = QGridLayout(self.frameDirections)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.pushButtonStop = QPushButton(self.frameDirections)
+        self.pushButtonStop.setObjectName("pushButtonStop")
+        self.pushButtonStop.setIconSize(QSize(25, 25))
+
+        self.gridLayout_2.addWidget(self.pushButtonStop, 4, 2, 1, 1)
+
+        self.pushButtonN = QPushButton(self.frameDirections)
+        self.pushButtonN.setObjectName("pushButtonN")
+        self.pushButtonN.setIconSize(QSize(25, 25))
+
+        self.gridLayout_2.addWidget(self.pushButtonN, 3, 2, 1, 1)
+
+        self.pushButtonE = QPushButton(self.frameDirections)
+        self.pushButtonE.setObjectName("pushButtonE")
+        self.pushButtonE.setIconSize(QSize(25, 25))
+
+        self.gridLayout_2.addWidget(self.pushButtonE, 4, 3, 1, 1)
+
+        self.pushButtonS = QPushButton(self.frameDirections)
+        self.pushButtonS.setObjectName("pushButtonS")
+        self.pushButtonS.setIconSize(QSize(25, 25))
+
+        self.gridLayout_2.addWidget(self.pushButtonS, 5, 2, 1, 1)
+
+        self.pushButtonW = QPushButton(self.frameDirections)
+        self.pushButtonW.setObjectName("pushButtonW")
+        self.pushButtonW.setIconSize(QSize(25, 25))
+
+        self.gridLayout_2.addWidget(self.pushButtonW, 4, 1, 1, 1)
+
+        self.label_9 = QLabel(self.frameDirections)
+        self.label_9.setObjectName("label_9")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
+        self.label_9.setSizePolicy(sizePolicy)
+        font1 = QFont()
+        font1.setFamilies(["Wix Madefor Display"])
+        font1.setBold(True)
+        self.label_9.setFont(font1)
+
+        self.gridLayout_2.addWidget(self.label_9, 2, 1, 1, 1)
+
+        self.comboBoxRanges = QComboBox(self.frameDirections)
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.addItem("")
+        self.comboBoxRanges.setObjectName("comboBoxRanges")
+
+        self.gridLayout_2.addWidget(self.comboBoxRanges, 2, 2, 1, 2)
+
+        self.gridLayout_3.addWidget(
+            self.frameDirections, 2, 1, 2, 1, Qt.AlignmentFlag.AlignTop
+        )
+
         self.frame_2 = QFrame(Dialog)
         self.frame_2.setObjectName("frame_2")
         self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_5 = QGridLayout(self.frame_2)
         self.gridLayout_5.setObjectName("gridLayout_5")
+        self.lineEditOffset = QLineEdit(self.frame_2)
+        self.lineEditOffset.setObjectName("lineEditOffset")
+        self.lineEditOffset.setReadOnly(True)
+
+        self.gridLayout_5.addWidget(self.lineEditOffset, 2, 0, 1, 1)
+
+        self.label_2 = QLabel(self.frame_2)
+        self.label_2.setObjectName("label_2")
+
+        self.gridLayout_5.addWidget(self.label_2, 5, 1, 1, 1)
+
+        self.lineEditBehavior = QLineEdit(self.frame_2)
+        self.lineEditBehavior.setObjectName("lineEditBehavior")
+        self.lineEditBehavior.setReadOnly(True)
+
+        self.gridLayout_5.addWidget(self.lineEditBehavior, 5, 0, 1, 1)
+
         self.label_4 = QLabel(self.frame_2)
         self.label_4.setObjectName("label_4")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
-        self.label_4.setSizePolicy(sizePolicy)
 
-        self.gridLayout_5.addWidget(self.label_4, 1, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.label_4, 3, 1, 1, 1)
 
-        self.label_3 = QLabel(self.frame_2)
-        self.label_3.setObjectName("label_3")
-        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy)
+        self.lineEditIsRunning = QLineEdit(self.frame_2)
+        self.lineEditIsRunning.setObjectName("lineEditIsRunning")
+        self.lineEditIsRunning.setReadOnly(True)
 
-        self.gridLayout_5.addWidget(self.label_3, 0, 1, 1, 1)
+        self.gridLayout_5.addWidget(self.lineEditIsRunning, 6, 0, 1, 1)
 
-        self.doubleSpinBox_3 = QDoubleSpinBox(self.frame_2)
-        self.doubleSpinBox_3.setObjectName("doubleSpinBox_3")
+        self.lineEditLocation = QLineEdit(self.frame_2)
+        self.lineEditLocation.setObjectName("lineEditLocation")
+        self.lineEditLocation.setReadOnly(True)
 
-        self.gridLayout_5.addWidget(self.doubleSpinBox_3, 0, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.lineEditLocation, 1, 0, 1, 1)
 
-        self.doubleSpinBox_4 = QDoubleSpinBox(self.frame_2)
-        self.doubleSpinBox_4.setObjectName("doubleSpinBox_4")
+        self.lineEditPosition = QLineEdit(self.frame_2)
+        self.lineEditPosition.setObjectName("lineEditPosition")
+        self.lineEditPosition.setReadOnly(True)
 
-        self.gridLayout_5.addWidget(self.doubleSpinBox_4, 1, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.lineEditPosition, 3, 0, 1, 1)
 
-        self.pushButtonALTAZ = QPushButton(self.frame_2)
-        self.pushButtonALTAZ.setObjectName("pushButtonALTAZ")
-        self.pushButtonALTAZ.setIconSize(QSize(25, 25))
+        self.label_7 = QLabel(self.frame_2)
+        self.label_7.setObjectName("label_7")
 
-        self.gridLayout_5.addWidget(self.pushButtonALTAZ, 2, 0, 1, 2)
+        self.gridLayout_5.addWidget(self.label_7, 6, 1, 1, 1)
+
+        self.label_5 = QLabel(self.frame_2)
+        self.label_5.setObjectName("label_5")
+
+        self.gridLayout_5.addWidget(self.label_5, 1, 1, 1, 1)
+
+        self.label = QLabel(self.frame_2)
+        self.label.setObjectName("label")
+        self.label.setFont(font1)
+
+        self.gridLayout_5.addWidget(self.label, 0, 0, 1, 2)
+
+        self.label_6 = QLabel(self.frame_2)
+        self.label_6.setObjectName("label_6")
+
+        self.gridLayout_5.addWidget(self.label_6, 2, 1, 1, 1)
+
+        self.label_8 = QLabel(self.frame_2)
+        self.label_8.setObjectName("label_8")
+
+        self.gridLayout_5.addWidget(self.label_8, 4, 1, 1, 1)
+
+        self.lineEditTarget = QLineEdit(self.frame_2)
+        self.lineEditTarget.setObjectName("lineEditTarget")
+        self.lineEditTarget.setReadOnly(True)
+
+        self.gridLayout_5.addWidget(self.lineEditTarget, 4, 0, 1, 1)
 
         self.gridLayout_3.addWidget(self.frame_2, 3, 0, 1, 1)
 
@@ -284,78 +395,48 @@ class Ui_Dialog(object):
         self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_4 = QGridLayout(self.frame_3)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.doubleSpinBox_2 = QDoubleSpinBox(self.frame_3)
-        self.doubleSpinBox_2.setObjectName("doubleSpinBox_2")
-        self.doubleSpinBox_2.setDecimals(6)
+        self.label_3 = QLabel(self.frame_3)
+        self.label_3.setObjectName("label_3")
+        self.label_3.setFont(font1)
 
-        self.gridLayout_4.addWidget(self.doubleSpinBox_2, 0, 1, 1, 1)
-
-        self.doubleSpinBox = QDoubleSpinBox(self.frame_3)
-        self.doubleSpinBox.setObjectName("doubleSpinBox")
-        self.doubleSpinBox.setDecimals(6)
-
-        self.gridLayout_4.addWidget(self.doubleSpinBox, 3, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.label_3, 1, 0, 1, 1)
 
         self.pushButtonRADEC = QPushButton(self.frame_3)
         self.pushButtonRADEC.setObjectName("pushButtonRADEC")
         self.pushButtonRADEC.setIconSize(QSize(25, 25))
 
-        self.gridLayout_4.addWidget(self.pushButtonRADEC, 4, 1, 1, 2)
+        self.gridLayout_4.addWidget(self.pushButtonRADEC, 7, 0, 1, 3)
 
-        self.label = QLabel(self.frame_3)
-        self.label.setObjectName("label")
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
+        self.labelCoord1 = QLabel(self.frame_3)
+        self.labelCoord1.setObjectName("labelCoord1")
 
-        self.gridLayout_4.addWidget(self.label, 0, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.labelCoord1, 4, 2, 1, 1)
 
-        self.label_2 = QLabel(self.frame_3)
-        self.label_2.setObjectName("label_2")
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
+        self.doubleSpinBox_2 = QDoubleSpinBox(self.frame_3)
+        self.doubleSpinBox_2.setObjectName("doubleSpinBox_2")
+        self.doubleSpinBox_2.setDecimals(6)
 
-        self.gridLayout_4.addWidget(self.label_2, 3, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.doubleSpinBox_2, 4, 0, 1, 2)
+
+        self.labelCoord2 = QLabel(self.frame_3)
+        self.labelCoord2.setObjectName("labelCoord2")
+
+        self.gridLayout_4.addWidget(self.labelCoord2, 5, 2, 1, 1)
+
+        self.doubleSpinBox = QDoubleSpinBox(self.frame_3)
+        self.doubleSpinBox.setObjectName("doubleSpinBox")
+        self.doubleSpinBox.setDecimals(6)
+
+        self.gridLayout_4.addWidget(self.doubleSpinBox, 5, 0, 1, 2)
 
         self.gridLayout_3.addWidget(self.frame_3, 2, 0, 1, 1)
 
-        self.frameDirections = QFrame(Dialog)
-        self.frameDirections.setObjectName("frameDirections")
-        self.frameDirections.setEnabled(False)
-        self.frameDirections.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frameDirections.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout_2 = QGridLayout(self.frameDirections)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.pushButtonS = QPushButton(self.frameDirections)
-        self.pushButtonS.setObjectName("pushButtonS")
-        self.pushButtonS.setIconSize(QSize(25, 25))
+        self.comboBoxCoords = QComboBox(Dialog)
+        self.comboBoxCoords.addItem("")
+        self.comboBoxCoords.addItem("")
+        self.comboBoxCoords.setObjectName("comboBoxCoords")
 
-        self.gridLayout_2.addWidget(self.pushButtonS, 2, 1, 1, 1)
-
-        self.pushButtonW = QPushButton(self.frameDirections)
-        self.pushButtonW.setObjectName("pushButtonW")
-        self.pushButtonW.setIconSize(QSize(25, 25))
-
-        self.gridLayout_2.addWidget(self.pushButtonW, 1, 0, 1, 1)
-
-        self.pushButtonE = QPushButton(self.frameDirections)
-        self.pushButtonE.setObjectName("pushButtonE")
-        self.pushButtonE.setIconSize(QSize(25, 25))
-
-        self.gridLayout_2.addWidget(self.pushButtonE, 1, 2, 1, 1)
-
-        self.pushButtonN = QPushButton(self.frameDirections)
-        self.pushButtonN.setObjectName("pushButtonN")
-        self.pushButtonN.setIconSize(QSize(25, 25))
-
-        self.gridLayout_2.addWidget(self.pushButtonN, 0, 1, 1, 1)
-
-        self.pushButtonStop = QPushButton(self.frameDirections)
-        self.pushButtonStop.setObjectName("pushButtonStop")
-        self.pushButtonStop.setIconSize(QSize(25, 25))
-
-        self.gridLayout_2.addWidget(self.pushButtonStop, 1, 1, 1, 1)
-
-        self.gridLayout_3.addWidget(self.frameDirections, 2, 1, 2, 1)
+        self.gridLayout_3.addWidget(self.comboBoxCoords, 1, 0, 1, 1)
 
         QWidget.setTabOrder(self.pushButtonN, self.pushButtonS)
         QWidget.setTabOrder(self.pushButtonS, self.pushButtonE)
@@ -368,8 +449,8 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Dialog", None))
-        self.pushButtonAcquire.setText(
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", "Keypad", None))
+        self.pushButtonLink.setText(
             QCoreApplication.translate("Dialog", "acquire", None)
         )
         self.lineEditEndpoint.setText("")
@@ -379,20 +460,59 @@ class Ui_Dialog(object):
         self.lineEditSID.setPlaceholderText(
             QCoreApplication.translate("Dialog", "session", None)
         )
-        self.label_4.setText(QCoreApplication.translate("Dialog", "AZ", None))
-        self.label_3.setText(QCoreApplication.translate("Dialog", "ALT", None))
-        self.pushButtonALTAZ.setText(
-            QCoreApplication.translate("Dialog", "PushButton", None)
+        self.pushButtonStop.setText(QCoreApplication.translate("Dialog", "Stop", None))
+        self.pushButtonN.setText(QCoreApplication.translate("Dialog", "N", None))
+        self.pushButtonE.setText(QCoreApplication.translate("Dialog", "E", None))
+        self.pushButtonS.setText(QCoreApplication.translate("Dialog", "S", None))
+        self.pushButtonW.setText(QCoreApplication.translate("Dialog", "W", None))
+        self.label_9.setText(QCoreApplication.translate("Dialog", "Free", None))
+        self.comboBoxRanges.setItemText(
+            0, QCoreApplication.translate("Dialog", "5''", None)
         )
+        self.comboBoxRanges.setItemText(
+            1, QCoreApplication.translate("Dialog", "30''", None)
+        )
+        self.comboBoxRanges.setItemText(
+            2, QCoreApplication.translate("Dialog", "1'", None)
+        )
+        self.comboBoxRanges.setItemText(
+            3, QCoreApplication.translate("Dialog", "10'", None)
+        )
+        self.comboBoxRanges.setItemText(
+            4, QCoreApplication.translate("Dialog", "30'", None)
+        )
+        self.comboBoxRanges.setItemText(
+            5, QCoreApplication.translate("Dialog", "1\u00b0", None)
+        )
+        self.comboBoxRanges.setItemText(
+            6, QCoreApplication.translate("Dialog", "5\u00b0", None)
+        )
+        self.comboBoxRanges.setItemText(
+            7, QCoreApplication.translate("Dialog", "10\u00b0", None)
+        )
+
+        self.label_2.setText(QCoreApplication.translate("Dialog", "Behaviour", None))
+        self.label_4.setText(QCoreApplication.translate("Dialog", "Position", None))
+        self.label_7.setText(QCoreApplication.translate("Dialog", "Is running", None))
+        self.label_5.setText(QCoreApplication.translate("Dialog", "Location", None))
+        self.label.setText(QCoreApplication.translate("Dialog", "Status", None))
+        self.label_6.setText(QCoreApplication.translate("Dialog", "Offset", None))
+        self.label_8.setText(QCoreApplication.translate("Dialog", "Target", None))
+        self.label_3.setText(QCoreApplication.translate("Dialog", "Positioning", None))
         self.pushButtonRADEC.setText(
             QCoreApplication.translate("Dialog", "PushButton", None)
         )
-        self.label.setText(QCoreApplication.translate("Dialog", "RA", None))
-        self.label_2.setText(QCoreApplication.translate("Dialog", "DEC", None))
-        self.pushButtonS.setText(QCoreApplication.translate("Dialog", "S", None))
-        self.pushButtonW.setText(QCoreApplication.translate("Dialog", "W", None))
-        self.pushButtonE.setText(QCoreApplication.translate("Dialog", "E", None))
-        self.pushButtonN.setText(QCoreApplication.translate("Dialog", "N", None))
-        self.pushButtonStop.setText(QCoreApplication.translate("Dialog", "Stop", None))
+        self.labelCoord1.setText(
+            QCoreApplication.translate("Dialog", "TextLabel", None)
+        )
+        self.labelCoord2.setText(
+            QCoreApplication.translate("Dialog", "TextLabel", None)
+        )
+        self.comboBoxCoords.setItemText(
+            0, QCoreApplication.translate("Dialog", "RA/DEC", None)
+        )
+        self.comboBoxCoords.setItemText(
+            1, QCoreApplication.translate("Dialog", "ALT/AZ", None)
+        )
 
     # retranslateUi

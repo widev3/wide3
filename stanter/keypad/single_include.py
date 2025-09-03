@@ -95,3 +95,15 @@ import time
 
 SingletonSplash().message("Requester")
 from Requester import Requester
+
+SingletonSplash().message("Signal")
+from PySide6.QtCore import Signal
+
+SingletonSplash().message("QObject")
+from PySide6.QtCore import QObject
+
+SingletonSplash().message("QThread")
+from PySide6.QtCore import QThread
+
+SingletonSplash().message("Slot")
+from PySide6.QtCore import Slot
