@@ -1,7 +1,3 @@
-# `STAN`dard moun`T` Serv`ER`
-
-STANTER is a set of APIs intended to be a communication standard for open source mounts, pointing, and tracking systems.
-
 ## /session route
 
 The session endpoint is used to acquire or release the session since only one session is allowed at a time.
