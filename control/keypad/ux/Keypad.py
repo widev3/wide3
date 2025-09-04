@@ -1,5 +1,6 @@
 import globals
-from single_include import Requester, QObject, Signal, time, QThread, Slot
+import os.path
+from single_include import Requester, QObject, Signal, time, QThread, Slot, json
 from despyner.QtMger import i_name, set_icon, get_icon_path, WindowManager
 
 from despyner.popupDialog.PopupDialog import Ui_Dialog as ui_popup_dialog
@@ -37,6 +38,7 @@ class Keypad:
         self.__sid = None
         self.__coord = None
         self.__range = None
+        self.__status = {}
 
         self.worker = Worker()
         self.worker.set_parent(self)
@@ -79,22 +81,34 @@ class Keypad:
     @Slot(tuple)
     def __update_status(self, j):
         if "location" in j:
-            self.ui.lineEditLocation.setText(str(j["location"]))
+            v = j["location"]
+            self.__status["location"] = v
+            self.ui.lineEditLocation.setText(str(v))
 
         if "offset" in j:
-            self.ui.lineEditOffset.setText(str(j["offset"]))
+            v = j["offset"]
+            self.__status["offset"] = v
+            self.ui.lineEditOffset.setText(str(v))
 
         if "position" in j:
-            self.ui.lineEditPosition.setText(str(j["position"]))
+            v = j["position"]
+            self.__status["position"] = v
+            self.ui.lineEditPosition.setText(str(v))
 
         if "target" in j:
-            self.ui.lineEditTarget.setText(str(j["target"]))
+            v = j["target"]
+            self.__status["target"] = v
+            self.ui.lineEditTarget.setText(str(v))
 
         if "bh" in j:
-            self.ui.lineEditBehavior.setText(str(j["bh"]))
+            v = j["bh"]
+            self.__status["bh"] = v
+            self.ui.lineEditBehavior.setText(str(v))
 
         if "is_running" in j:
-            self.ui.lineEditIsRunning.setText(str(j["is_running"]))
+            v = j["is_running"]
+            self.__status["is_running"] = v
+            self.ui.lineEditIsRunning.setText(str(v))
 
     def pushButtonLink_clicked(self):
         if self.__sid:
@@ -129,18 +143,30 @@ class Keypad:
                     self.dialog,
                 ).show()
         else:
-            if not self.ui.lineEditEndpoint.text():
+            last_session = "last.json"
+            if os.path.isfile(last_session):
+                with open(last_session) as f:
+                    j = json.load(f)
+                    self.ui.lineEditEndpoint.setText(j["server_endpoint"])
+                    self.requester = Requester(
+                        f"http://{j["server_endpoint"]}:5000",
+                        headers={"Authorization": j["sid"]},
+                    )
+                    sid = self.requester.get("/session/release")
+
+            endpoint = self.ui.lineEditEndpoint.text()
+            if not endpoint:
                 return WindowManager(
                     ui_popup_dialog,
                     ux_popup_dialog,
                     {
-                        "text": f"Insert a valid endpoint",
+                        "text": f"Insert an endpoint",
                         "image": get_icon_path(i_name.WARNING, globals.theme),
                     },
                     self.dialog,
                 ).show()
 
-            self.requester = Requester(f"http://{self.ui.lineEditEndpoint.text()}:5000")
+            self.requester = Requester(f"http://{endpoint}:5000")
             sid = self.requester.get("/session/acquire")
             if sid:
                 if "session_id" in sid:
@@ -153,10 +179,19 @@ class Keypad:
                     set_icon(self.ui.pushButtonLink, i_name.LINK_OFF, globals.theme)
 
                     self.requester = Requester(
-                        f"http://{self.ui.lineEditEndpoint.text()}:5000",
-                        headers={"Authorization": self.__sid},
+                        f"http://{endpoint}:5000", headers={"Authorization": self.__sid}
                     )
                     self.worker.start()
+
+                    with open(last_session, "w", encoding="utf-8") as f:
+                        json.dump(
+                            {
+                                "server_endpoint": f"{endpoint}",
+                                "sid": f"{self.__sid}",
+                            },
+                            f,
+                            indent=4,
+                        )
 
                     return WindowManager(
                         ui_popup_dialog,

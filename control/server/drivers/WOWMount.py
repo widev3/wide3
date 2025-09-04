@@ -127,10 +127,10 @@ class WOWMount(Mount):
             self.__mpu6050_data()
 
     def __get_az(self) -> float:
-        return Singleton().rotary_encoder.steps if drivers.hw.is_rpi() else 0
+        return Singleton().rotary_encoder.steps if drivers.hw.is_rpi() else None
 
     def __get_alt(self) -> float:
-        return self.__mpu6050_data()[0] if drivers.hw.is_rpi() else 0
+        return self.__mpu6050_data()[0] if drivers.hw.is_rpi() else None
 
     def __run(self, az: float, alt: float) -> None:
         def forward_azimuth(speed):
@@ -307,34 +307,34 @@ class WOWMount(Mount):
                 altaz_coords = path_coord.transform_to(altaz_frame)
                 self.__run(altaz_coords.az.deg, altaz_coords.alt.deg)
                 TBD().write(
-                [
-                    # Measure 1
-                    ("C4", 0.25),
-                    ("E4", 0.25),
-                    ("G4", 0.25),
-                    ("C5", 0.25),
-                    # Measure 2
-                    ("B4", 0.25),
-                    ("A4", 0.25),
-                    ("G4", 0.5),
-                    # Measure 3
-                    ("E4", 0.25),
-                    ("F4", 0.25),
-                    ("G4", 0.25),
-                    (None, 0.25),
-                    # Measure 4
-                    ("C5", 0.5),
-                    ("B4", 0.25),
-                    ("A4", 0.25),
-                    # # Measure 5
-                    ("G4", 0.25),
-                    ("A4", 0.25),
-                    ("B4", 0.25),
-                    ("D5", 0.25),
-                    # Measure 6
-                    ("C5", 0.5),
-                ]
-            )
+                    [
+                        # Measure 1
+                        ("C4", 0.25),
+                        ("E4", 0.25),
+                        ("G4", 0.25),
+                        ("C5", 0.25),
+                        # Measure 2
+                        ("B4", 0.25),
+                        ("A4", 0.25),
+                        ("G4", 0.5),
+                        # Measure 3
+                        ("E4", 0.25),
+                        ("F4", 0.25),
+                        ("G4", 0.25),
+                        (None, 0.25),
+                        # Measure 4
+                        ("C5", 0.5),
+                        ("B4", 0.25),
+                        ("A4", 0.25),
+                        # # Measure 5
+                        ("G4", 0.25),
+                        ("A4", 0.25),
+                        ("B4", 0.25),
+                        ("D5", 0.25),
+                        # Measure 6
+                        ("C5", 0.5),
+                    ]
+                )
 
         self.__running = False
         print("Done run")

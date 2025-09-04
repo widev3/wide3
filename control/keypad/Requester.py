@@ -8,6 +8,9 @@ class Requester(object):
         self.__verify = verify
         self.__timeout = timeout
 
+    def get_endpoint(self):
+        return self.__endpoint
+
     def check(self, endpoint="/", params=None) -> bool:
         try:
             response = httpx.get(

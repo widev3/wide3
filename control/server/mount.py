@@ -217,9 +217,18 @@ def mount_status():
         jsonify(
             {
                 "location": mount.get_location(),
-                "target": mount.get_target(),
-                "offset": mount.get_offset(),
-                "position": mount.get_position(),
+                "target": {
+                    "ra": mount.get_target().ra.deg if mount.get_target() else None,
+                    "dec": mount.get_target().dec.deg if mount.get_target() else None,
+                },
+                "offset": {
+                    "ra": mount.get_offset().ra.deg if mount.get_offset() else None,
+                    "dec": mount.get_offset().dec.deg if mount.get_offset() else None,
+                },
+                "position": {
+                    "ra": mount.get_position()[0] if mount.get_position()[0] else None,
+                    "dec": mount.get_position()[1] if mount.get_position()[1] else None,
+                },
                 "bh": mount.get_behaviour(),
                 "is_running": mount.get_running(),
             }
