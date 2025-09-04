@@ -1,0 +1,3 @@
+[submodule "control/keypad/despyner"]
+	path = control/keypad/despyner
+	url = git@github.com:gttrcr/despyner.git
