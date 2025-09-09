@@ -129,14 +129,15 @@ sudo systemctl start $SERVICE_NAME.service
 cd ~
 rm -rf whistle_of_wind
 git clone https://github.com/gttrcr/whistle_of_wind
-# wget https://github.com/gttrcr/whistle_of_wind/archive/refs/tags/25.08.27.zip
-# unzip 25.08.27.zip
-cd whistle_of_wind/mount/server #whistle_of_wind-25.08.27/mount/server
+cd whistle_of_wind
+git config -f .gitmodules submodule.control/keypad/despyner.url https://github.com/gttrcr/despyner.git
+git config -f .gitmodules submodule.control/server/despyner.url https://github.com/gttrcr/despyner.git
+git submodule update --init --recursive
+cd control/server
 sudo apt install python3-pip -y
 python3 -m venv u
 source u/bin/activate
 pip3 install -r requirements.txt
-python3 main.py
 
 SERVICE_NAME=control_server
 sudo bash -c "cat > /etc/systemd/system/$SERVICE_NAME.service" <<EOL
