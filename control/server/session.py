@@ -19,6 +19,6 @@ def session_acquire():
 def session_release():
     if SingletonSID().SID:
         SingletonSID().SID = None
-        return jsonify({"message": "OK"}), 200
+        return jsonify({"message": "ok"}), 200
 
     return jsonify({"message": "cannot release an empty session"}), 403

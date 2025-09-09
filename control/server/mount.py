@@ -25,58 +25,58 @@ def is_float(value: str) -> bool:
 def mount_location():
     global mount
     if mount.get_running():
-        return jsonify({"error": "Already moving"}), 403
+        return jsonify({"error": "already moving"}), 403
 
     data = request.get_json()
     if not data:
-        return jsonify({"error": "Empty body"}), 400
+        return jsonify({"error": "empty body"}), 400
 
     if "lat" not in data:
-        return jsonify({"error": "Missing required field lat"}), 400
+        return jsonify({"error": "missing required field lat"}), 400
 
     lat = data["lat"]
     lat = lat * units.deg if is_float(lat) else lat
 
     if "lon" not in data:
-        return jsonify({"error": "Missing required field lon"}), 400
+        return jsonify({"error": "missing required field lon"}), 400
 
     lon = data["lon"]
     lon = lon * units.deg if is_float(lon) else lon
 
     if "height" not in data:
-        return jsonify({"error": "Missing required field height"}), 400
+        return jsonify({"error": "missing required field height"}), 400
 
     height = data["height"]
     height = height * units.m if is_float(height) else height
     mount.set_location(EarthLocation(lat=lat, lon=lon, height=height))
 
-    return jsonify({"message": "OK"}), 200
+    return jsonify({"message": "ok"}), 200
 
 
 @mount_bp.route("/target", methods=["POST"])
 def mount_target():
     global mount
     if mount.get_running():
-        return jsonify({"error": "Already moving"}), 403
+        return jsonify({"error": "already moving"}), 403
 
     data = request.get_json()
     if not data:
-        return jsonify({"error": "Empty body"}), 400
+        return jsonify({"error": "empty body"}), 400
 
     if "ra" in data and "dec" not in data:
-        return jsonify({"error": "Missing required field target.dec"}), 400
+        return jsonify({"error": "missing required field target.dec"}), 400
 
     if "dec" in data and "ra" not in data:
-        return jsonify({"error": "Missing required field target.ra"}), 400
+        return jsonify({"error": "missing required field target.ra"}), 400
 
     if "alt" in data and "az" not in data:
-        return jsonify({"error": "Missing required field target.az"}), 400
+        return jsonify({"error": "missing required field target.az"}), 400
 
     if "az" in data and "alt" not in data:
-        return jsonify({"error": "Missing required field target.alt"}), 400
+        return jsonify({"error": "missing required field target.alt"}), 400
 
     if "ra" in data and "alt" in data:
-        return jsonify({"error": "Target should be in ra/dec or alt/az"}), 400
+        return jsonify({"error": "target should be in ra/dec or alt/az"}), 400
 
     if "az" in data:
         alt = data["alt"]
@@ -87,10 +87,10 @@ def mount_target():
         return (
             jsonify(
                 {
-                    "message": "OK",
+                    "message": "ok",
                     "target": {
-                        "ra": mount.get_target().ra.deg,
-                        "dec": mount.get_target().dec.deg,
+                        "ra": round(mount.get_target().ra.deg, 6),
+                        "dec": round(mount.get_target().dec.deg, 6),
                     },
                 }
             ),
@@ -105,28 +105,28 @@ def mount_target():
         return (
             jsonify(
                 {
-                    "message": "OK",
+                    "message": "ok",
                     "target": {
-                        "ra": mount.get_target().ra.deg,
-                        "dec": mount.get_target().dec.deg,
+                        "ra": round(mount.get_target().ra.deg, 6),
+                        "dec": round(mount.get_target().dec.deg, 6),
                     },
                 }
             ),
             200,
         )
     else:
-        return jsonify({"error": "Neither ra/dec nor alt/az"}), 400
+        return jsonify({"error": "neither ra/dec nor alt/az"}), 400
 
 
 @mount_bp.route("/offset", methods=["POST"])
 def mount_offset():
     global mount
     if mount.get_running():
-        return jsonify({"error": "Already moving"}), 403
+        return jsonify({"error": "already moving"}), 403
 
     data = request.get_json()
     if not data:
-        return jsonify({"error": "Empty body"}), 400
+        return jsonify({"error": "empty body"}), 400
 
     if "absolute" in data:
         absolute = data["absolute"]
@@ -163,10 +163,10 @@ def mount_offset():
     return (
         jsonify(
             {
-                "message": "OK",
+                "message": "ok",
                 "offset": {
-                    "ra": mount.get_offset().ra.deg,
-                    "dec": mount.get_offset().dec.deg,
+                    "ra": round(mount.get_offset().ra.deg, 6),
+                    "dec": round(mount.get_offset().dec.deg, 6),
                 },
             }
         ),
@@ -178,36 +178,36 @@ def mount_offset():
 def mount_run():
     global mount
     if mount.get_running():
-        return jsonify({"error": "Already moving"}), 403
+        return jsonify({"error": "already moving"}), 403
 
     if mount.get_location() is None:
-        return jsonify({"error": "Mount location is not set"}), 400
+        return jsonify({"error": "mount location is not set"}), 400
 
     if not mount.get_target():
-        return jsonify({"error": "Mount target is not set"}), 400
+        return jsonify({"error": "mount target is not set"}), 400
 
     bh = request.args.get("bh")
     if not bh:
-        return jsonify({"error": "Missing required argument bh"}), 400
+        return jsonify({"error": "missing required argument bh"}), 400
     if bh not in ["follow", "transit", "route"]:
         return jsonify({"error": "bh must be 'follow', 'transit' or 'route'"}), 400
     if bh in ["transit", "route"] and not mount.get_offset():
-        return jsonify({"error": f"Mount offset must be set when bh is {bh}"}), 400
+        return jsonify({"error": f"mount offset must be set when bh is {bh}"}), 400
 
     thread = threading.Thread(target=lambda: mount.run(bh))
     thread.start()
 
-    return jsonify({"message": "OK"}), 200
+    return jsonify({"message": "ok"}), 200
 
 
 @mount_bp.route("/stop", methods=["GET"])
 def mount_stop():
     global mount
     if not mount.get_running():
-        return jsonify({"error": "Already stopped"}), 403
+        return jsonify({"error": "already stopped"}), 403
 
     mount.stop()
-    return jsonify({"message": "OK"}), 200
+    return jsonify({"message": "ok"}), 200
 
 
 @mount_bp.route("/status", methods=["GET"])
@@ -218,16 +218,40 @@ def mount_status():
             {
                 "location": mount.get_location(),
                 "target": {
-                    "ra": mount.get_target().ra.deg if mount.get_target() else None,
-                    "dec": mount.get_target().dec.deg if mount.get_target() else None,
+                    "ra": (
+                        round(mount.get_target().ra.deg, 6)
+                        if mount.get_target()
+                        else None
+                    ),
+                    "dec": (
+                        round(mount.get_target().dec.deg, 6)
+                        if mount.get_target()
+                        else None
+                    ),
                 },
                 "offset": {
-                    "ra": mount.get_offset().ra.deg if mount.get_offset() else None,
-                    "dec": mount.get_offset().dec.deg if mount.get_offset() else None,
+                    "ra": (
+                        round(mount.get_offset().ra.deg, 6)
+                        if mount.get_offset()
+                        else None
+                    ),
+                    "dec": (
+                        round(mount.get_offset().dec.deg, 6)
+                        if mount.get_offset()
+                        else None
+                    ),
                 },
                 "position": {
-                    "ra": mount.get_position()[0] if mount.get_position()[0] else None,
-                    "dec": mount.get_position()[1] if mount.get_position()[1] else None,
+                    "ra": (
+                        round(mount.get_position()[0], 6)
+                        if mount.get_position()[0]
+                        else None
+                    ),
+                    "dec": (
+                        round(mount.get_position()[1], 6)
+                        if mount.get_position()[1]
+                        else None
+                    ),
                 },
                 "bh": mount.get_behaviour(),
                 "is_running": mount.get_running(),

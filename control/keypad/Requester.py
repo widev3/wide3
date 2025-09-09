@@ -8,9 +8,6 @@ class Requester(object):
         self.__verify = verify
         self.__timeout = timeout
 
-    def get_endpoint(self):
-        return self.__endpoint
-
     def check(self, endpoint="/", params=None) -> bool:
         try:
             response = httpx.get(
@@ -29,50 +26,54 @@ class Requester(object):
 
     def get(self, endpoint, params=None):
         try:
-            return httpx.get(
+            response = httpx.get(
                 url=urljoin(self.__endpoint, endpoint),
                 timeout=self.__timeout,
                 verify=self.__verify,
                 params=params,
                 headers=self.__headers,
-            ).json()
+            )
+            return response.status_code, response.json()
         except:
             return False
 
     def put(self, endpoint, params=None, json=None):
         try:
-            return httpx.put(
+            response = httpx.put(
                 url=urljoin(self.__endpoint, endpoint),
                 timeout=self.__timeout,
                 verify=self.__verify,
                 params=params,
                 json=json,
                 headers=self.__headers,
-            ).json()
+            )
+            return response.status_code, response.json()
         except:
             return False
 
     def post(self, endpoint, params=None, json=None):
         try:
-            return httpx.post(
+            response = httpx.post(
                 url=urljoin(self.__endpoint, endpoint),
                 timeout=self.__timeout,
                 verify=self.__verify,
                 params=params,
                 json=json,
                 headers=self.__headers,
-            ).json()
+            )
+            return response.status_code, response.json()
         except:
             return False
 
     def delete(self, endpoint, params=None):
         try:
-            return httpx.delete(
+            response = httpx.delete(
                 url=urljoin(self.__endpoint, endpoint),
                 timeout=self.__timeout,
                 verify=self.__verify,
                 params=params,
                 headers=self.__headers,
-            ).json()
+            )
+            return response.status_code, response.json()
         except:
             return False

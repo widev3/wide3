@@ -17,11 +17,11 @@ app.register_blueprint(mount_bp, url_prefix="/mount")
 def middleware():
     token = request.headers.get("Authorization")
     if token and SingletonSID().SID and token != str(SingletonSID().SID):
-        return jsonify({"error": "Session already acquired"}), 401
+        return jsonify({"error": "session already acquired"}), 401
     if token and not SingletonSID().SID:
-        return jsonify({"error": "No active session"}), 401
+        return jsonify({"error": "no active session"}), 401
     if not token and request.path != "/session/acquire":
-        return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
 
 
 if __name__ == "__main__":

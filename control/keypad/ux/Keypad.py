@@ -6,6 +6,8 @@ from despyner.QtMger import i_name, set_icon, get_icon_path, WindowManager
 from despyner.popupDialog.PopupDialog import Ui_Dialog as ui_popup_dialog
 from despyner.popupDialog.UXPopupDialog import UXPopupDialog as ux_popup_dialog
 
+last_session = "last.json"
+
 
 class Worker(QObject):
     progress = Signal(tuple)
@@ -20,7 +22,8 @@ class Worker(QObject):
             while self.__run:
                 time.sleep(2)
                 j = self.__par.requester.get("/mount/status")
-                self.__par.worker.progress.emit(j)
+                if j and j[0] == 200:
+                    self.__par.worker.progress.emit(j[1])
 
     def stop(self):
         self.__run = False
@@ -36,6 +39,7 @@ class Keypad:
         self.args = args
 
         self.__sid = None
+        self.__last = None
         self.__coord = None
         self.__range = None
         self.__status = {}
@@ -78,6 +82,17 @@ class Keypad:
         self.ui.comboBoxCoords.setCurrentIndex(1)
         self.ui.comboBoxCoords.setCurrentIndex(0)
 
+        if os.path.isfile(last_session):
+            with open(last_session) as f:
+                self.__last = json.load(f)
+                self.requester = Requester(
+                    f"http://{self.__last["server_endpoint"]}:5000",
+                    headers={"Authorization": self.__last["sid"]},
+                )
+                self.ui.lineEditEndpoint.setText(self.__last["server_endpoint"])
+                self.__release()
+                self.__acquire()
+
     @Slot(tuple)
     def __update_status(self, j):
         if "location" in j:
@@ -110,119 +125,116 @@ class Keypad:
             self.__status["is_running"] = v
             self.ui.lineEditIsRunning.setText(str(v))
 
-    def pushButtonLink_clicked(self):
-        if self.__sid:
-            sid = self.requester.get("/session/release")
-            if "message" in sid:
-                if sid["message"] == "OK":
-                    self.ui.lineEditSID.setText("")
-                    self.ui.frameDirections.setEnabled(False)
-                    set_icon(self.ui.pushButtonLink, i_name.ADD_LINK, globals.theme)
-                    self.worker.stop()
-                    self.requester = Requester(
-                        f"http://{self.ui.lineEditEndpoint.text()}:5000"
-                    )
-
-                    return WindowManager(
-                        ui_popup_dialog,
-                        ux_popup_dialog,
-                        {
-                            "text": f"Session released",
-                            "image": get_icon_path(i_name.CHECK, globals.theme),
-                        },
-                        self.dialog,
-                    ).show()
+    def __release(self):
+        self.__sid = None
+        sid = self.requester.get("/session/release")
+        if sid:
+            if ("message" in sid[1] and sid[1]["message"] == "OK") or (
+                "error" in sid[1] and sid[1]["error"] == "no active session"
+            ):
+                self.ui.lineEditSID.setText("")
+                self.ui.frameDirections.setEnabled(False)
+                set_icon(self.ui.pushButtonLink, i_name.ADD_LINK, globals.theme)
+                self.worker.stop()
+                self.requester = Requester(
+                    f"http://{self.ui.lineEditEndpoint.text()}:5000"
+                )
 
                 return WindowManager(
                     ui_popup_dialog,
                     ux_popup_dialog,
                     {
-                        "text": f"{sid["message"]}",
+                        "text": f"Session released",
+                        "image": get_icon_path(i_name.CHECK, globals.theme),
+                    },
+                    self.dialog,
+                ).show()
+            elif "error" in sid[1]:
+                return WindowManager(
+                    ui_popup_dialog,
+                    ux_popup_dialog,
+                    {
+                        "text": f"{sid[1]["error"]}",
                         "image": get_icon_path(i_name.ERROR, globals.theme),
                     },
                     self.dialog,
                 ).show()
-        else:
-            last_session = "last.json"
-            if os.path.isfile(last_session):
-                with open(last_session) as f:
-                    j = json.load(f)
-                    self.ui.lineEditEndpoint.setText(j["server_endpoint"])
-                    self.requester = Requester(
-                        f"http://{j["server_endpoint"]}:5000",
-                        headers={"Authorization": j["sid"]},
-                    )
-                    sid = self.requester.get("/session/release")
 
-            endpoint = self.ui.lineEditEndpoint.text()
-            if not endpoint:
+    def __acquire(self):
+        endpoint = self.ui.lineEditEndpoint.text()
+        if not endpoint:
+            return WindowManager(
+                ui_popup_dialog,
+                ux_popup_dialog,
+                {
+                    "text": f"Insert an endpoint",
+                    "image": get_icon_path(i_name.WARNING, globals.theme),
+                },
+                self.dialog,
+            ).show()
+
+        self.requester = Requester(f"http://{endpoint}:5000")
+        sid = self.requester.get("/session/acquire")
+        if sid:
+            if "session_id" in sid[1]:
+                sid = sid[1]["session_id"]
+                self.__sid = sid
+                self.ui.lineEditSID.setText(self.__sid)
+
+                self.ui.lineEditSID.setText(self.__sid)
+                self.ui.frameDirections.setEnabled(True)
+                set_icon(self.ui.pushButtonLink, i_name.LINK_OFF, globals.theme)
+
+                self.requester = Requester(
+                    f"http://{endpoint}:5000", headers={"Authorization": self.__sid}
+                )
+                self.worker.start()
+
+                with open(last_session, "w", encoding="utf-8") as f:
+                    json.dump(
+                        {
+                            "server_endpoint": f"{endpoint}",
+                            "sid": f"{self.__sid}",
+                        },
+                        f,
+                        indent=4,
+                    )
+
                 return WindowManager(
                     ui_popup_dialog,
                     ux_popup_dialog,
                     {
-                        "text": f"Insert an endpoint",
+                        "text": f"Session acquired",
+                        "image": get_icon_path(i_name.CHECK, globals.theme),
+                    },
+                    self.dialog,
+                ).show()
+            elif "message" in sid[1]:
+                return WindowManager(
+                    ui_popup_dialog,
+                    ux_popup_dialog,
+                    {
+                        "text": f"{sid[1]["message"]}",
                         "image": get_icon_path(i_name.WARNING, globals.theme),
                     },
                     self.dialog,
                 ).show()
 
-            self.requester = Requester(f"http://{endpoint}:5000")
-            sid = self.requester.get("/session/acquire")
-            if sid:
-                if "session_id" in sid:
-                    sid = sid["session_id"]
-                    self.__sid = sid
-                    self.ui.lineEditSID.setText(self.__sid)
+        return WindowManager(
+            ui_popup_dialog,
+            ux_popup_dialog,
+            {
+                "text": "Unknown error",
+                "image": get_icon_path(i_name.ERROR, globals.theme),
+            },
+            self.dialog,
+        ).show()
 
-                    self.ui.lineEditSID.setText(self.__sid)
-                    self.ui.frameDirections.setEnabled(True)
-                    set_icon(self.ui.pushButtonLink, i_name.LINK_OFF, globals.theme)
-
-                    self.requester = Requester(
-                        f"http://{endpoint}:5000", headers={"Authorization": self.__sid}
-                    )
-                    self.worker.start()
-
-                    with open(last_session, "w", encoding="utf-8") as f:
-                        json.dump(
-                            {
-                                "server_endpoint": f"{endpoint}",
-                                "sid": f"{self.__sid}",
-                            },
-                            f,
-                            indent=4,
-                        )
-
-                    return WindowManager(
-                        ui_popup_dialog,
-                        ux_popup_dialog,
-                        {
-                            "text": f"Session acquired",
-                            "image": get_icon_path(i_name.CHECK, globals.theme),
-                        },
-                        self.dialog,
-                    ).show()
-
-                if "message" in sid:
-                    return WindowManager(
-                        ui_popup_dialog,
-                        ux_popup_dialog,
-                        {
-                            "text": f"{sid["message"]}",
-                            "image": get_icon_path(i_name.WARNING, globals.theme),
-                        },
-                        self.dialog,
-                    ).show()
-
-            return WindowManager(
-                ui_popup_dialog,
-                ux_popup_dialog,
-                {
-                    "text": "Unknown error",
-                    "image": get_icon_path(i_name.ERROR, globals.theme),
-                },
-                self.dialog,
-            ).show()
+    def pushButtonLink_clicked(self):
+        if self.__sid:
+            self.__release()
+        else:
+            self.__acquire()
 
     def pushButtonNSEW_clicked(self, x):
         if x == "N":

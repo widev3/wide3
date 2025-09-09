@@ -146,7 +146,7 @@ Description=$SERVICE_NAME
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/sdrpp --server --port 56153
+ExecStart=/usr/bin/bash /home/wow/whistle_of_wind/control/server/$SERVICE_NAME.sh
 WorkingDirectory=/home/wow
 StandardOutput=inherit
 StandardError=inherit
