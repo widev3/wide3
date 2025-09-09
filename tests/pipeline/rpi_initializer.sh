@@ -104,7 +104,30 @@ cd ~
 rm -rf ~/.config/sdrpp/ #in case of previous installations
 rm -rf SDRPlusPlus-nightly
 
+SERVICE_NAME=sdrpp_server
+sudo bash -c "cat > /etc/systemd/system/$SERVICE_NAME.service" <<EOL
+[Unit]
+Description=$SERVICE_NAME
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/sdrpp --server --port 56153
+WorkingDirectory=/home/wow
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=wow
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+sudo systemctl daemon-reload
+sudo systemctl enable $SERVICE_NAME.service
+sudo systemctl start $SERVICE_NAME.service
+
 cd ~
+rm -rf whistle_of_wind
 git clone https://github.com/gttrcr/whistle_of_wind
 # wget https://github.com/gttrcr/whistle_of_wind/archive/refs/tags/25.08.27.zip
 # unzip 25.08.27.zip
@@ -114,3 +137,25 @@ python3 -m venv u
 source u/bin/activate
 pip3 install -r requirements.txt
 python3 main.py
+
+SERVICE_NAME=control_server
+sudo bash -c "cat > /etc/systemd/system/$SERVICE_NAME.service" <<EOL
+[Unit]
+Description=$SERVICE_NAME
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/sdrpp --server --port 56153
+WorkingDirectory=/home/wow
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=wow
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+sudo systemctl daemon-reload
+sudo systemctl enable $SERVICE_NAME.service
+sudo systemctl start $SERVICE_NAME.service
