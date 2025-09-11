@@ -131,7 +131,9 @@ rm -rf whistle_of_wind
 git clone https://github.com/gttrcr/whistle_of_wind
 cd whistle_of_wind
 git config -f .gitmodules submodule.control/keypad/despyner.url https://github.com/gttrcr/despyner.git
-git config -f .gitmodules submodule.control/server/despyner.url https://github.com/gttrcr/despyner.git
+git config -f .gitmodules submodule.viewer/despyner.url https://github.com/gttrcr/despyner.git
+git config -f .gitmodules submodule.waterfall/despyner.url https://github.com/gttrcr/despyner.git
+git submodule sync
 git submodule update --init --recursive
 cd control/server
 sudo apt install python3-pip -y
