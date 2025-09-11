@@ -18,7 +18,7 @@ SingletonSplash().message("Loading...")
 import Config
 from despyner.QtMger import WindowManager
 from ui.Dashboard import Ui_Dialog
-from ux.Dashboard.Dashboard import Dashboard
+from ux.Dashboard import Dashboard
 
 if __name__ == "__main__":
     SingletonSplash().message("Starting...")

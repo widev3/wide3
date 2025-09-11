@@ -14,8 +14,8 @@ class MplSpecCanvas(FigureCanvasQTAgg):
 
         self.fig = Figure()
         self.axes = self.fig.add_subplot(111)
-        self.axes.set_xlabel("frequency")
-        self.axes.set_ylabel("time")
+        self.axes.set_xlabel("time")
+        self.axes.set_ylabel("frequency")
 
         self.__xlim = self.axes.get_xlim()
         self.__ylim = self.axes.get_ylim()
@@ -45,12 +45,26 @@ class MplSpecCanvas(FigureCanvasQTAgg):
             interpolation="none",
             origin="lower",
             extent=[
-                min(self.__sp["f"]),
-                max(self.__sp["f"]),
                 min(self.__sp["r"]),
                 max(self.__sp["r"]),
+                min(self.__sp["f"]),
+                max(self.__sp["f"]),
             ],
         )
+
+        mx = min(self.__sp["r"])
+        Mx = max(self.__sp["r"])
+        self.axes.set_xticks(np.arange(mx, Mx, (Mx - mx) / 10))
+        self.axes.set_xticks(np.arange(mx, Mx, (Mx - mx) / 30), minor=True)
+
+        my = min(self.__sp["f"])
+        My = max(self.__sp["f"])
+        self.axes.set_yticks(np.arange(my, My, (My - my) / 10))
+        self.axes.set_yticks(np.arange(my, My, (My - my) / 30), minor=True)
+
+        self.axes.grid(which="minor", alpha=0.2)
+        self.axes.grid(which="major", alpha=0.5)
+
         self.fig.tight_layout()
         self.draw()
 
