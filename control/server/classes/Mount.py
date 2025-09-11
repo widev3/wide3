@@ -19,7 +19,7 @@ class Mount(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_behaviour(self):
+    def get_behavior(self):
         raise NotImplementedError
 
     @abstractmethod

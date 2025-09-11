@@ -76,7 +76,7 @@ class WOWMount(Mount):
         self.__location = None
         self.__target = None  # it is always in icrs
         self.__offset = None  # it is always in icrs
-        self.__behaviour = None
+        self.__behavior = None
         self.__running = False
 
     def __now_utc(self):
@@ -207,8 +207,8 @@ class WOWMount(Mount):
     def get_position(self):
         return (self.__get_alt(), self.__get_az())
 
-    def get_behaviour(self):
-        return self.__behaviour
+    def get_behavior(self):
+        return self.__behavior
 
     def get_running(self):
         return self.__running

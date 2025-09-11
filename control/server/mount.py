@@ -219,41 +219,41 @@ def mount_status():
                 "location": mount.get_location(),
                 "target": {
                     "ra": (
-                        round(mount.get_target().ra.deg, 6)
-                        if mount.get_target()
-                        else None
+                        None
+                        if mount.get_target() is None
+                        else round(mount.get_target().ra.deg, 6)
                     ),
                     "dec": (
-                        round(mount.get_target().dec.deg, 6)
-                        if mount.get_target()
-                        else None
+                        None
+                        if mount.get_target() is None
+                        else round(mount.get_target().dec.deg, 6)
                     ),
                 },
                 "offset": {
                     "ra": (
-                        round(mount.get_offset().ra.deg, 6)
-                        if mount.get_offset()
-                        else None
+                        None
+                        if mount.get_offset() is None
+                        else round(mount.get_offset().ra.deg, 6)
                     ),
                     "dec": (
-                        round(mount.get_offset().dec.deg, 6)
-                        if mount.get_offset()
-                        else None
+                        None
+                        if mount.get_offset() is None
+                        else round(mount.get_offset().dec.deg, 6)
                     ),
                 },
                 "position": {
                     "ra": (
-                        round(mount.get_position()[0], 6)
-                        if mount.get_position()[0]
-                        else None
+                        None
+                        if mount.get_position()[0] is None
+                        else round(mount.get_position()[0], 6)
                     ),
                     "dec": (
-                        round(mount.get_position()[1], 6)
-                        if mount.get_position()[1]
-                        else None
+                        None
+                        if mount.get_position()[1] is None
+                        else round(mount.get_position()[1], 6)
                     ),
                 },
-                "bh": mount.get_behaviour(),
+                "bh": mount.get_behavior(),
                 "is_running": mount.get_running(),
             }
         ),

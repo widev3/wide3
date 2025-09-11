@@ -42,6 +42,7 @@ class Keypad:
         self.__last = None
         self.__coord = None
         self.__range = None
+        self.__behavior = None
         self.__status = {}
 
         self.worker = Worker()
@@ -70,28 +71,56 @@ class Keypad:
         self.ui.pushButtonW.clicked.connect(lambda: self.pushButtonNSEW_clicked("W"))
         self.ui.pushButtonStop.clicked.connect(lambda: self.pushButtonNSEW_clicked("O"))
 
-        self.ui.comboBoxRanges.currentTextChanged.connect(
-            self.comboBoxRanges_currentTextChanged
-        )
-        self.ui.comboBoxRanges.setCurrentIndex(1)
-        self.ui.comboBoxRanges.setCurrentIndex(0)
-
-        self.ui.comboBoxCoords.currentIndexChanged.connect(
-            self.comboBoxCoords_currentIndexChanged
+        self.ui.comboBoxCoords.currentTextChanged.connect(
+            lambda x: self.comboBoxCoords_currentTextChanged(x, False)
         )
         self.ui.comboBoxCoords.setCurrentIndex(1)
         self.ui.comboBoxCoords.setCurrentIndex(0)
+        self.ui.comboBoxCoords.currentTextChanged.disconnect()
+        self.ui.comboBoxCoords.currentTextChanged.connect(
+            self.comboBoxCoords_currentTextChanged
+        )
+
+        self.ui.comboBoxRanges.currentTextChanged.connect(
+            lambda x: self.comboBoxRanges_currentTextChanged(x, False)
+        )
+        self.ui.comboBoxRanges.setCurrentIndex(1)
+        self.ui.comboBoxRanges.setCurrentIndex(0)
+        self.ui.comboBoxRanges.currentTextChanged.disconnect()
+        self.ui.comboBoxRanges.currentTextChanged.connect(
+            self.comboBoxRanges_currentTextChanged
+        )
+
+        self.ui.comboBoxBehavior.currentTextChanged.connect(
+            lambda x: self.comboBoxBehavior_currentTextChanged(x, False)
+        )
+        self.ui.comboBoxBehavior.setCurrentIndex(1)
+        self.ui.comboBoxBehavior.setCurrentIndex(0)
+        self.ui.comboBoxBehavior.currentTextChanged.disconnect()
+        self.ui.comboBoxBehavior.currentTextChanged.connect(
+            self.comboBoxBehavior_currentTextChanged
+        )
 
         if os.path.isfile(last_session):
             with open(last_session) as f:
                 self.__last = json.load(f)
-                self.requester = Requester(
-                    f"http://{self.__last["server_endpoint"]}:5000",
-                    headers={"Authorization": self.__last["sid"]},
-                )
-                self.ui.lineEditEndpoint.setText(self.__last["server_endpoint"])
-                self.__release()
-                self.__acquire()
+                if "server_endpoint" in self.__last and "sid" in self.__last:
+                    self.requester = Requester(
+                        f"http://{self.__last["server_endpoint"]}:5000",
+                        headers={"Authorization": self.__last["sid"]},
+                    )
+                    self.ui.lineEditEndpoint.setText(self.__last["server_endpoint"])
+                    self.__release()
+                    self.__acquire()
+
+                if "coords" in self.__last:
+                    self.ui.comboBoxCoords.setCurrentText(self.__last["coords"])
+
+                if "range" in self.__last:
+                    self.ui.comboBoxRanges.setCurrentText(self.__last["range"])
+
+                if "behavior" in self.__last:
+                    self.ui.comboBoxBehavior.setCurrentText(self.__last["behavior"])
 
     @Slot(tuple)
     def __update_status(self, j):
@@ -125,6 +154,14 @@ class Keypad:
             self.__status["is_running"] = v
             self.ui.lineEditIsRunning.setText(str(v))
 
+    def __upsert_last(self, key, value):
+        if os.path.isfile(last_session):
+            with open(last_session, "r") as file:
+                last = json.load(file)
+            last[key] = value
+            with open(last_session, "w") as file:
+                json.dump(last, file, indent=4)
+
     def __release(self):
         self.__sid = None
         sid = self.requester.get("/session/release")
@@ -132,7 +169,6 @@ class Keypad:
             if ("message" in sid[1] and sid[1]["message"] == "OK") or (
                 "error" in sid[1] and sid[1]["error"] == "no active session"
             ):
-                self.ui.lineEditSID.setText("")
                 self.ui.frameDirections.setEnabled(False)
                 set_icon(self.ui.pushButtonLink, i_name.ADD_LINK, globals.theme)
                 self.worker.stop()
@@ -179,9 +215,6 @@ class Keypad:
             if "session_id" in sid[1]:
                 sid = sid[1]["session_id"]
                 self.__sid = sid
-                self.ui.lineEditSID.setText(self.__sid)
-
-                self.ui.lineEditSID.setText(self.__sid)
                 self.ui.frameDirections.setEnabled(True)
                 set_icon(self.ui.pushButtonLink, i_name.LINK_OFF, globals.theme)
 
@@ -240,14 +273,23 @@ class Keypad:
         if x == "N":
             print(x)
 
-    def comboBoxCoords_currentIndexChanged(self, index: int):
-        self.__coord = [
-            self.ui.comboBoxCoords.itemText(i)
-            for i in range(self.ui.comboBoxCoords.count())
-        ][index]
+    def comboBoxCoords_currentTextChanged(self, text: str, save: bool = True):
+        self.__coord = text
         coords = self.__coord.split("/")
-        self.ui.labelCoord1.setText(coords[0])
-        self.ui.labelCoord2.setText(coords[1])
+        self.ui.label1Coord1.setText(coords[0])
+        self.ui.label1Coord2.setText(coords[1])
+        self.ui.label2Coord1.setText(coords[0])
+        self.ui.label2Coord2.setText(coords[1])
+        if save:
+            self.__upsert_last("coords", self.__coord)
 
-    def comboBoxRanges_currentTextChanged(self, text: str):
+    def comboBoxRanges_currentTextChanged(self, text: str, save: bool = True):
         self.__range = text
+        if save:
+            self.__upsert_last("range", self.__range)
+
+    def comboBoxBehavior_currentTextChanged(self, text: str, save: bool = True):
+        self.__behavior = text
+        self.ui.frameOffset.setEnabled(self.__behavior != "Follow")
+        if save:
+            self.__upsert_last("behavior", self.__behavior)
