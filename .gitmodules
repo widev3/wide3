@@ -1,6 +1,9 @@
 [submodule "control/keypad/despyner"]
 	path = control/keypad/despyner
 	url = git@github.com:gttrcr/despyner.git
-[submodule "control/server/despyner"]
-	path = control/server/despyner
+[submodule "viewer/despyner"]
+	path = viewer/despyner
+	url = git@github.com:gttrcr/despyner.git
+[submodule "waterfall/despyner"]
+	path = waterfall/despyner
 	url = git@github.com:gttrcr/despyner.git

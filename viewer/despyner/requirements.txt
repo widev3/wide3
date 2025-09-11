@@ -1,7 +1,0 @@
-altgraph
-packaging
-pyinstaller
-pyinstaller-hooks-contrib
-setuptools
-pyside6
-gdown
