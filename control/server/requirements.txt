@@ -4,4 +4,3 @@ gpiozero
 smbus2
 RPi.GPIO
 lgpio
--r despyner/requirements.txt
