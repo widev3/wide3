@@ -1,4 +1,4 @@
-# [Whistle of Wind radio telescope](https://www.whistleofwind.com)
+# [Wide3 radio telescope](https://www.wide3.com)
 
 ## [viewer](./viewer)
 
